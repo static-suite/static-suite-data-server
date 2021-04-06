@@ -1,0 +1,31 @@
+{
+  "name": "static-suite-data-server",
+  "version": "0.0.1",
+  "description": "A flexible, fast and developer friendly Data Server for Static Suite",
+  "main": "src/index.js",
+  "author": "Alberto Silva, BIKO",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.5.1",
+    "cors": "^2.8.5",
+    "decache": "^4.6.0",
+    "express": "^4.17.1",
+    "fast-glob": "^3.2.5",
+    "winston": "^3.3.3",
+    "yargs": "^16.2.0"
+  },
+  "bin": {
+    "static-suite-data-server": "./bin/serve.js"
+  },
+  "scripts": {
+    "serve": "node bin/serve.js"
+  },
+  "devDependencies": {
+    "eslint": "^7.21.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1"
+  }
+}

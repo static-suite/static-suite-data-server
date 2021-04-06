@@ -1,0 +1,26 @@
+{
+  // nvm alias default 14.16.0
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug serve",
+      "skipFiles": ["<node_internals>/**"],
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ],
+      "program": "${workspaceFolder}/bin/serve.js",
+      "args": [
+        "http",
+        "--data-dir",
+        "/var/www/natgeo/static/current/es/data/prod/",
+        "--work-dir",
+        "/var/www/natgeo/static/current/es/data/prod/.work/",
+        "-vvvv"
+      ],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
