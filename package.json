@@ -28,8 +28,7 @@
   },
   "scripts": {
     "serve": "node bin/serve.js",
-    "serve-dev": "nodemon bin/serve.js",
-    "postinstall": "node scripts/postinstall.js"
+    "serve-dev": "nodemon bin/serve.js"
   },
   "devDependencies": {
     "eslint": "^7.21.0",

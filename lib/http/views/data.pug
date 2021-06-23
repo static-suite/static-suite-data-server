@@ -4,10 +4,10 @@ block vars
   - var title = "Data | Static Suite Data Server"
 
 block assets
-  link(rel='stylesheet', href='/assets/simple-datatables/style.css')
-  link(rel='stylesheet', href='/assets/bulma/bulma-tooltip.min.css')
-  script(src="/assets/simple-datatables/index.js")
-  script(src="/assets/clipboard/clipboard.min.js")
+  link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css')
+  link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css')
+  script(src="https://cdn.jsdelivr.net/npm/simple-datatables@latest")
+  script(src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js")
 
   script.
     const dataTable = new simpleDatatables.DataTable("#data-table", {
