@@ -35,7 +35,7 @@ Require `lib/dataServer.js` inside the SSG, and call its `init()` function:
 const { dataServer } = require('lib/dataServer');
 
 // Init the Data Server.
-const { store, storeManager, queryRunner, logger } = dataServer.init({
+const { store, dataDirManager, queryRunner, logger } = dataServer.init({
   dataDir: '../data/prod',
   workDir: '../data/prod/.work',
   queryDir: './src/data-server/query',
@@ -46,7 +46,7 @@ const { store, storeManager, queryRunner, logger } = dataServer.init({
 });
 
 // Loop over all articles of a given language
-store.data[langcode].entity.node.article._items.forEach(article => {
+store.data[langcode].entity.node.article._json.forEach(article => {
   // do something
 });
 ```
@@ -75,25 +75,25 @@ To be able to do so, you need to start the Data Server HTTP endpoint as stated i
 
 The Data Server honors the structure of Static Suite's data directory. Each file is stored in a tree-like object, where directories and filenames are transformed into object properties. For example, the filepath `/en/entity/node/article/40000/41234.json` is transformed into `store.data.en.entity.node.article['40000']['41234.json']`
 
-Every JSON file is also added to a special `_items` object inside every tree leaf, so the above file will be available in:
+Every JSON file is also added to a special `_json` object inside every tree leaf, so the above file will be available in:
 
-- `store.data._items.main`
-- `store.data.en._items.main`
-- `store.data.en.entity._items.main`
-- `store.data.en.entity.node._items.main`
-- `store.data.en.entity.node.article._items.main`
-- `store.data.en.entity.node.article['40000']._items.main`
+- `store.data._json.main`
+- `store.data.en._json.main`
+- `store.data.en.entity._json.main`
+- `store.data.en.entity.node._json.main`
+- `store.data.en.entity.node.article._json.main`
+- `store.data.en.entity.node.article['40000']._json.main`
 
-Given a variant file named `/en/entity/node/article/40000/41234--teaser.json`, it would be added to the following `_items` object:
+Given a variant file named `/en/entity/node/article/40000/41234--teaser.json`, it would be added to the following `_json` object:
 
-- `store.data._items.variants.teaser`
-- `store.data.en._items.variants.teaser`
-- `store.data.en.entity._items.variants.teaser`
-- `store.data.en.entity.node._items.variants.teaser`
-- `store.data.en.entity.node.article._items.variants.teaser`
-- `store.data.en.entity.node.article['40000']._items.variants.teaser`
+- `store.data._json.variants.teaser`
+- `store.data.en._json.variants.teaser`
+- `store.data.en.entity._json.variants.teaser`
+- `store.data.en.entity.node._json.variants.teaser`
+- `store.data.en.entity.node.article._json.variants.teaser`
+- `store.data.en.entity.node.article['40000']._json.variants.teaser`
 
-As shown above, every directory path contains an special entry named `_items`, which is an
+As shown above, every directory path contains an special entry named `_json`, which is an
 object that contains `main` and `variants`:
 
 - `main`: an array that contains, recursively, all files inside that directory that are not a variant.
@@ -103,14 +103,14 @@ This way, queries can be run on any set of data, limiting the amount of data to 
 
 ```javascript
 // Find articles that contain "foo" inside their title.
-const results = store.data.en.entity.node.article._items.main.filter(
+const results = store.data.en.entity.node.article._json.main.filter(
   article => article.data.content.title.indexOf('foo') !== 1,
 );
 ```
 
 ```javascript
 // Find "teaser" article variants that contain "foo" inside their title.
-const results = store.data.en.entity.node.article._items.variant.teaser.filter(
+const results = store.data.en.entity.node.article._json.variant.teaser.filter(
   article => article.data.content.title.indexOf('foo') !== 1,
 );
 ```
@@ -134,9 +134,9 @@ It must return an object with two keys:
 Example: find all contents by title passed in "q" argument
 
 ```javascript
-const findContentByTitle = (storeData, args) => {
+const findContentsByTitle = (storeData, args) => {
   const q = args.q?.toLowerCase();
-  const results = storeData._items.main
+  const results = storeData._json.main
     .filter(
       node =>
         node.data?.content?.title &&
@@ -157,7 +157,7 @@ Example: list latest contents. Note the use of slice() to make a copy of the dat
 
 ```javascript
 const latestContents = (storeData, args = {}) => {
-  const results = storeData._items.main
+  const results = storeData._json.main
     .slice()
     .sort((a, b) => b.changed - a.changed)
     .slice(0, args.limit || 10)

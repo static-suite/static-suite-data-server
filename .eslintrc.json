@@ -23,6 +23,6 @@
         "enforceForRenamedProperties": false
       }
     ],
-    "no-underscore-dangle": ["error", { "allow": ["_items", "__FILENAME__"] }]
+    "no-underscore-dangle": ["error", { "allow": ["_json", "__FILENAME__"] }]
   }
 }
