@@ -22,7 +22,7 @@ const { argv } = yargs(hideBin(process.argv))
       describe: 'Path to Static Suite data directory',
     },
     'work-dir': {
-      demandOption: true,
+      demandOption: false,
       describe: 'Path to Static Suite work directory',
     },
     // query-dir is required here, because running an HTTP server implies
