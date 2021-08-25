@@ -7,7 +7,11 @@ block content
   h1(class="title is-1")="Available queries"
   table(class="table is-fullwidth  is-hoverable")
     tbody
-      each queryId in queryIds
+      if queryIds
+        each queryId in queryIds
+          tr
+            td
+              a(href=queryId)= queryId
+      else
         tr
-          td
-            a(href=queryId)= queryId
+          td="No queries available"

@@ -212,7 +212,7 @@ const main = {
 module.exports = main;
 ```
 
-The post processor is a single file, instead of several ones like queries. The reason for this is to be able to easily execute different post processors in a given order, or bypass some of them (or event sorting them differently) given some conditions.
+The post processor is a single file, instead of several ones like queries. The reason for this is to be able to easily execute different post processors in a given order, or bypass some of them (or even sorting them differently) given some conditions.
 
 ### processFile
 

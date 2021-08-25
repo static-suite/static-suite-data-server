@@ -5,17 +5,18 @@ const { hideBin } = require('yargs/helpers');
 const { httpServer } = require('../lib/http/httpServer');
 const { dataServer } = require('../lib/dataServer');
 
+const logLevels = ['error', 'warn', 'info', 'debug'];
+
 const { argv } = yargs(hideBin(process.argv))
-  .usage(
-    'Usage: $0 <command> --data-dir [path] --work-dir [path] --query-dir [path]',
-  )
-  .command('http [--port]', 'Start an HTTP server', args => {
+  .usage('Usage: $0 http --data-dir [path]')
+  .command(['http [--port]'], 'Start an HTTP server', args => {
     args.positional('--port', {
       describe: 'Port number',
       type: 'number',
       default: 57471,
     });
   })
+  .demandCommand()
   .options({
     'data-dir': {
       demandOption: true,
@@ -25,10 +26,8 @@ const { argv } = yargs(hideBin(process.argv))
       demandOption: false,
       describe: 'Path to Static Suite work directory',
     },
-    // query-dir is required here, because running an HTTP server implies
-    // having some queries to be run.
     'query-dir': {
-      demandOption: true,
+      demandOption: false,
       describe: 'Path to the directory where queries are stored',
     },
     'run-mode': {
@@ -39,27 +38,34 @@ const { argv } = yargs(hideBin(process.argv))
       choices: ['dev', 'prod'],
     },
     'post-processor': {
-      describe: 'Path to the post processor file',
+      describe: 'Path to the post processor module',
     },
-    'error-log-file': {
-      describe: 'Path to error log file',
+    'log-level': {
+      describe: 'Log level verbosity',
+      choices: logLevels,
+      default: 'info',
     },
-    verbose: {
-      alias: 'v',
-      count: true,
-      describe: 'Increase verbosity',
+    'log-file': {
+      describe: 'Path to log file',
+    },
+    'log-file-level': {
+      describe: 'Log file level verbosity',
+      choices: logLevels,
     },
     help: {
       alias: 'h',
       describe: 'Show help',
       type: 'boolean',
     },
-  });
+  })
+  .strict()
+  .help();
 
 // Configure data server.
 dataServer.init({
-  errorLogFile: argv.errorLogFile,
-  logLevelIncrement: argv.verbose,
+  logLevel: argv.logLevel,
+  logFile: argv.logFile,
+  logFileLevel: argv.logFileLevel || argv.logLevel,
   dataDir: argv.dataDir,
   workDir: argv.workDir,
   queryDir: argv.queryDir,
