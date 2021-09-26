@@ -1,0 +1,17 @@
+extends includes/layout.pug
+
+block vars
+  - var title = "Available queries | Static Suite Data Server"
+
+block content
+  h1(class="title is-1")="Available queries"
+  table(class="table is-fullwidth  is-hoverable")
+    tbody
+      if queryIds
+        each queryId in queryIds
+          tr
+            td
+              a(href=queryId)= queryId
+      else
+        tr
+          td="No queries available"
