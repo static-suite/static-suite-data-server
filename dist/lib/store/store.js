@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
 const path_1 = __importDefault(require("path"));
-const postProcessorManager_1 = require("./postProcessorManager");
-const fsUtils_1 = require("../utils/fsUtils");
-const logger_1 = require("../utils/logger");
-const cache_1 = require("../utils/cache");
-const objectUtils_1 = require("../utils/objectUtils");
+const fsUtils_1 = require("@lib/utils/fsUtils");
+const logger_1 = require("@lib/utils/logger");
+const cache_1 = require("@lib/utils/cache");
+const objectUtils_1 = require("@lib/utils/objectUtils");
+const postProcessor_1 = require("./postProcessor");
 const JSON_ITEMS = '_json';
 const MAIN = 'main';
 const VARIANTS = 'variants';
@@ -161,7 +161,7 @@ exports.store = {
         }
         let fileContent = cache_1.cache.get('file', filePath);
         // Post process file.
-        const postProcessor = (0, postProcessorManager_1.getPostProcessor)();
+        const postProcessor = postProcessor_1.postProcessorManager.getPostProcessor();
         if (postProcessor?.processFile) {
             fileContent = postProcessor.processFile(dataDir, file, fileContent, exports.store);
         }
@@ -236,7 +236,7 @@ exports.store = {
             }
         });
         // Post process file.
-        const postProcessor = (0, postProcessorManager_1.getPostProcessor)();
+        const postProcessor = postProcessor_1.postProcessorManager.getPostProcessor();
         if (postProcessor?.storeRemove) {
             postProcessor.storeRemove(file, exports.store);
         }

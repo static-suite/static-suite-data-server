@@ -11,7 +11,9 @@ const combinedFormat = winston.format.combine(
   customFormat,
 );
 
-const logger = winston.createLogger({
+export type Logger = winston.Logger;
+
+const logger: winston.Logger = winston.createLogger({
   levels: winston.config.npm.levels,
   level: 'info',
   format: winston.format.json(),

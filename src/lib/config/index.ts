@@ -1,1 +1,2 @@
-export { config, setConfig } from './config';
+export * from './config';
+export * from './config.types';

@@ -6,18 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryRunner = void 0;
 const path_1 = __importDefault(require("path"));
 const microtime_1 = __importDefault(require("microtime"));
-const config_1 = require("../config");
-const store_1 = require("../store");
-const moduleHandler_1 = require("../utils/moduleHandler");
-const logger_1 = require("../utils/logger");
-const cache_1 = require("../utils/cache");
-const fsUtils_1 = require("../utils/fsUtils");
-const runMode_1 = require("../types/runMode");
-var CacheStatus;
-(function (CacheStatus) {
-    CacheStatus[CacheStatus["MISS"] = 0] = "MISS";
-    CacheStatus[CacheStatus["HIT"] = 1] = "HIT";
-})(CacheStatus || (CacheStatus = {}));
+const config_1 = require("@lib/config");
+const store_1 = require("@lib/store");
+const moduleHandler_1 = require("@lib/utils/moduleHandler");
+const logger_1 = require("@lib/utils/logger");
+const cache_1 = require("@lib/utils/cache");
+const fsUtils_1 = require("@lib/utils/fsUtils");
+const dataServer_types_1 = require("@lib/dataServer.types");
+const queryRunner_types_1 = require("@lib/query/queryRunner.types");
 let count = 0;
 const createErrorResponse = (message) => {
     logger_1.logger.error(message);
@@ -28,7 +24,7 @@ const createErrorResponse = (message) => {
  * @property {Function} configure - Configure the query runner.
  * @property {Function} run - Run a query.
  */
-exports.queryRunner = {
+const queryRunner = {
     /**
      * Get a list of available query IDs.
      *
@@ -39,7 +35,7 @@ exports.queryRunner = {
     getAvailableQueryIds: () => {
         const availableQueries = [];
         if (config_1.config.queryDir) {
-            const queryDir = config_1.config.queryDir;
+            const { queryDir } = config_1.config;
             const allQueryModulesRelativePath = (0, fsUtils_1.findFilesInDir)(queryDir, '**/*.js');
             allQueryModulesRelativePath.forEach(queryModuleRelativePath => {
                 const queryModuleAbsolutePath = path_1.default.join(queryDir, queryModuleRelativePath);
@@ -93,7 +89,7 @@ exports.queryRunner = {
                 });
                 queryResult = queryResponse?.result;
                 isCacheMiss = true;
-                if (config_1.config.runMode === runMode_1.RunMode.PROD &&
+                if (config_1.config.runMode === dataServer_types_1.RunMode.PROD &&
                     queryResponse?.cacheable !== false) {
                     cache_1.cache.set('query', cacheId, queryResult);
                 }
@@ -110,8 +106,8 @@ exports.queryRunner = {
             metadata: {
                 contentType: 'application/json',
                 execTimeMs,
-                queriesPerSecond: Math.round(1000 / execTimeMs),
-                cache: isCacheMiss ? CacheStatus.MISS : CacheStatus.HIT,
+                // queriesPerSecond: Math.round(1000 / execTimeMs),
+                cache: isCacheMiss ? queryRunner_types_1.CacheStatus.MISS : queryRunner_types_1.CacheStatus.HIT,
             },
         };
         if (queryResult && Array.isArray(queryResult)) {
@@ -127,3 +123,4 @@ exports.queryRunner = {
      */
     getCount: () => count,
 };
+exports.queryRunner = queryRunner;

@@ -1,16 +1,16 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import path from 'path';
+import { config } from '@lib/config';
 import { logger } from './logger';
-import { config } from '../config';
 import { findFilesInDir } from './fsUtils';
 
-const modules: Dictionary<any> = {};
+const modules: Record<string, any> = {};
 
 export const moduleHandler = {
-  init: () => {
+  init: (): void => {
     if (config.queryDir) {
-      const queryDir = config.queryDir;
+      const { queryDir } = config;
       const allQueryModules = findFilesInDir(queryDir, '**/*.js');
       allQueryModules.forEach(queryModule => {
         const modulePath = path.join(queryDir, queryModule);

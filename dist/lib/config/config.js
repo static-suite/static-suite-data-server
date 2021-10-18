@@ -6,9 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setConfig = exports.config = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = require("path");
-const objectUtils_1 = require("../utils/objectUtils");
-const runMode_1 = require("../types/runMode");
-exports.config = Object.create(null); // no inherited properties
+const dataServer_types_1 = require("@lib/dataServer.types");
+const objectUtils_1 = require("@lib/utils/objectUtils");
+const config = Object.create(null); // no inherited properties
+exports.config = config;
 /**
  * Configure the data server.
  *
@@ -22,52 +23,55 @@ exports.config = Object.create(null); // no inherited properties
  * @return {Object} - The config object.
  */
 const setConfig = (options) => {
+    const localOptions = options;
     // Check that required options are provided
-    if (!options.dataDir) {
+    if (!localOptions.dataDir) {
         throw Error('Required option not provided: "dataDir".');
     }
-    options.dataDir = (0, path_1.resolve)(options.dataDir);
-    if (!fs_1.default.existsSync(options.dataDir) ||
-        !fs_1.default.lstatSync(options.dataDir).isDirectory()) {
-        throw Error(`Cannot find dataDir directory: "${options.dataDir}"`);
+    localOptions.dataDir = (0, path_1.resolve)(localOptions.dataDir);
+    if (!fs_1.default.existsSync(localOptions.dataDir) ||
+        !fs_1.default.lstatSync(localOptions.dataDir).isDirectory()) {
+        throw Error(`Cannot find dataDir directory: "${localOptions.dataDir}"`);
     }
-    if (options.workDir) {
-        options.workDir = (0, path_1.resolve)(options.workDir);
-        if (!fs_1.default.existsSync(options.workDir) ||
-            !fs_1.default.lstatSync(options.workDir).isDirectory()) {
-            throw Error(`Cannot find workDir directory: "${options.workDir}"`);
+    if (localOptions.workDir) {
+        localOptions.workDir = (0, path_1.resolve)(localOptions.workDir);
+        if (!fs_1.default.existsSync(localOptions.workDir) ||
+            !fs_1.default.lstatSync(localOptions.workDir).isDirectory()) {
+            throw Error(`Cannot find workDir directory: "${localOptions.workDir}"`);
         }
     }
-    if (options.queryDir) {
-        options.queryDir = (0, path_1.resolve)(options.queryDir);
-        if (!fs_1.default.existsSync(options.queryDir) ||
-            !fs_1.default.lstatSync(options.queryDir).isDirectory()) {
-            throw Error(`Cannot find queryDir directory: ${options.queryDir}`);
+    if (localOptions.queryDir) {
+        localOptions.queryDir = (0, path_1.resolve)(localOptions.queryDir);
+        if (!fs_1.default.existsSync(localOptions.queryDir) ||
+            !fs_1.default.lstatSync(localOptions.queryDir).isDirectory()) {
+            throw Error(`Cannot find queryDir directory: ${localOptions.queryDir}`);
         }
     }
-    if (options.postProcessor) {
-        options.postProcessor = (0, path_1.resolve)(options.postProcessor);
-        if (!fs_1.default.existsSync(options.postProcessor)) {
-            throw Error(`Cannot find postProcessor module: ${options.postProcessor}`);
+    if (localOptions.postProcessor) {
+        localOptions.postProcessor = (0, path_1.resolve)(localOptions.postProcessor);
+        if (!fs_1.default.existsSync(localOptions.postProcessor)) {
+            throw Error(`Cannot find postProcessor module: ${localOptions.postProcessor}`);
         }
     }
-    if (!options.runMode) {
+    if (!localOptions.runMode) {
         throw Error('Required option not provided: "runMode"');
     }
-    if (!Object.values(runMode_1.RunMode).includes(options.runMode)) {
-        throw Error(`Invalid value provided for "runMode": "${options.runMode}". Valid options are ${Object.values(runMode_1.RunMode).join(' or ')}`);
+    if (!Object.values(dataServer_types_1.RunMode).includes(localOptions.runMode)) {
+        throw Error(`Invalid value provided for "runMode": "${localOptions.runMode}". Valid options are ${Object.values(dataServer_types_1.RunMode).join(' or ')}`);
     }
-    Object.keys(options).forEach(key => {
-        if ((0, objectUtils_1.hasKey)(options, key)) {
-            Object.defineProperty(exports.config, key, {
+    Object.keys(localOptions).forEach(key => {
+        if ((0, objectUtils_1.hasKey)(localOptions, key)) {
+            Object.defineProperty(config, key, {
                 enumerable: true,
                 configurable: false,
                 writable: false,
                 // Remove leading slash from all directories.
-                value: key === 'runMode' ? options[key] : options[key]?.replace(/\/$/, ''),
+                value: key === 'runMode'
+                    ? localOptions[key]
+                    : localOptions[key]?.replace(/\/$/, ''),
             });
         }
     });
-    return exports.config;
+    return config;
 };
 exports.setConfig = setConfig;

@@ -1,10 +1,10 @@
 import path from 'path';
 import chokidar from 'chokidar';
-import { config } from '../config';
+import { config } from '@lib/config';
+import { dataDirManager } from '@lib/store/dataDir/dataDirManager';
+import { RunMode } from '@lib/dataServer.types';
 import { logger } from './logger';
-import { dataDirManager } from '../store/dataDirManager';
 import { moduleHandler } from './moduleHandler';
-import { RunMode } from '../types/runMode';
 
 // If module is a post processor, rebuild the whole store
 // so it can be re-evaluated.

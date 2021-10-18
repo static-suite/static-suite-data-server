@@ -7,14 +7,14 @@ exports.moduleHandler = void 0;
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 const path_1 = __importDefault(require("path"));
+const config_1 = require("@lib/config");
 const logger_1 = require("./logger");
-const config_1 = require("../config");
 const fsUtils_1 = require("./fsUtils");
 const modules = {};
 exports.moduleHandler = {
     init: () => {
         if (config_1.config.queryDir) {
-            const queryDir = config_1.config.queryDir;
+            const { queryDir } = config_1.config;
             const allQueryModules = (0, fsUtils_1.findFilesInDir)(queryDir, '**/*.js');
             allQueryModules.forEach(queryModule => {
                 const modulePath = path_1.default.join(queryDir, queryModule);

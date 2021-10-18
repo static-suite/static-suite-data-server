@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.initWatcher = void 0;
 const path_1 = __importDefault(require("path"));
 const chokidar_1 = __importDefault(require("chokidar"));
-const config_1 = require("../config");
+const config_1 = require("@lib/config");
+const dataDirManager_1 = require("@lib/store/dataDir/dataDirManager");
+const dataServer_types_1 = require("@lib/dataServer.types");
 const logger_1 = require("./logger");
-const dataDirManager_1 = require("../store/dataDirManager");
 const moduleHandler_1 = require("./moduleHandler");
-const runMode_1 = require("../types/runMode");
 // If module is a post processor, rebuild the whole store
 // so it can be re-evaluated.
 const conditionallyResetStore = (filePath) => {
@@ -24,7 +24,7 @@ const conditionallyResetStore = (filePath) => {
 };
 // Initialize watcher.
 const initWatcher = () => {
-    if (config_1.config.runMode === runMode_1.RunMode.DEV &&
+    if (config_1.config.runMode === dataServer_types_1.RunMode.DEV &&
         (config_1.config.queryDir || config_1.config.postProcessor)) {
         const paths = [];
         if (config_1.config.queryDir) {

@@ -1,51 +1,19 @@
 import path from 'path';
 import microtime from 'microtime';
-import { config } from '../config';
-import { store } from '../store';
-import { moduleHandler } from '../utils/moduleHandler';
-import { logger } from '../utils/logger';
-import { cache } from '../utils/cache';
-import { findFilesInDir } from '../utils/fsUtils';
-import { RunMode } from '../types/runMode';
-
-// const { getArgs } = require('../utils/functionUtils');
-
-type QueryRunner = {
-  getAvailableQueryIds(): string[];
-};
-
-type QueryModule = {
-  queryHandler(options: {
-    data: any;
-    args: Dictionary<string>;
-  }): QueryModuleResult;
-};
-
-type QueryModuleResult = {
-  result: any;
-  cacheable: boolean;
-};
-
-enum CacheStatus {
-  MISS,
-  HIT,
-}
-
-type QueryResponse = {
-  data: any;
-  error?: string;
-  metadata: {
-    contentType: string;
-    num?: number;
-    execTimeMs: number;
-    queriesPerSecond?: number;
-    cache: CacheStatus;
-  };
-};
-
-type QueryErrorResponse = {
-  error: string;
-};
+import { config } from '@lib/config';
+import { store } from '@lib/store';
+import { moduleHandler } from '@lib/utils/moduleHandler';
+import { logger } from '@lib/utils/logger';
+import { cache } from '@lib/utils/cache';
+import { findFilesInDir } from '@lib/utils/fsUtils';
+import { RunMode } from '@lib/dataServer.types';
+import {
+  QueryRunner,
+  QueryModule,
+  CacheStatus,
+  QueryResponse,
+  QueryErrorResponse,
+} from '@lib/query/queryRunner.types';
 
 let count = 0;
 
@@ -59,7 +27,7 @@ const createErrorResponse = (message: string): QueryErrorResponse => {
  * @property {Function} configure - Configure the query runner.
  * @property {Function} run - Run a query.
  */
-export const queryRunner = {
+const queryRunner: QueryRunner = {
   /**
    * Get a list of available query IDs.
    *
@@ -71,7 +39,7 @@ export const queryRunner = {
     const availableQueries: string[] = [];
 
     if (config.queryDir) {
-      const queryDir = config.queryDir;
+      const { queryDir } = config;
       const allQueryModulesRelativePath = findFilesInDir(queryDir, '**/*.js');
 
       allQueryModulesRelativePath.forEach(queryModuleRelativePath => {
@@ -113,7 +81,7 @@ export const queryRunner = {
    */
   run: (
     queryId: string,
-    args: Dictionary<string>,
+    args: Record<string, string>,
   ): QueryResponse | QueryErrorResponse => {
     if (!config.queryDir) {
       return createErrorResponse('No query directory configured');
@@ -161,7 +129,7 @@ export const queryRunner = {
       metadata: {
         contentType: 'application/json',
         execTimeMs,
-        queriesPerSecond: Math.round(1000 / execTimeMs),
+        // queriesPerSecond: Math.round(1000 / execTimeMs),
         cache: isCacheMiss ? CacheStatus.MISS : CacheStatus.HIT,
       },
     };
@@ -181,3 +149,5 @@ export const queryRunner = {
    */
   getCount: (): number => count,
 };
+
+export { queryRunner };

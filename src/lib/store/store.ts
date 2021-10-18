@@ -1,21 +1,22 @@
 import path from 'path';
-import { getPostProcessor } from './postProcessorManager';
 import {
   getFileContent,
   getVariantName,
   FileType,
   Json,
-} from '../utils/fsUtils';
-import { logger } from '../utils/logger';
-import { cache } from '../utils/cache';
-import { deepClone } from '../utils/objectUtils';
+} from '@lib/utils/fsUtils';
+import { logger } from '@lib/utils/logger';
+import { cache } from '@lib/utils/cache';
+import { deepClone } from '@lib/utils/objectUtils';
+import { Store } from './store.types';
+import { postProcessorManager } from './postProcessor';
 
 const JSON_ITEMS = '_json';
 const MAIN = 'main';
 const VARIANTS = 'variants';
 
 type StoreDataLeaf = {
-  [key: string]: Json | string | Array<notUndefined> | StoreDataLeaf;
+  [key: string]: Json | string | Array<any> | StoreDataLeaf;
   [JSON_ITEMS]: {
     [MAIN]: Json[];
     [VARIANTS]: {
@@ -92,23 +93,6 @@ const meetsPathRequirements = (pathParts: string[]) => {
     return false;
   }
   return true;
-};
-
-export type Store = {
-  updated: Date | null;
-  data: any;
-  stage: any;
-  add(
-    dataDir: string,
-    file: string,
-    options?: {
-      useStage: boolean;
-      useCache: boolean;
-    },
-  ): Store;
-  remove(file: string): Store;
-  update(dataDir: string, file: string): Store;
-  promoteStage(): Store;
 };
 
 // A skeleton for the data in the store.
@@ -220,7 +204,7 @@ export const store: Store = {
     let fileContent = cache.get<FileType>('file', filePath);
 
     // Post process file.
-    const postProcessor = getPostProcessor();
+    const postProcessor = postProcessorManager.getPostProcessor();
     if (postProcessor?.processFile) {
       fileContent = postProcessor.processFile(
         dataDir,
@@ -307,7 +291,7 @@ export const store: Store = {
     });
 
     // Post process file.
-    const postProcessor = getPostProcessor();
+    const postProcessor = postProcessorManager.getPostProcessor();
     if (postProcessor?.storeRemove) {
       postProcessor.storeRemove(file, store);
     }

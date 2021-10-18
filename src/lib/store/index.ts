@@ -1,2 +1,2 @@
-export { store } from './store';
-export { dataDirManager } from './dataDirManager';
+export * from './store';
+export * from './store.types';

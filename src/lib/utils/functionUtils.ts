@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const getArgs = (f: Function): string[] => {
   const argsArray = f
     .toString()

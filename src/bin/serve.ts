@@ -2,12 +2,11 @@
 
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
-// import { httpServer } from '../lib/http/httpServer';
-import { dataServer } from '../lib/dataServer';
-import { LogLevel } from '../lib/utils/logger';
-import { RunMode } from '../lib/types/runMode';
-
-console.log('kkk', Object.keys(LogLevel));
+import 'module-alias/register';
+// import { httpServer } from '@lib/http/httpServer';
+import { dataServer } from '@lib/dataServer';
+import { LogLevel } from '@lib/utils/logger';
+import { RunMode } from '@lib/dataServer.types';
 
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 http --data-dir [path]')
@@ -66,8 +65,6 @@ const argv = yargs(hideBin(process.argv))
     },
   })
   .parseSync();
-
-console.log('kkk 1111', argv['log-level']);
 
 type LogLevelStrings = keyof typeof LogLevel;
 type RunModeStrings = keyof typeof RunMode;

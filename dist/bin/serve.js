@@ -6,11 +6,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs/yargs"));
 const helpers_1 = require("yargs/helpers");
-// import { httpServer } from '../lib/http/httpServer';
-const dataServer_1 = require("../lib/dataServer");
-const logger_1 = require("../lib/utils/logger");
-const runMode_1 = require("../lib/types/runMode");
-console.log('kkk', Object.keys(logger_1.LogLevel));
+require("module-alias/register");
+// import { httpServer } from '@lib/http/httpServer';
+const dataServer_1 = require("@lib/dataServer");
+const logger_1 = require("@lib/utils/logger");
+const dataServer_types_1 = require("@lib/dataServer.types");
 const argv = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
     .usage('Usage: $0 http --data-dir [path]')
     .command(['http [--port]'], 'Start an HTTP server', args => {
@@ -67,7 +67,6 @@ const argv = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
     },
 })
     .parseSync();
-console.log('kkk 1111', argv['log-level']);
 const logLevel = logger_1.LogLevel[argv['log-level'].toUpperCase()];
 const logFileLevel = argv['log-file-level']
     ? logger_1.LogLevel[argv['log-file-level'].toUpperCase()]
@@ -82,7 +81,7 @@ dataServer_1.dataServer.init({
     workDir: argv['work-dir'],
     queryDir: argv['query-dir'],
     postProcessor: argv['post-processor'],
-    runMode: runMode_1.RunMode[argv['run-mode'].toUpperCase()],
+    runMode: dataServer_types_1.RunMode[argv['run-mode'].toUpperCase()],
 });
 // Start server.
 /* if (argv._.includes('http')) {
