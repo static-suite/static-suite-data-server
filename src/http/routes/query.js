@@ -1,6 +1,6 @@
 const microtime = require('microtime');
-const { dataDirManager } = require('@lib/lib/store');
-const { queryRunner } = require('@lib/lib/query');
+const { dataDirManager } = require('@lib/store');
+const { queryRunner } = require('@lib/query');
 
 const index = (req, res) => {
   const queryIds = queryRunner.getAvailableQueryIds();
