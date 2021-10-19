@@ -1,1 +1,1 @@
-export { workDirHelper } from './workDirHelper';
+export * from './workDirHelper';

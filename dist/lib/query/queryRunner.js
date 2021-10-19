@@ -13,7 +13,7 @@ const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
 const fsUtils_1 = require("@lib/utils/fsUtils");
 const dataServer_types_1 = require("@lib/dataServer.types");
-const queryRunner_types_1 = require("@lib/query/queryRunner.types");
+const query_types_1 = require("@lib/query/query.types");
 let count = 0;
 const createErrorResponse = (message) => {
     logger_1.logger.error(message);
@@ -107,7 +107,7 @@ const queryRunner = {
                 contentType: 'application/json',
                 execTimeMs,
                 // queriesPerSecond: Math.round(1000 / execTimeMs),
-                cache: isCacheMiss ? queryRunner_types_1.CacheStatus.MISS : queryRunner_types_1.CacheStatus.HIT,
+                cache: isCacheMiss ? query_types_1.CacheStatus.MISS : query_types_1.CacheStatus.HIT,
             },
         };
         if (queryResult && Array.isArray(queryResult)) {

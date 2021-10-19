@@ -1,4 +1,4 @@
-import { Store } from '@lib/store';
+import { Store } from '@lib/store/store.types';
 
 export type DataDirManager = {
   store: Store;

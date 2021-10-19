@@ -7,13 +7,6 @@ const config_1 = require("@lib/config");
 const dataDir_1 = require("@lib/store/dataDir");
 const query_1 = require("@lib/query");
 const moduleHandler_1 = require("@lib/utils/moduleHandler");
-/* export type DataDirManager = {
-  store: Store;
-  loadDataDir(options?: { useCache: boolean }): DataDirManager;
-  updateDataDir(): DataDirManager;
-  getDataDirLastUpdate(): Date | null;
-};
- */
 exports.dataServer = {
     /**
      * Init the data server.

@@ -13,7 +13,7 @@ import {
   CacheStatus,
   QueryResponse,
   QueryErrorResponse,
-} from '@lib/query/queryRunner.types';
+} from '@lib/query/query.types';
 
 let count = 0;
 

@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "tsc-watch --onSuccess \"yarn lint\"",
     "build": "yarn lint && tsc",
-    "serve": "node ./dist/bin/serve.js",
+    "serve": "node ./dist/bin/serve.js http",
     "lint": "eslint . --ext .ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },

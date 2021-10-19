@@ -1,30 +1,11 @@
-import {
-  configureLogger,
-  logger,
-  Logger,
-  LogLevel,
-  LogFile,
-} from '@lib/utils/logger';
+import { configureLogger, logger, LogLevel, LogFile } from '@lib/utils/logger';
 import { initWatcher } from '@lib/utils/watcher';
 import { setConfig } from '@lib/config';
-import { dataDirManager, DataDirManager } from '@lib/store/dataDir';
-import { queryRunner, QueryRunner } from '@lib/query';
+import { dataDirManager } from '@lib/store/dataDir';
+import { queryRunner } from '@lib/query';
 import { moduleHandler } from '@lib/utils/moduleHandler';
-import { RunMode } from './dataServer.types';
+import { RunMode, DataServerReturn } from './dataServer.types';
 
-type InitReturn = {
-  data: any;
-  dataDirManager: DataDirManager;
-  queryRunner: QueryRunner;
-  logger: Logger;
-};
-/* export type DataDirManager = {
-  store: Store;
-  loadDataDir(options?: { useCache: boolean }): DataDirManager;
-  updateDataDir(): DataDirManager;
-  getDataDirLastUpdate(): Date | null;
-};
- */
 export const dataServer = {
   /**
    * Init the data server.
@@ -49,7 +30,7 @@ export const dataServer = {
     queryDir?: string;
     postProcessor?: string;
     runMode: RunMode;
-  }): InitReturn => {
+  }): DataServerReturn => {
     // Configure logger.
     configureLogger(options.logLevel, options.logFile);
 
