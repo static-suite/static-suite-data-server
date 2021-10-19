@@ -1,6 +1,6 @@
 import { config } from '@lib/config';
 import { store } from '@lib/store';
-import { findFilesInDir } from '@lib/utils/fsUtils';
+import { findFilesInDir } from '@lib/utils/fs';
 import { logger } from '@lib/utils/logger';
 import { workDirHelper } from '@lib/store/workDir';
 import { cache } from '@lib/utils/cache';

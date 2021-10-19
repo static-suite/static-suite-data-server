@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataDirManager = void 0;
 const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
-const fsUtils_1 = require("@lib/utils/fsUtils");
+const fs_1 = require("@lib/utils/fs");
 const logger_1 = require("@lib/utils/logger");
 const workDir_1 = require("@lib/store/workDir");
 const cache_1 = require("@lib/utils/cache");
@@ -38,7 +38,7 @@ exports.dataDirManager = {
      */
     loadDataDir: (options = { useCache: false }) => {
         logger_1.logger.info('Loading data dir...');
-        const files = (0, fsUtils_1.findFilesInDir)(config_1.config.dataDir);
+        const files = (0, fs_1.findFilesInDir)(config_1.config.dataDir);
         const startDate = Date.now();
         let updatedFiles = [];
         // Look for updated files since last update

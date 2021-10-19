@@ -1,5 +1,5 @@
 import { Store } from '@lib/store/store.types';
-import { FileType } from '@lib/utils/fsUtils';
+import { FileType } from '@lib/utils/fs';
 
 export type PostProcessor = {
   processFile(

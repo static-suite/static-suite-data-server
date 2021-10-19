@@ -6,7 +6,7 @@ const watcher_1 = require("@lib/utils/watcher");
 const config_1 = require("@lib/config");
 const dataDir_1 = require("@lib/store/dataDir");
 const query_1 = require("@lib/query");
-const moduleHandler_1 = require("@lib/utils/moduleHandler");
+const module_1 = require("@lib/utils/module");
 exports.dataServer = {
     /**
      * Init the data server.
@@ -35,7 +35,7 @@ exports.dataServer = {
             runMode: options.runMode,
         });
         // Init moduleHandler and load all modules (query and post processor).
-        moduleHandler_1.moduleHandler.init();
+        module_1.moduleHandler.init();
         // Start watcher.
         (0, watcher_1.initWatcher)();
         // Load data from dataDir.

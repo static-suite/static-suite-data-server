@@ -1,13 +1,8 @@
 import path from 'path';
-import {
-  getFileContent,
-  getVariantName,
-  FileType,
-  Json,
-} from '@lib/utils/fsUtils';
+import { getFileContent, getVariantName, FileType, Json } from '@lib/utils/fs';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
-import { deepClone } from '@lib/utils/objectUtils';
+import { deepClone } from '@lib/utils/object';
 import { Store } from './store.types';
 import { postProcessorManager } from './postProcessor';
 

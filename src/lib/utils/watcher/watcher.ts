@@ -3,8 +3,8 @@ import chokidar from 'chokidar';
 import { config } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir/dataDirManager';
 import { RunMode } from '@lib/dataServer.types';
-import { logger } from './logger';
-import { moduleHandler } from './moduleHandler';
+import { logger } from '@lib/utils/logger';
+import { moduleHandler } from '@lib/utils/module';
 
 // If module is a post processor, rebuild the whole store
 // so it can be re-evaluated.

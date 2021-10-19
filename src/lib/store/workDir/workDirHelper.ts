@@ -1,4 +1,4 @@
-import { getModificationDate } from '@lib/utils/fsUtils';
+import { getModificationDate } from '@lib/utils/fs';
 import { logger } from '@lib/utils/logger';
 import { ChangedFiles, LogLineData } from './workDir.types';
 import {

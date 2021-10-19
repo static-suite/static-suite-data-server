@@ -2,10 +2,10 @@ import path from 'path';
 import microtime from 'microtime';
 import { config } from '@lib/config';
 import { store } from '@lib/store';
-import { moduleHandler } from '@lib/utils/moduleHandler';
+import { moduleHandler } from '@lib/utils/module';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
-import { findFilesInDir } from '@lib/utils/fsUtils';
+import { findFilesInDir } from '@lib/utils/fs';
 import { RunMode } from '@lib/dataServer.types';
 import {
   QueryRunner,
@@ -13,7 +13,7 @@ import {
   CacheStatus,
   QueryResponse,
   QueryErrorResponse,
-} from '@lib/query/query.types';
+} from './query.types';
 
 let count = 0;
 

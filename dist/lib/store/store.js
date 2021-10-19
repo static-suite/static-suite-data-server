@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
 const path_1 = __importDefault(require("path"));
-const fsUtils_1 = require("@lib/utils/fsUtils");
+const fs_1 = require("@lib/utils/fs");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
-const objectUtils_1 = require("@lib/utils/objectUtils");
+const object_1 = require("@lib/utils/object");
 const postProcessor_1 = require("./postProcessor");
 const JSON_ITEMS = '_json';
 const MAIN = 'main';
@@ -19,7 +19,7 @@ const addFileToJsonItems = (dataLeaf, file, jsonFileContents) => {
     const json = jsonFileContents;
     json.__FILENAME__ = file;
     // Check whether file is a regular one or a variant
-    const variantName = (0, fsUtils_1.getVariantName)(file);
+    const variantName = (0, fs_1.getVariantName)(file);
     // Take variant into account.
     if (variantName) {
         // Ensure JSON_ITEMS.VARIANTS.variantName is an array
@@ -35,7 +35,7 @@ const addFileToJsonItems = (dataLeaf, file, jsonFileContents) => {
 const removeFileFromJsonItems = (dataLeaf, file) => {
     const leaf = dataLeaf;
     // Check whether file is a regular one or a variant
-    const variantName = (0, fsUtils_1.getVariantName)(file);
+    const variantName = (0, fs_1.getVariantName)(file);
     // Take variant into account.
     if (variantName) {
         // Ensure JSON_ITEMS.VARIANTS.variantName is an array
@@ -103,11 +103,11 @@ exports.store = {
      *    article => article.data.content.title.indexOf('foo') !== 1
      * );
      */
-    data: (0, objectUtils_1.deepClone)(storeDataSkeleton),
+    data: (0, object_1.deepClone)(storeDataSkeleton),
     /**
      * Temporary object to be able to make changes to data without touching "store.data".
      */
-    stage: (0, objectUtils_1.deepClone)(storeDataSkeleton),
+    stage: (0, object_1.deepClone)(storeDataSkeleton),
     /**
      * Add a file to the store, into a tree structure.
      *
@@ -157,7 +157,7 @@ exports.store = {
         }
         const filePath = path_1.default.join(dataDir, file);
         if (!options.useCache || !cache_1.cache.get('file', filePath)) {
-            cache_1.cache.set('file', filePath, (0, fsUtils_1.getFileContent)(filePath));
+            cache_1.cache.set('file', filePath, (0, fs_1.getFileContent)(filePath));
         }
         let fileContent = cache_1.cache.get('file', filePath);
         // Post process file.
@@ -188,7 +188,7 @@ exports.store = {
                 // be done here, to ensure proper structure is created, even when we
                 // find a directory with only one non-JSON_ITEMS file.
                 if (!leaf[part]) {
-                    leaf[part] = (0, objectUtils_1.deepClone)(storeDataSkeleton);
+                    leaf[part] = (0, object_1.deepClone)(storeDataSkeleton);
                 }
                 // Add data to leaf JSON_ITEMS
                 if (fileContent.json) {
@@ -276,7 +276,7 @@ exports.store = {
      */
     promoteStage: () => {
         exports.store.data = exports.store.stage;
-        exports.store.stage = (0, objectUtils_1.deepClone)(storeDataSkeleton);
+        exports.store.stage = (0, object_1.deepClone)(storeDataSkeleton);
         return exports.store;
     },
 };

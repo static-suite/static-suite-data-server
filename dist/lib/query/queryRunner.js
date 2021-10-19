@@ -8,12 +8,12 @@ const path_1 = __importDefault(require("path"));
 const microtime_1 = __importDefault(require("microtime"));
 const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
-const moduleHandler_1 = require("@lib/utils/moduleHandler");
+const module_1 = require("@lib/utils/module");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
-const fsUtils_1 = require("@lib/utils/fsUtils");
+const fs_1 = require("@lib/utils/fs");
 const dataServer_types_1 = require("@lib/dataServer.types");
-const query_types_1 = require("@lib/query/query.types");
+const query_types_1 = require("./query.types");
 let count = 0;
 const createErrorResponse = (message) => {
     logger_1.logger.error(message);
@@ -36,11 +36,11 @@ const queryRunner = {
         const availableQueries = [];
         if (config_1.config.queryDir) {
             const { queryDir } = config_1.config;
-            const allQueryModulesRelativePath = (0, fsUtils_1.findFilesInDir)(queryDir, '**/*.js');
+            const allQueryModulesRelativePath = (0, fs_1.findFilesInDir)(queryDir, '**/*.js');
             allQueryModulesRelativePath.forEach(queryModuleRelativePath => {
                 const queryModuleAbsolutePath = path_1.default.join(queryDir, queryModuleRelativePath);
                 try {
-                    const queryModule = moduleHandler_1.moduleHandler.get(queryModuleAbsolutePath);
+                    const queryModule = module_1.moduleHandler.get(queryModuleAbsolutePath);
                     if (queryModule.queryHandler &&
                         typeof queryModule.queryHandler === 'function') {
                         availableQueries.push(queryModuleRelativePath.split('.').slice(0, -1).join('.'));
@@ -82,7 +82,7 @@ const queryRunner = {
         let queryResult = cache_1.cache.get('query', cacheId);
         if (!queryResult) {
             try {
-                const queryModule = moduleHandler_1.moduleHandler.get(queryModulePath);
+                const queryModule = module_1.moduleHandler.get(queryModulePath);
                 const queryResponse = queryModule.queryHandler({
                     data: store_1.store.data,
                     args,

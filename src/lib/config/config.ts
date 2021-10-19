@@ -2,7 +2,7 @@ import fs from 'fs';
 import { resolve } from 'path';
 import { RunMode } from '@lib/dataServer.types';
 import { Config } from '@lib/config/config.types';
-import { hasKey } from '@lib/utils/objectUtils';
+import { hasKey } from '@lib/utils/object';
 
 const config: Config = Object.create(null); // no inherited properties
 

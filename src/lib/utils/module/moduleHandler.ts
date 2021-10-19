@@ -2,8 +2,8 @@
 /* eslint-disable import/no-dynamic-require */
 import path from 'path';
 import { config } from '@lib/config';
-import { logger } from './logger';
-import { findFilesInDir } from './fsUtils';
+import { logger } from '@lib/utils/logger';
+import { findFilesInDir } from '@lib/utils/fs';
 
 const modules: Record<string, any> = {};
 

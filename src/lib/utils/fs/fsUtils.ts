@@ -1,9 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import fg from 'fast-glob';
-import { logger } from './logger';
+import { logger } from '@lib/utils/logger';
 
 const VARIANT_SEPARATOR = '--';
+
+export type Json = {
+  [key: string]: unknown;
+  __FILENAME__?: string;
+};
+
+export type FileType = {
+  raw: string | null;
+  json: Json | null;
+};
 
 export const isJson = (file: string): boolean => file.substr(-5) === '.json';
 
@@ -25,16 +35,6 @@ export const parseJsonString = (jsonString: string): any => {
     logger.error(`Error parsing JSON data "${jsonString}": ${error}`);
   }
   return json;
-};
-
-export type Json = {
-  [key: string]: unknown;
-  __FILENAME__?: string;
-};
-
-export type FileType = {
-  raw: string | null;
-  json: Json | null;
 };
 
 /**

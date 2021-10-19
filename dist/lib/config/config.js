@@ -7,7 +7,7 @@ exports.setConfig = exports.config = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = require("path");
 const dataServer_types_1 = require("@lib/dataServer.types");
-const objectUtils_1 = require("@lib/utils/objectUtils");
+const object_1 = require("@lib/utils/object");
 const config = Object.create(null); // no inherited properties
 exports.config = config;
 /**
@@ -60,7 +60,7 @@ const setConfig = (options) => {
         throw Error(`Invalid value provided for "runMode": "${localOptions.runMode}". Valid options are ${Object.values(dataServer_types_1.RunMode).join(' or ')}`);
     }
     Object.keys(localOptions).forEach(key => {
-        if ((0, objectUtils_1.hasKey)(localOptions, key)) {
+        if ((0, object_1.hasKey)(localOptions, key)) {
             Object.defineProperty(config, key, {
                 enumerable: true,
                 configurable: false,

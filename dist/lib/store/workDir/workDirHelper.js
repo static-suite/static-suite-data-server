@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.workDirHelper = void 0;
-const fsUtils_1 = require("@lib/utils/fsUtils");
+const fs_1 = require("@lib/utils/fs");
 const logger_1 = require("@lib/utils/logger");
 const storage_1 = require("./storage");
 const changedFileCache = {};
@@ -16,7 +16,7 @@ const workDirHelper = {
      *
      * @return {Date} - The date of last update of metadata dir (work dir).
      */
-    getLastUpdate: () => (0, fsUtils_1.getModificationDate)((0, storage_1.getLogFile)()),
+    getLastUpdate: () => (0, fs_1.getModificationDate)((0, storage_1.getLogFile)()),
     /**
      * @typedef ChangedFiles
      * @type {object}

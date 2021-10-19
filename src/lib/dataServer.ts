@@ -3,7 +3,7 @@ import { initWatcher } from '@lib/utils/watcher';
 import { setConfig } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir';
 import { queryRunner } from '@lib/query';
-import { moduleHandler } from '@lib/utils/moduleHandler';
+import { moduleHandler } from '@lib/utils/module';
 import { RunMode, DataServerReturn } from './dataServer.types';
 
 export const dataServer = {
