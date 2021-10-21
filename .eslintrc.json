@@ -23,7 +23,12 @@
   "parserOptions": {
     "ecmaVersion": 12
   },
-  "plugins": ["@typescript-eslint", "prettier", "import"],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "import",
+    "eslint-plugin-tsdoc"
+  ],
   "rules": {
     "import/prefer-default-export": 0,
     "prettier/prettier": "error",

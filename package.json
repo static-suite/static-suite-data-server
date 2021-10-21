@@ -34,6 +34,7 @@
     "build": "yarn lint && tsc",
     "serve": "node ./dist/bin/serve.js http",
     "lint": "eslint . --ext .ts",
+    "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "devDependencies": {
@@ -49,7 +50,9 @@
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-tsdoc": "^0.2.14",
     "prettier": "^2.4.1",
+    "typedoc": "^0.22.6",
     "yarn-upgrade-all": "^0.5.4"
   },
   "_moduleAliases": {

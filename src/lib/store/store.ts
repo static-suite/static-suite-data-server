@@ -1,5 +1,6 @@
 import path from 'path';
-import { getFileContent, getVariantName, FileType, Json } from '@lib/utils/fs';
+import { getFileContent, getVariantKey } from '@lib/utils/fs';
+import { FileType, Json } from '@lib/utils/fs/fs.types';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
 import { deepClone } from '@lib/utils/object';
@@ -31,15 +32,15 @@ const addFileToJsonItems = (
   json.__FILENAME__ = file;
 
   // Check whether file is a regular one or a variant
-  const variantName = getVariantName(file);
+  const variantKey = getVariantKey(file);
 
   // Take variant into account.
-  if (variantName) {
-    // Ensure JSON_ITEMS.VARIANTS.variantName is an array
-    if (!leaf[JSON_ITEMS][VARIANTS][variantName]) {
-      leaf[JSON_ITEMS][VARIANTS][variantName] = [];
+  if (variantKey) {
+    // Ensure JSON_ITEMS.VARIANTS.variantKey is an array
+    if (!leaf[JSON_ITEMS][VARIANTS][variantKey]) {
+      leaf[JSON_ITEMS][VARIANTS][variantKey] = [];
     }
-    leaf[JSON_ITEMS][VARIANTS][variantName].push(json);
+    leaf[JSON_ITEMS][VARIANTS][variantKey].push(json);
   } else {
     leaf[JSON_ITEMS][MAIN].push(json);
   }
@@ -52,20 +53,20 @@ const removeFileFromJsonItems = (
   const leaf = dataLeaf;
 
   // Check whether file is a regular one or a variant
-  const variantName = getVariantName(file);
+  const variantKey = getVariantKey(file);
 
   // Take variant into account.
-  if (variantName) {
-    // Ensure JSON_ITEMS.VARIANTS.variantName is an array
-    if (leaf?.[JSON_ITEMS]?.[VARIANTS]?.[variantName]) {
-      const fileIndex = leaf[JSON_ITEMS][VARIANTS][variantName].findIndex(
+  if (variantKey) {
+    // Ensure JSON_ITEMS.VARIANTS.variantKey is an array
+    if (leaf?.[JSON_ITEMS]?.[VARIANTS]?.[variantKey]) {
+      const fileIndex = leaf[JSON_ITEMS][VARIANTS][variantKey].findIndex(
         item => item?.__FILENAME__ === file,
       );
-      leaf[JSON_ITEMS][VARIANTS][variantName].splice(fileIndex, 1);
+      leaf[JSON_ITEMS][VARIANTS][variantKey].splice(fileIndex, 1);
 
       // Delete variant group if empty.
-      if (leaf[JSON_ITEMS][VARIANTS][variantName].length === 0) {
-        delete leaf[JSON_ITEMS][VARIANTS][variantName];
+      if (leaf[JSON_ITEMS][VARIANTS][variantKey].length === 0) {
+        delete leaf[JSON_ITEMS][VARIANTS][variantKey];
       }
     }
   } else if (leaf?.[JSON_ITEMS]?.[MAIN]) {
