@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "@creativebulma/bulma-tooltip": "^1.2.0",
+    "@types/jest": "^27.0.2",
     "bulma": "^0.9.3",
     "chokidar": "^3.5.2",
     "clipboard": "^2.0.8",
@@ -35,7 +36,8 @@
     "serve": "node ./dist/bin/serve.js http",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
-    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
@@ -51,13 +53,28 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
+    "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "typedoc": "^0.22.6",
+    "ts-jest": "^27.0.7",
     "yarn-upgrade-all": "^0.5.4"
   },
   "_moduleAliases": {
     "@bin": "dist/bin",
     "@http": "dist/http",
     "@lib": "dist/lib"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "verbose": true,
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "moduleNameMapper": {
+      "@bin/(.*)": "<rootDir>/src/bin/$1",
+      "@http/(.*)": "<rootDir>/src/http/$1",
+      "@lib/(.*)": "<rootDir>/src/lib/$1"
+    }
   }
 }
