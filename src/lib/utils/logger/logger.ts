@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path, { resolve } from 'path';
 import winston from 'winston';
+import { LogLevel, LogFile } from './logger.types';
 
 const customFormat = winston.format.printf(
   ({ level, message, timestamp }) => `${timestamp} [${level}]: ${message}`,
@@ -10,8 +11,6 @@ const combinedFormat = winston.format.combine(
   winston.format.timestamp(),
   customFormat,
 );
-
-export type Logger = winston.Logger;
 
 const logger: winston.Logger = winston.createLogger({
   levels: winston.config.npm.levels,
@@ -25,26 +24,23 @@ const logger: winston.Logger = winston.createLogger({
   ],
 });
 
-const setLogFile = (logFile: string, level = 'warn'): void => {
+/**
+ * Sets the logger log file and its level
+ *
+ * @param logFilePath - Absolute path to the log file
+ * @param level - The log level. Optional, defaults to "warn"
+ */
+const setLogFile = (
+  logFilePath: string,
+  level: LogLevel = LogLevel.WARN,
+): void => {
   const fileTransport = new winston.transports.File({
-    filename: path.basename(logFile),
-    dirname: path.dirname(logFile),
+    filename: path.basename(logFilePath),
+    dirname: path.dirname(logFilePath),
     format: combinedFormat,
     level,
   });
   logger.add(fileTransport);
-};
-
-enum LogLevel {
-  ERROR = 'error',
-  WARN = 'warn',
-  INFO = 'info',
-  DEBUG = 'debug',
-}
-
-type LogFile = {
-  path: string;
-  level: string;
 };
 
 const configureLogger = (level: LogLevel, logFile?: LogFile): void => {

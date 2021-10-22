@@ -6,7 +6,8 @@ import 'module-alias/register';
 // import { httpServer } from '@lib/http/httpServer';
 import { dataServer } from '@lib/dataServer';
 import { LogLevel } from '@lib/utils/logger';
-import { RunMode } from '@lib/dataServer.types';
+import { RunMode, RunModeStrings } from '@lib/dataServer.types';
+import { LogLevelStrings } from '@lib/utils/logger/logger.types';
 
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 http --data-dir [path]')
@@ -65,9 +66,6 @@ const argv = yargs(hideBin(process.argv))
     },
   })
   .parseSync();
-
-type LogLevelStrings = keyof typeof LogLevel;
-type RunModeStrings = keyof typeof RunMode;
 
 const logLevel = LogLevel[argv['log-level'].toUpperCase() as LogLevelStrings];
 const logFileLevel = argv['log-file-level']

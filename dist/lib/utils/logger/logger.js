@@ -26,6 +26,8 @@ exports.LogLevel = exports.configureLogger = exports.logger = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importStar(require("path"));
 const winston_1 = __importDefault(require("winston"));
+const logger_types_1 = require("./logger.types");
+Object.defineProperty(exports, "LogLevel", { enumerable: true, get: function () { return logger_types_1.LogLevel; } });
 const customFormat = winston_1.default.format.printf(({ level, message, timestamp }) => `${timestamp} [${level}]: ${message}`);
 const combinedFormat = winston_1.default.format.combine(winston_1.default.format.timestamp(), customFormat);
 const logger = winston_1.default.createLogger({
@@ -40,23 +42,21 @@ const logger = winston_1.default.createLogger({
     ],
 });
 exports.logger = logger;
-const setLogFile = (logFile, level = 'warn') => {
+/**
+ * Sets the logger log file and its level
+ *
+ * @param logFilePath - Absolute path to the log file
+ * @param level - The log level. Optional, defaults to "warn"
+ */
+const setLogFile = (logFilePath, level = logger_types_1.LogLevel.WARN) => {
     const fileTransport = new winston_1.default.transports.File({
-        filename: path_1.default.basename(logFile),
-        dirname: path_1.default.dirname(logFile),
+        filename: path_1.default.basename(logFilePath),
+        dirname: path_1.default.dirname(logFilePath),
         format: combinedFormat,
         level,
     });
     logger.add(fileTransport);
 };
-var LogLevel;
-(function (LogLevel) {
-    LogLevel["ERROR"] = "error";
-    LogLevel["WARN"] = "warn";
-    LogLevel["INFO"] = "info";
-    LogLevel["DEBUG"] = "debug";
-})(LogLevel || (LogLevel = {}));
-exports.LogLevel = LogLevel;
 const configureLogger = (level, logFile) => {
     if (level) {
         logger.level = level;

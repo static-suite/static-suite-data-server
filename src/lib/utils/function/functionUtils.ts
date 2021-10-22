@@ -1,3 +1,10 @@
+/**
+ * Gets arguments from a function
+ *
+ * @param f - A function
+ *
+ * @returns An array with the function arguments.
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const getArgs = (f: Function): string[] => {
   const argsArray = f
