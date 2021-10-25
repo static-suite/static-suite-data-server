@@ -7,7 +7,7 @@ const mockModuleHandler = () => {
     .mockImplementation((modulePath: string) => originalLoad(modulePath));
 };
 
-const dummyModulePath = '../../..yar/mocks/dummyModule';
+const dummyModulePath = '../../../mocks/dummyModule';
 
 describe('lib/utils/module/moduleHandler test', () => {
   describe('get/load', () => {

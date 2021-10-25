@@ -1,5 +1,4 @@
 {
-  // nvm alias default 14.16.0
   "version": "0.2.0",
   "configurations": [
     {
@@ -20,6 +19,13 @@
         "/var/www/natgeo/static/current/es/data/prod/.work/",
         "-vvvv"
       ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Script: test",
+      "request": "launch",
+      "command": "yarn run test",
       "cwd": "${workspaceFolder}"
     }
   ]

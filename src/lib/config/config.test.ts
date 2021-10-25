@@ -15,6 +15,39 @@ describe('Config test', () => {
       expect(setConfig(config)).toEqual(config);
     });
 
+    it(`Required option dataDir returns expected error`, () => {
+      const config = {
+        runMode: RunMode.DEV,
+      };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      expect(() => setConfig(config)).toThrowError(
+        'Required option not provided: "dataDir".',
+      );
+    });
+    it(`Required option runMode returns expected error`, () => {
+      const config = {
+        dataDir: 'src/mocks/fixtures/data/',
+      };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      expect(() => setConfig(config)).toThrowError(
+        'Required option not provided: "runMode"',
+      );
+    });
+
+    it(`wrong option runMode returns expected error`, () => {
+      const config = {
+        dataDir: 'src/mocks/fixtures/data/',
+        runMode: 'xx',
+      };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      expect(() => setConfig(config)).toThrowError(
+        'Invalid value provided for "runMode": ',
+      );
+    });
+
     it(`Wrong dataDir returns expected error`, () => {
       const config: Config = {
         dataDir: 'non-existent-dir',
