@@ -59,7 +59,7 @@ export const getFileContent = (absoluteFilePath: string): FileType => {
  * Finds all files inside a directory
  *
  * @param dir - Absolute path to the directory to be scanned
- * @param glob - Optional glob to filter results
+ * @param glob - Optional glob to filter results (default all files recursive '**\/*')
  *
  * @returns Array of file paths found inside directory
  */
