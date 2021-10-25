@@ -23,9 +23,7 @@ const createErrorResponse = (message: string): QueryErrorResponse => {
 };
 
 /**
- * @typedef {Object} QueryRunner
- * @property {Function} configure - Configure the query runner.
- * @property {Function} run - Run a query.
+ * QueryRunner
  */
 const queryRunner: QueryRunner = {
   /**
@@ -33,7 +31,7 @@ const queryRunner: QueryRunner = {
    *
    * Check any module inside config.queryDir that exports a function called "queryHandler".
    *
-   * @return {Array} Array with available query IDs.
+   * @returns Array with available query IDs.
    */
   getAvailableQueryIds: (): string[] => {
     const availableQueries: string[] = [];
@@ -77,10 +75,10 @@ const queryRunner: QueryRunner = {
    * This function should not throw any error, so each consumer can handle exceptions
    * in a different way.
    *
-   * @param {string} queryId - ID (filename without extension) of the query to be executed.
-   * @param {Object} args - Optional object with query arguments.
+   * @param queryId - ID (filename without extension) of the query to be executed.
+   * @param args - Optional object with query arguments.
    *
-   * @return {Object} The result of the query.
+   * @returns The result of the query.
    */
   run: (
     queryId: string,
@@ -149,7 +147,7 @@ const queryRunner: QueryRunner = {
   /**
    * Get number of queries executed.
    *
-   * @return {number} Number of queries executed.
+   * @returns Number of queries executed.
    */
   getCount: (): number => count,
 };

@@ -1,7 +1,7 @@
-const query1 = () => {
+const query1 = ({ args }) => {
   const result = [
     {
-      id: '1',
+      id: args.y,
     },
   ];
 

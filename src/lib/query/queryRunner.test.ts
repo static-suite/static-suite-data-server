@@ -17,11 +17,13 @@ describe('QueryRunner test', () => {
   describe('run', () => {
     it(`Returns query data`, () => {
       config.queryDir = resolve('src/mocks/fixtures/query');
-      const queryResponse = queryRunner.run('query1.query', { x: 'x' });
-      expect(queryResponse).toHaveProperty('data');
+      const queryResponse = queryRunner.run('query1.query', {
+        x: 'x',
+        y: '33',
+      });
       expect((queryResponse as QueryResponse).data).toEqual([
         {
-          id: '1',
+          id: '33',
         },
       ]);
     });

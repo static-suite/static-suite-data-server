@@ -7,11 +7,7 @@ import { cache } from '@lib/utils/cache';
 import { DataDirManager } from './dataDir.types';
 
 /**
- * @typedef {Object} DataDirManager
- * @property {Object} store - Object that holds all data.
- * @property {Function} loadDataDir - Load all files inside a directory into the store.
- * @property {Function} updateDataDir - Load all files inside a directory into the store.
- * @property {Function} getDataDirLastUpdate - Get date of last update of metadata dir (work dir).
+ * DataDirManager
  */
 export const dataDirManager: DataDirManager = {
   /**
@@ -31,10 +27,9 @@ export const dataDirManager: DataDirManager = {
    * For such cases, Data Server should be completely restarted, or this function
    * should be called with `options.useCache = false`
    *
-   * @param {Object} options Configuration options
-   * @param {boolean} options.useCache - Use cached data to avoid reloading files.
+   * @param options - Configuration options
    *
-   * @return {StoreManager} - The store manager.
+   * @returns The store manager.
    */
   loadDataDir: (options = { useCache: false }): DataDirManager => {
     logger.info('Loading data dir...');
@@ -88,7 +83,7 @@ export const dataDirManager: DataDirManager = {
    * updateDataDir() checks if something has changed, not doing anything if nothing
    * has changed. Thus, this method is way faster than loadDataDir().
    *
-   * @return {StoreManager} - The store manager.
+   * @returns The store manager.
    */
   updateDataDir: (): DataDirManager => {
     // Get when was data dir last updated.
@@ -121,8 +116,7 @@ export const dataDirManager: DataDirManager = {
   /**
    * Get date of last update of metadata dir (work dir).
    *
-   * @return number
-   *   The date of last update of metadata dir (work dir).
+   * @returns The date of last update of metadata dir (work dir).
    */
   getDataDirLastUpdate: (): Date | null =>
     workDirHelper.getLastUpdate() || store.updated,
