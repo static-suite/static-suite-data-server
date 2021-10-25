@@ -37,7 +37,7 @@
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
@@ -55,8 +55,8 @@
     "eslint-plugin-tsdoc": "^0.2.14",
     "jest": "^27.3.1",
     "prettier": "^2.4.1",
-    "typedoc": "^0.22.6",
     "ts-jest": "^27.0.7",
+    "typedoc": "^0.22.6",
     "yarn-upgrade-all": "^0.5.4"
   },
   "_moduleAliases": {
@@ -72,9 +72,9 @@
       "src"
     ],
     "moduleNameMapper": {
-      "@bin/(.*)": "<rootDir>/src/bin/$1",
-      "@http/(.*)": "<rootDir>/src/http/$1",
-      "@lib/(.*)": "<rootDir>/src/lib/$1"
+      "^@bin/(.*)$": "<rootDir>/src/bin/$1",
+      "^@http/(.*)$": "<rootDir>/src/http/$1",
+      "^@lib/(.*)$": "<rootDir>/src/lib/$1"
     }
   }
 }

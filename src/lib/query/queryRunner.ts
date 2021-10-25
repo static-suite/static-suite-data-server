@@ -40,7 +40,10 @@ const queryRunner: QueryRunner = {
 
     if (config.queryDir) {
       const { queryDir } = config;
-      const allQueryModulesRelativePath = findFilesInDir(queryDir, '**/*.js');
+      const allQueryModulesRelativePath = findFilesInDir(
+        queryDir,
+        '**/*.query.js',
+      );
 
       allQueryModulesRelativePath.forEach(queryModuleRelativePath => {
         const queryModuleAbsolutePath = path.join(
@@ -99,7 +102,8 @@ const queryRunner: QueryRunner = {
     const cacheId = `${queryId}--${argsString}`;
     const queryModulePath = `${path.join(config.queryDir, queryId)}.js`;
     let isCacheMiss = false;
-    let queryResult = cache.get('query', cacheId);
+    const queryCache = cache.bin('query');
+    let queryResult = queryCache.get(cacheId);
     if (!queryResult) {
       try {
         const queryModule = moduleHandler.get<QueryModule>(queryModulePath);
@@ -113,7 +117,7 @@ const queryRunner: QueryRunner = {
           config.runMode === RunMode.PROD &&
           queryResponse?.cacheable !== false
         ) {
-          cache.set('query', cacheId, queryResult);
+          queryCache.set(cacheId, queryResult);
         }
       } catch (e) {
         // Log error and rethrow.

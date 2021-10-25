@@ -1,8 +1,8 @@
 import { getArgs } from './functionUtils';
 
-describe('lib/utils/function/functionUtils test', () => {
+describe('Function utils test', () => {
   describe('getArgs', () => {
-    it(`get the args of a function`, () => {
+    it(`gets the arguments of a function`, () => {
       expect(
         getArgs((x: string, y: string, z: string) => `${x} ${y} ${z}`),
       ).toEqual(['x', 'y', 'z']);

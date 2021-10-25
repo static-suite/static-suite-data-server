@@ -46,7 +46,7 @@ exports.logger = logger;
  * Sets the logger log file and its level
  *
  * @param logFilePath - Absolute path to the log file
- * @param level - The log level. Optional, defaults to "warn"
+ * @param level - Optional log level, defaults to "warn"
  */
 const setLogFile = (logFilePath, level = logger_types_1.LogLevel.WARN) => {
     const fileTransport = new winston_1.default.transports.File({

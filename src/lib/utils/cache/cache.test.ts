@@ -1,32 +1,23 @@
-import { cache } from './cache';
+import { cache } from './cacheBinManager';
 
-describe('lib/utils/cache/cache test', () => {
-  describe('set/get', () => {
-    it(`sets and gets correctly a value in bin`, () => {
-      cache.set('test', 'test', 'test');
-      expect(cache.get('test', 'test')).toBe('test');
-      cache.set('test', 'test', 'test2');
-      expect(cache.get('test', 'test')).toBe('test2');
-    });
+describe('Cache test', () => {
+  it('newly created cache bins are empty', () => {
+    expect(cache.bin('bin1').size).toBe(0);
   });
 
-  describe('delete', () => {
-    it(`deletes correctly a value in bin`, () => {
-      cache.delete('test', 'test');
-      expect(cache.get('test', 'test')).toBeUndefined();
-    });
+  it('gets the keys of all cache bins', () => {
+    cache.bin('bin1');
+    cache.bin('bin2');
+    expect(cache.keys()).toStrictEqual(['bin1', 'bin2']);
   });
-  describe('counts', () => {
-    it(`count correctly the values in bin`, () => {
-      cache.set('test', 'test', 'test');
-      cache.set('test', 'test2', 'test2');
-      expect(cache.count('test')).toBe(2);
-    });
-  });
-  describe('reset', () => {
-    it(`reset correctly the bin`, () => {
-      cache.reset('test');
-      expect(cache.count('test')).toBe(0);
-    });
+
+  it(`atomically resets a given cache bin out of several ones`, () => {
+    cache.bin('bin1').set('key1', 'value1');
+    cache.bin('bin2').set('key2', 'value2');
+    expect(cache.bin('bin1').size).toBe(1);
+    expect(cache.bin('bin2').size).toBe(1);
+    cache.reset('bin2');
+    expect(cache.bin('bin1').size).toBe(1);
+    expect(cache.bin('bin2').size).toBe(0);
   });
 });

@@ -1,5 +1,6 @@
 import path from 'path';
-import { getFileContent, getVariantKey } from '@lib/utils/fs';
+import { getFileContent } from '@lib/utils/fs';
+import { getVariantKey } from '@lib/utils/string';
 import { FileType, Json } from '@lib/utils/fs/fs.types';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
@@ -194,10 +195,10 @@ export const store: Store = {
     }
 
     const filePath = path.join(dataDir, file);
-    if (!options.useCache || !cache.get('file', filePath)) {
-      cache.set('file', filePath, getFileContent(filePath));
+    if (!options.useCache || !cache.bin('file').get(filePath)) {
+      cache.bin('file').set(filePath, getFileContent(filePath));
     }
-    let fileContent = cache.get<FileType>('file', filePath);
+    let fileContent: FileType = cache.bin('file').get(filePath);
 
     // Post process file.
     const postProcessor = postProcessorManager.getPostProcessor();

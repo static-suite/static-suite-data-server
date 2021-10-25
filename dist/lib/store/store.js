@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
 const path_1 = __importDefault(require("path"));
 const fs_1 = require("@lib/utils/fs");
+const string_1 = require("@lib/utils/string");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
 const object_1 = require("@lib/utils/object");
@@ -19,7 +20,7 @@ const addFileToJsonItems = (dataLeaf, file, jsonFileContents) => {
     const json = jsonFileContents;
     json.__FILENAME__ = file;
     // Check whether file is a regular one or a variant
-    const variantKey = (0, fs_1.getVariantKey)(file);
+    const variantKey = (0, string_1.getVariantKey)(file);
     // Take variant into account.
     if (variantKey) {
         // Ensure JSON_ITEMS.VARIANTS.variantKey is an array
@@ -35,7 +36,7 @@ const addFileToJsonItems = (dataLeaf, file, jsonFileContents) => {
 const removeFileFromJsonItems = (dataLeaf, file) => {
     const leaf = dataLeaf;
     // Check whether file is a regular one or a variant
-    const variantKey = (0, fs_1.getVariantKey)(file);
+    const variantKey = (0, string_1.getVariantKey)(file);
     // Take variant into account.
     if (variantKey) {
         // Ensure JSON_ITEMS.VARIANTS.variantKey is an array
@@ -156,10 +157,10 @@ exports.store = {
             return exports.store;
         }
         const filePath = path_1.default.join(dataDir, file);
-        if (!options.useCache || !cache_1.cache.get('file', filePath)) {
-            cache_1.cache.set('file', filePath, (0, fs_1.getFileContent)(filePath));
+        if (!options.useCache || !cache_1.cache.bin('file').get(filePath)) {
+            cache_1.cache.bin('file').set(filePath, (0, fs_1.getFileContent)(filePath));
         }
-        let fileContent = cache_1.cache.get('file', filePath);
+        let fileContent = cache_1.cache.bin('file').get(filePath);
         // Post process file.
         const postProcessor = postProcessor_1.postProcessorManager.getPostProcessor();
         if (postProcessor?.processFile) {

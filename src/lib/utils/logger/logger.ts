@@ -28,7 +28,7 @@ const logger: winston.Logger = winston.createLogger({
  * Sets the logger log file and its level
  *
  * @param logFilePath - Absolute path to the log file
- * @param level - The log level. Optional, defaults to "warn"
+ * @param level - Optional log level, defaults to "warn"
  */
 const setLogFile = (
   logFilePath: string,

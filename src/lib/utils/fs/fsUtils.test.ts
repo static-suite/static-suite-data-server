@@ -1,37 +1,73 @@
-import { getFileContent, findFilesInDir, getVariantKey } from './fsUtils';
+import { logger } from '@lib/utils/logger';
+import {
+  readFile,
+  getFileContent,
+  findFilesInDir,
+  getModificationDate,
+} from './fsUtils';
 
-describe('lib/utils/fs/fsUtils test', () => {
-  describe('getFileContent', () => {
-    it(`json file has json and raw property not null`, () => {
-      const currentgetFileContent = getFileContent(
-        'tests/fixtures/data/global.json',
-      );
-      expect(currentgetFileContent).not.toHaveProperty('json', null);
-      expect(currentgetFileContent).not.toHaveProperty('raw', null);
+beforeEach(() => {
+  logger.error = jest.fn();
+});
+
+describe('File System utils test', () => {
+  describe('readFile', () => {
+    it('reads an existing filepath without logging any error', () => {
+      expect(readFile('src/mocks/fixtures/data/global.json')).not.toBeNull();
+      expect(logger.error).not.toHaveBeenCalled();
     });
-    it(`not json file has json property null and raw not null`, () => {
-      const currentgetFileContent = getFileContent(
-        'tests/fixtures/example.txt',
-      );
-      expect(currentgetFileContent).toHaveProperty('json', null);
-      expect(currentgetFileContent).not.toHaveProperty('raw', null);
+    it('logs an error when reading a non-existing filepath', () => {
+      expect(readFile('invalid-path')).toBeNull();
+      expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  describe('getFileContent', () => {
+    describe('when file exists', () => {
+      it(`returns an object with non-null "raw" and "json" properties if the file is a JSON file`, () => {
+        const fileContent = getFileContent(
+          'src/mocks/fixtures/data/global.json',
+        );
+        expect(fileContent).not.toHaveProperty('json', null);
+        expect(fileContent).not.toHaveProperty('raw', null);
+      });
+      it(`returns an object with a non-null "raw" property and a null "json" property if the file is not a JSON file`, () => {
+        const fileContent = getFileContent('src/mocks/fixtures/example.txt');
+        expect(fileContent).toHaveProperty('json', null);
+        expect(fileContent).not.toHaveProperty('raw', null);
+      });
+    });
+    describe('when file does not exist', () => {
+      it(`returns an object with null "raw" and "json" properties`, () => {
+        const fileContent = getFileContent('invalid-path');
+        expect(fileContent).toHaveProperty('json', null);
+        expect(fileContent).toHaveProperty('raw', null);
+      });
     });
   });
 
   describe('findFilesInDir', () => {
-    it('gets correct files in dir', () => {
-      const currentFindFilesInDir = findFilesInDir('tests/fixtures', '*');
-      expect(currentFindFilesInDir).toContain('example.txt');
-      expect(currentFindFilesInDir).toHaveLength(1);
+    it('finds a file non-recursively in a directory', () => {
+      const filesInDir = findFilesInDir('src/mocks/fixtures', '*.txt');
+      expect(filesInDir).toContain('example.txt');
+      expect(filesInDir).toHaveLength(1);
+    });
+    it('finds several files recursively in a directory', () => {
+      const filesInDir = findFilesInDir('src/mocks/fixtures');
+      expect(filesInDir).toHaveLength(18);
     });
   });
 
-  describe('getVariantKey', () => {
-    it('"/example--variant.json" gets "variant"', () => {
-      expect(getVariantKey('/example--variant.json')).toBe('variant');
+  describe('getModificationDate', () => {
+    it('returns a Date for an existing filepath without logging any error', () => {
+      expect(
+        getModificationDate('src/mocks/fixtures/data/global.json'),
+      ).not.toBeNull();
+      expect(logger.error).not.toHaveBeenCalled();
     });
-    it('"/example__variant.json" gets null', () => {
-      expect(getVariantKey('/example__variant.json')).toBeNull();
+    it('logs an error for a non-existing filepath', () => {
+      expect(getModificationDate('invalid-path')).toBeNull();
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });

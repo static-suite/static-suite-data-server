@@ -36,7 +36,7 @@ const queryRunner = {
         const availableQueries = [];
         if (config_1.config.queryDir) {
             const { queryDir } = config_1.config;
-            const allQueryModulesRelativePath = (0, fs_1.findFilesInDir)(queryDir, '**/*.js');
+            const allQueryModulesRelativePath = (0, fs_1.findFilesInDir)(queryDir, '**/*.query.js');
             allQueryModulesRelativePath.forEach(queryModuleRelativePath => {
                 const queryModuleAbsolutePath = path_1.default.join(queryDir, queryModuleRelativePath);
                 try {
@@ -79,7 +79,8 @@ const queryRunner = {
         const cacheId = `${queryId}--${argsString}`;
         const queryModulePath = `${path_1.default.join(config_1.config.queryDir, queryId)}.js`;
         let isCacheMiss = false;
-        let queryResult = cache_1.cache.get('query', cacheId);
+        const queryCache = cache_1.cache.bin('query');
+        let queryResult = queryCache.get(cacheId);
         if (!queryResult) {
             try {
                 const queryModule = module_1.moduleHandler.get(queryModulePath);
@@ -91,7 +92,7 @@ const queryRunner = {
                 isCacheMiss = true;
                 if (config_1.config.runMode === dataServer_types_1.RunMode.PROD &&
                     queryResponse?.cacheable !== false) {
-                    cache_1.cache.set('query', cacheId, queryResult);
+                    queryCache.set(cacheId, queryResult);
                 }
             }
             catch (e) {

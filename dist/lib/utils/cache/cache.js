@@ -2,8 +2,42 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cache = void 0;
 const data = new Map();
-const initBin = (bin) => {
-    data.set(bin, new Map());
+const cacheBin = (bin) => {
+    return {
+        /**
+         * Sets a value in the cache.
+         *
+         * @param key - The key for the data to be stored
+         * @param value - The value to be stored
+         */
+        set: (key, value) => {
+            bin.set(key, value);
+        },
+        /**
+         * Gets a value from the cache.
+         *
+         * @param key - The key to be retrieved
+         * @typeParam Type - Type of returned value
+         */
+        get: (key) => bin.get(key),
+        /**
+         * Deletes a value from the cache.
+         *
+         * @param key - The key to be deleted
+         * @returns True on success, or false otherwise.
+         */
+        delete: (key) => bin.delete(key) || false,
+        /**
+         * Deletes a value from the cache.
+         *
+         * @returns True on success, or false otherwise.
+         */
+        count: () => bin.size,
+    };
+};
+const initBin = (binId) => {
+    data.set(binId, cacheBin(new Map()));
+    return data.get(binId);
 };
 /**
  * Cache system based on specialized bins.
@@ -16,43 +50,25 @@ exports.cache = {
     /**
      * Sets a value in the cache.
      *
-     * @param bin - The id of the bin
+     * @param binId - The id of the bin
      * @param key - The key for the data to be stored
      * @param value - The value to be stored
      */
-    set: (bin, key, value) => {
-        if (!data.has(bin)) {
-            initBin(bin);
-        }
-        data.get(bin)?.set(key, value);
+    bin: (binId) => {
+        return data.has(binId) ? data.get(binId) : initBin(binId);
     },
     /**
-     * Gets a value from the cache.
+     * Sets a value in the cache.
      *
-     * @param bin - The id of the bin
-     * @param key - The key to be retrieved
-     * @typeParam Type - Type of returned value
+     * @param binId - The id of the bin
+     * @param key - The key for the data to be stored
+     * @param value - The value to be stored
      */
-    get: (bin, key) => data.get(bin)?.get(key),
-    /**
-     * Deletes a value from the cache.
-     *
-     * @param bin - The id of the bin
-     * @param key - The key to be deleted
-     * @returns True on success, or false otherwise.
-     */
-    delete: (bin, key) => data.get(bin)?.delete(key) || false,
-    /**
-     * Count elements inside a cache bin
-     *
-     * @param bin - The id of the bin
-     * @returns The number of elements inside a cache bin
-     */
-    count: (bin) => data.get(bin)?.size || 0,
+    keys: () => Array.from(data.keys()),
     /**
      * Resets and empties a cache bin.
      *
-     * @param bin - The id of the bin
+     * @param binId - The id of the bin
      */
-    reset: (bin) => initBin(bin),
+    reset: (binId) => initBin(binId),
 };
