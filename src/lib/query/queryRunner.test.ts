@@ -1,6 +1,6 @@
 import { config } from '@lib/config';
 import { resolve } from 'path';
-import { QueryResponse } from './query.types';
+import { isQueryErrorResponse } from './query.types';
 import { queryRunner } from './queryRunner';
 
 describe('QueryRunner test', () => {
@@ -21,7 +21,9 @@ describe('QueryRunner test', () => {
         x: 'x',
         y: '33',
       });
-      expect((queryResponse as QueryResponse).data).toEqual([
+      expect(
+        !isQueryErrorResponse(queryResponse) && queryResponse.data,
+      ).toEqual([
         {
           id: '33',
         },

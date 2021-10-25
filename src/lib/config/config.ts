@@ -9,8 +9,8 @@ const config: Config = Object.create(null); // no inherited properties
 /**
  * Configure the data server.
  *
- * @param {Object} options Configuration options
- * @param {string} options.dataDir - Relative path to the directory where data is stored.
+ * @param options Configuration options
+ * @param options.dataDir - Relative path to the directory where data is stored.
  * @param {string} options.workDir - Relative path to the directory where work data is stored.
  * @param {string} options.queryDir - Relative path to the directory where queries are stored.
  * @param {string} options.postProcessor - Relative path to the post processor module.

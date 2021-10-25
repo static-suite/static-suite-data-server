@@ -26,7 +26,6 @@ enum CacheStatus {
 
 type QueryResponse = {
   data: any;
-  error?: string;
   metadata: {
     contentType: string;
     num?: number;
@@ -40,10 +39,16 @@ type QueryErrorResponse = {
   error: string;
 };
 
+const isQueryErrorResponse = (
+  query: QueryResponse | QueryErrorResponse,
+): query is QueryErrorResponse =>
+  (query as QueryErrorResponse).error !== undefined;
+
 export {
   QueryRunner,
   QueryModule,
   CacheStatus,
   QueryResponse,
   QueryErrorResponse,
+  isQueryErrorResponse,
 };

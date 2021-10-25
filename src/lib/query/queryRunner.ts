@@ -24,6 +24,8 @@ const createErrorResponse = (message: string): QueryErrorResponse => {
 
 /**
  * QueryRunner
+ * @property {Function} configure - Configure the query runner.
+ * @property {Function} run - Run a query.
  */
 const queryRunner: QueryRunner = {
   /**
@@ -147,7 +149,7 @@ const queryRunner: QueryRunner = {
   /**
    * Get number of queries executed.
    *
-   * @returns Number of queries executed.
+   * @return {number} Number of queries executed.
    */
   getCount: (): number => count,
 };
