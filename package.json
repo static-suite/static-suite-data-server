@@ -32,7 +32,8 @@
   },
   "scripts": {
     "dev": "tsc-watch --onSuccess \"yarn lint\"",
-    "build": "yarn lint && tsc",
+    "build": "yarn lint && tsc && yarn post-build",
+    "post-build": "yarn rimraf dist/mocks dist/**/*.test.js",
     "serve": "node ./dist/bin/serve.js http",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
