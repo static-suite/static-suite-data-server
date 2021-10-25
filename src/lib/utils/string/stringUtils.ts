@@ -14,8 +14,7 @@ import { logger } from '@lib/utils/logger';
  * are "card" and "search", its resulting variant file names are:
  *   - 12345--card.json
  *   - 12345--search.json
- * @see Drupal\static_export\Exporter\ExporterPluginInterface::VARIANT_SEPARATOR
- * in https://www.drupal.org/project/static_suite
+ * @see ExporterPluginInterface::VARIANT_SEPARATOR in https://www.drupal.org/project/static_suite
  *
  * @sealed
  * Not intended to be over ride.

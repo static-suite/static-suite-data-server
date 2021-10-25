@@ -1,4 +1,5 @@
 node_modules
 lib/http/public
+dist/
 docs/
 coverage/
