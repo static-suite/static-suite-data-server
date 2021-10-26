@@ -3,7 +3,7 @@
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import 'module-alias/register';
-// import { httpServer } from '@lib/http/httpServer';
+import { httpServer } from '@http/httpServer';
 import { dataServer } from '@lib/dataServer';
 import { LogLevel } from '@lib/utils/logger';
 import { RunMode, RunModeStrings } from '@lib/dataServer.types';
@@ -11,14 +11,13 @@ import { LogLevelStrings } from '@lib/utils/logger/logger.types';
 
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 http --data-dir [path]')
-  .command(['http [--port]'], 'Start an HTTP server', args => {
-    args.positional('--port', {
-      describe: 'Port number',
-      type: 'number',
-      default: 57471,
-    });
-  })
+  .command(['http [--port]'], 'Start an HTTP server')
   .demandCommand()
+  .positional('--port', {
+    describe: 'Port number',
+    type: 'number',
+    default: 57471,
+  })
   .options({
     'data-dir': {
       describe: 'Path to Static Suite data directory',
@@ -65,6 +64,11 @@ const argv = yargs(hideBin(process.argv))
       type: 'boolean',
     },
   })
+  .completion('completion', (_current, _argv, done) => {
+    setTimeout(() => {
+      done(['query-dir', 'data-dir']);
+    }, 500);
+  })
   .parseSync();
 
 const logLevel = LogLevel[argv['log-level'].toUpperCase() as LogLevelStrings];
@@ -85,6 +89,6 @@ dataServer.init({
   runMode: RunMode[argv['run-mode'].toUpperCase() as RunModeStrings],
 });
 // Start server.
-/* if (argv._.includes('http')) {
-  httpServer.start(argv.port);
-} */
+if (argv._.includes('http')) {
+  httpServer.start(argv['--port']);
+}

@@ -29,22 +29,25 @@
     "yargs": "^17.2.1"
   },
   "bin": {
-    "static-suite-data-server": "./bin/serve.js"
+    "static-suite-data-server": "./dist/bin/serve.js"
   },
   "scripts": {
     "dev": "tsc-watch --onSuccess \"yarn lint\"",
-    "build": "yarn lint && tsc && yarn post-build",
+    "build": "yarn lint && tsc && yarn post-build && yarn copy-http-files",
     "post-build": "yarn rimraf dist/mocks dist/**/*.test.js",
     "serve": "node ./dist/bin/serve.js http",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "copy-http-files": "cp ./src/http/public/ ./dist/http/ -r && cp ./src/http/views/ ./dist/http/ -r && cp README.md ./dist/http/"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/marked": "^3.0.2",
     "@types/microtime": "^2.1.0",
+    "@types/mime-types": "^2.1.1",
     "@types/node": "^16.10.2",
     "@types/yargs": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.33.0",

@@ -80,7 +80,7 @@ const queryRunner: QueryRunner = {
    * @param queryId - ID (filename without extension) of the query to be executed.
    * @param args - Optional object with query arguments.
    *
-   * @returns The result of the query.
+   * @return {QueryResponse | QueryErrorResponse} The result of the query.
    */
   run: (
     queryId: string,

@@ -1,4 +1,7 @@
-const home = (req, res) => {
+import { Request, Response } from "express";
+
+export const home = (req : Request, res : Response) => {
+  
   res.render('home', {
     links: {
       '/data': 'Browse all data loaded into the server',
@@ -9,5 +12,3 @@ const home = (req, res) => {
     },
   });
 };
-
-module.exports = { home };

@@ -10,13 +10,13 @@
         "${workspaceFolder}/**",
         "!**/node_modules/**"
       ],
-      "program": "${workspaceFolder}/bin/serve.js",
+      "program": "${workspaceFolder}/dist/bin/serve.js",
       "args": [
         "http",
         "--data-dir",
-        "/var/www/natgeo/static/current/es/data/prod/",
-        "--work-dir",
-        "/var/www/natgeo/static/current/es/data/prod/.work/",
+        "/home/oier/projects/bitween-group/demo-data",
+        "--query-dir",
+        "/home/oier/projects/bitween-group/static-suite-demo-next/nextjs/queries",
         "-vvvv"
       ],
       "cwd": "${workspaceFolder}"

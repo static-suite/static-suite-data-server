@@ -37,6 +37,11 @@ type QueryResponse = {
 
 type QueryErrorResponse = {
   error: string;
+  metadata?: {
+    contentType?: string;
+    execTimeMs?: number;
+    queriesPerSecond?: number;
+  };
 };
 
 const isQueryErrorResponse = (

@@ -1,8 +1,12 @@
-const mime = require('mime-types');
-const { dataDirManager } = require('@lib/store');
-const { logger } = require('@lib/utils/logger');
+import { Store } from "@lib/store/store.types";
+import { Request, Response } from "express";
 
-const serveDataFile = (req, res, storeItem) => {
+import mime from 'mime-types';
+import { dataDirManager } from '@lib/store/dataDir';
+import { logger } from '@lib/utils/logger';
+
+const serveDataFile = (req: Request, res: Response, storeItem:any) => {
+  logger.debug(`DEBUG: type ${typeof storeItem}` );
   logger.warn(
     `Rendering "${storeItem.__FILENAME__ || 'unknown filename'}" (route: ${
       req.params[0]
@@ -16,7 +20,7 @@ const serveDataFile = (req, res, storeItem) => {
   res.send(storeItem);
 };
 
-const data = (req, res) => {
+const data = (req: Request, res: Response) => {
   const paramPath = req.params[0];
   const storePathParts =
     !paramPath || paramPath === '' ? null : paramPath.split('/');
@@ -93,4 +97,4 @@ const data = (req, res) => {
   return res.render('data', vars);
 };
 
-module.exports = { data };
+export {data}

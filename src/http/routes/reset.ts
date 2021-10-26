@@ -1,6 +1,8 @@
-const { dataDirManager } = require('@lib/store');
+import { Request, Response } from "express";
 
-const reset = (req, res) => {
+import { dataDirManager } from '@lib/store/dataDir';
+
+export const reset = (req: Request, res: Response) => {
   const startDate = Date.now();
   dataDirManager.loadDataDir({ useCache: false });
   const endDate = Date.now();
@@ -9,5 +11,3 @@ const reset = (req, res) => {
   res.set({ 'Content-Type': 'application/json' });
   res.send({ execTime: endDate - startDate });
 };
-
-module.exports = { reset };
