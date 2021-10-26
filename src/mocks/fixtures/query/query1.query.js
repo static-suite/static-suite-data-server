@@ -2,6 +2,7 @@ const query1 = ({ args }) => {
   const result = [
     {
       id: args.y,
+      random: Math.random(),
     },
   ];
 
