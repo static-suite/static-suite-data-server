@@ -11,7 +11,7 @@ export const status = (req: Request, res: Response) => {
     dataDirLastUpdate: dataDirManager.getDataDirLastUpdate(),
     query: {
       numberOfExecutions: queryRunner.getCount(),
-      numberOfCachedQueries: cache.count('query'),
+      numberOfCachedQueries: cache.bin('query').size,
     },
   };
   res.status(200);
