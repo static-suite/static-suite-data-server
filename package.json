@@ -10,6 +10,7 @@
     "@types/jest": "^27.0.2",
     "bulma": "^0.9.3",
     "chokidar": "^3.5.2",
+    "clear-module": "^4.1.1",
     "clipboard": "^2.0.8",
     "copyfiles": "^2.4.1",
     "cors": "^2.8.5",

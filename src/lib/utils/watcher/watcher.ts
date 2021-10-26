@@ -29,7 +29,7 @@ export const initWatcher = (): void => {
       paths.push(config.queryDir);
     }
     if (config.postProcessor) {
-      paths.push(config.postProcessor);
+      paths.push(path.dirname(config.postProcessor));
     }
     if (paths.length > 0) {
       const watcher = chokidar.watch(paths, {
@@ -51,7 +51,7 @@ export const initWatcher = (): void => {
           })
           .on('change', filePath => {
             logger.debug(`File ${filePath} changed`);
-            moduleHandler.init();
+            paths.forEach(p => moduleHandler.reset(new RegExp(`^${p}`)));
             conditionallyResetStore(filePath);
             logger.info(`Re-building development modules done`);
           })

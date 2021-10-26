@@ -1,45 +1,36 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-import path from 'path';
-import { config } from '@lib/config';
+import clearModule from 'clear-module';
 import { logger } from '@lib/utils/logger';
-import { findFilesInDir } from '@lib/utils/fs';
 
 const modules: Record<string, any> = {};
 
 export const moduleHandler = {
-  init: (): void => {
-    if (config.queryDir) {
-      const { queryDir } = config;
-      const allQueryModules = findFilesInDir(queryDir, '**/*.js');
-      allQueryModules.forEach(queryModule => {
-        const modulePath = path.join(queryDir, queryModule);
-        // Use https://www.npmjs.com/package/decache as an alternative.
-        delete require.cache[require.resolve(modulePath)];
-        moduleHandler.load(modulePath);
-      });
-    }
-
-    if (config.postProcessor) {
-      delete require.cache[require.resolve(config.postProcessor)];
-      moduleHandler.load(config.postProcessor);
-    }
+  reset: (regex: RegExp): void => {
+    const modulePathsToBeRemoved = Object.keys(require.cache).filter(
+      modulePath => regex.test(modulePath),
+    );
+    modulePathsToBeRemoved.forEach(modulePath =>
+      moduleHandler.remove(modulePath),
+    );
   },
 
   load: <Type>(modulePath: string): Type => {
-    delete modules[modulePath];
-    modules[modulePath] = require(modulePath);
-    if (!modules[modulePath]) {
-      throw Error(`Query "${modulePath}" not loaded.`);
+    moduleHandler.remove(modulePath);
+    try {
+      modules[modulePath] = require(modulePath);
+    } catch (e) {
+      logger.error(`Module "${modulePath}" not found.`);
+      throw e;
     }
-    logger.debug(`Load for ${modulePath} done.`);
+    logger.debug(`Module ${modulePath} successfully loaded.`);
     return modules[modulePath];
   },
 
   remove: (modulePath: string): void => {
-    logger.debug(`Remove for ${modulePath} done.`);
-    delete require.cache[require.resolve(modulePath)];
+    clearModule(modulePath);
     delete modules[modulePath];
+    logger.debug(`Module ${modulePath} successfully removed.`);
   },
 
   get: <Type>(modulePath: string): Type =>

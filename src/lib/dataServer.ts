@@ -3,7 +3,6 @@ import { initWatcher } from '@lib/utils/watcher';
 import { setConfig } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir';
 import { queryRunner } from '@lib/query';
-import { moduleHandler } from '@lib/utils/module';
 import { RunMode, DataServerReturn } from './dataServer.types';
 
 export const dataServer = {
@@ -42,9 +41,6 @@ export const dataServer = {
       postProcessor: options.postProcessor,
       runMode: options.runMode,
     });
-
-    // Init moduleHandler and load all modules (query and post processor).
-    moduleHandler.init();
 
     // Start watcher.
     initWatcher();
