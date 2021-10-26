@@ -5,9 +5,9 @@ import { getLogFile } from './getLogFile';
 /**
    * Get changed files since a date.
    *
-   * @param {Date} sinceDate - Date to search
+   * @param sinceDate - Date to search
 
-  * @return {string[]} Array of changed lines
+  * @returns Array of changed lines
    */
 const getChangedLinesSince = (sinceDate: Date): string[] => {
   let allLines: string[] = [];

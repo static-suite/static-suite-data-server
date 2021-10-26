@@ -3,9 +3,9 @@ import { LogLineData } from '../workDir.types';
 /**
  * Extract information from metadata log line.
  *
- * @param {string} line - Log line.
+ * @param line - Log line.
  *
- * @return {(Object)} - An object with parsed data.
+ * @returns An object with parsed data.
  */
 const getDataFromLogLine = (line: string): LogLineData | null => {
   const matches = line.match(/^(\S+) (\S+) \[ID: ([^\]]+)] (.+)/);

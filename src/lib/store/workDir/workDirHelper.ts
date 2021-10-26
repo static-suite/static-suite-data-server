@@ -18,23 +18,16 @@ const workDirHelper = {
   /**
    * Get date of last update of metadata dir (work dir).
    *
-   * @return {Date} - The date of last update of metadata dir (work dir).
+   * @returns The date of last update of metadata dir (work dir).
    */
   getLastUpdate: (): Date | null => getModificationDate(getLogFile()),
 
   /**
-   * @typedef ChangedFiles
-   * @type {object}
-   * @property {string[]} updated - Array of updated files.
-   * @property {string[]} deleted - Array of deleted files.
-   */
-
-  /**
    * Get changed files since a date.
    *
-   * @param {Date} sinceDate - Date to search
+   * @param sinceDate - Date to search
    *
-   * @return {ChangedFiles} Array of changed files.
+   * @returns Array of changed files.
    *
    */
   getChangedFilesSince: (sinceDate: Date): ChangedFiles => {
