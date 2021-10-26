@@ -29,9 +29,8 @@ export const dataDirManager: DataDirManager = {
    *
    * @param options - Configuration options
    *
-   * @returns The store manager.
    */
-  loadDataDir: (options = { useCache: false }): DataDirManager => {
+  loadDataDir: (options = { useCache: false }) => {
     logger.info('Loading data dir...');
     const files = findFilesInDir(config.dataDir);
     const startDate = Date.now();
@@ -72,8 +71,6 @@ export const dataDirManager: DataDirManager = {
 
     const endDate = Date.now();
     logger.info(`${files.length} files loaded in ${endDate - startDate}ms.`);
-
-    return dataDirManager;
   },
 
   /**
@@ -85,7 +82,7 @@ export const dataDirManager: DataDirManager = {
    *
    * @returns The store manager.
    */
-  updateDataDir: (): DataDirManager => {
+  updateDataDir: () => {
     // Get when was data dir last updated.
     const dataDirLastUpdate = dataDirManager.getDataDirLastUpdate();
     if (dataDirLastUpdate && store.updated) {
@@ -109,8 +106,6 @@ export const dataDirManager: DataDirManager = {
         );
       }
     }
-
-    return dataDirManager;
   },
 
   /**

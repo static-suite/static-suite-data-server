@@ -35,7 +35,7 @@
     "dev": "tsc-watch --onSuccess \"yarn lint\"",
     "build": "yarn lint && tsc && yarn post-build && yarn copy-http-files",
     "post-build": "yarn rimraf dist/mocks dist/**/*.test.js",
-    "serve": "node ./dist/bin/serve.js http",
+    "serve": "node ./dist/bin/serve.js http --port=14471 --data-dir=./src/mocks/fixtures/data --work-dir=./src/mocks/fixtures/work --query-dir=./src/mocks/fixtures/query --run-mode=dev",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
