@@ -51,7 +51,7 @@ export const initWatcher = (): void => {
           })
           .on('change', filePath => {
             logger.debug(`File ${filePath} changed`);
-            paths.forEach(p => moduleHandler.reset(new RegExp(`^${p}`)));
+            paths.forEach(p => moduleHandler.removeAll(new RegExp(`^${p}`)));
             conditionallyResetStore(filePath);
             logger.info(`Re-building development modules done`);
           })
