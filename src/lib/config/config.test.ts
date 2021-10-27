@@ -4,7 +4,7 @@ import { Config } from './config.types';
 
 describe('Config test', () => {
   describe('setConfig', () => {
-    it(`Returns correct config`, () => {
+    it('Returns correct config', () => {
       const config: Config = {
         dataDir: 'src/mocks/fixtures/data/',
         workDir: 'src/mocks/fixtures/work/',
@@ -15,7 +15,7 @@ describe('Config test', () => {
       expect(setConfig(config)).toEqual(config);
     });
 
-    it(`Required option dataDir returns expected error`, () => {
+    it('Required option dataDir returns expected error', () => {
       const config = {
         runMode: RunMode.DEV,
       };
@@ -25,7 +25,7 @@ describe('Config test', () => {
         'Required option not provided: "dataDir".',
       );
     });
-    it(`Required option runMode returns expected error`, () => {
+    it('Required option runMode returns expected error', () => {
       const config = {
         dataDir: 'src/mocks/fixtures/data/',
       };
@@ -36,7 +36,7 @@ describe('Config test', () => {
       );
     });
 
-    it(`wrong option runMode returns expected error`, () => {
+    it('wrong option runMode returns expected error', () => {
       const config = {
         dataDir: 'src/mocks/fixtures/data/',
         runMode: 'xx',
@@ -48,7 +48,7 @@ describe('Config test', () => {
       );
     });
 
-    it(`Wrong dataDir returns expected error`, () => {
+    it('Wrong dataDir returns expected error', () => {
       const config: Config = {
         dataDir: 'non-existent-dir',
         runMode: RunMode.DEV,
@@ -58,7 +58,7 @@ describe('Config test', () => {
       );
     });
 
-    it(`Wrong workDir returns expected error`, () => {
+    it('Wrong workDir returns expected error', () => {
       const config: Config = {
         dataDir: 'src/mocks/fixtures/data',
         workDir: 'non-existent-dir',
@@ -69,7 +69,7 @@ describe('Config test', () => {
       );
     });
 
-    it(`Wrong queryDir returns expected error`, () => {
+    it('Wrong queryDir returns expected error', () => {
       const config: Config = {
         dataDir: 'src/mocks/fixtures/data',
         queryDir: 'non-existent-dir',
@@ -80,7 +80,7 @@ describe('Config test', () => {
       );
     });
 
-    it(`Wrong postProcessor returns expected error`, () => {
+    it('Wrong postProcessor returns expected error', () => {
       const config: Config = {
         dataDir: 'src/mocks/fixtures/data',
         postProcessor: 'non-existent-file',

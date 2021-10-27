@@ -11,7 +11,7 @@ describe('Cache test', () => {
     expect(cache.keys()).toStrictEqual(['bin1', 'bin2']);
   });
 
-  it(`atomically resets a given cache bin out of several ones`, () => {
+  it('atomically resets a given cache bin out of several ones', () => {
     cache.bin('bin1').set('key1', 'value1');
     cache.bin('bin2').set('key2', 'value2');
     expect(cache.bin('bin1').size).toBe(1);

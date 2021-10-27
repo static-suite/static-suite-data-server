@@ -26,14 +26,14 @@ describe('File System utils test', () => {
 
   describe('getFileContent', () => {
     describe('when file exists', () => {
-      it(`returns an object with non-null "raw" and "json" properties if the file is a JSON file`, () => {
+      it('returns an object with non-null "raw" and "json" properties if the file is a JSON file', () => {
         const fileContent = getFileContent(
           'src/mocks/fixtures/example-dir/global.json',
         );
         expect(fileContent.json).not.toBeNull();
         expect(fileContent.raw).not.toBeNull();
       });
-      it(`returns an object with a non-null "raw" property and a null "json" property if the file is not a JSON file`, () => {
+      it('returns an object with a non-null "raw" property and a null "json" property if the file is not a JSON file', () => {
         const fileContent = getFileContent(
           'src/mocks/fixtures/example-dir/example.txt',
         );
@@ -42,7 +42,7 @@ describe('File System utils test', () => {
       });
     });
     describe('when file does not exist', () => {
-      it(`returns an object with null "raw" and "json" properties`, () => {
+      it('returns an object with null "raw" and "json" properties', () => {
         const fileContent = getFileContent('invalid-path');
         expect(fileContent.json).toBeNull();
         expect(fileContent.raw).toBeNull();

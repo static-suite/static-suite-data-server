@@ -1,10 +1,27 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
+// import decache from 'decache';
 import { logger } from '@lib/utils/logger';
 
+/**
+ * Internal module cache.
+ */
 const modules: Record<string, any> = {};
 
+/**
+ * Resolves a path to a module
+ *
+ * @param modulePath - A path to a module
+ * @returns The resolved path, or the passed unresolved path if module cannot be found
+ */
+const resolve = (modulePath: string): string => {
+  try {
+    return require.resolve(modulePath);
+  } catch (e) {
+    return modulePath;
+  }
+};
 /**
  * Module system that manages the caching of modules.
  *
@@ -28,7 +45,7 @@ export const moduleHandler = {
    * An exception if the module cannot be loaded.
    */
   load: <Type>(modulePath: string): Type => {
-    const resolvedModulePath = require.resolve(modulePath);
+    const resolvedModulePath = resolve(modulePath);
     moduleHandler.remove(resolvedModulePath);
     try {
       modules[resolvedModulePath] = require(resolvedModulePath);
@@ -46,8 +63,8 @@ export const moduleHandler = {
    * @param modulePath - Path to the module to be removed
    */
   remove: (modulePath: string): void => {
-    const resolvedModulePath = require.resolve(modulePath);
-    clearModule(modulePath);
+    const resolvedModulePath = resolve(modulePath);
+    clearModule(resolvedModulePath);
     delete modules[resolvedModulePath];
     logger.debug(`Module ${resolvedModulePath} successfully removed.`);
   },
@@ -70,7 +87,7 @@ export const moduleHandler = {
    * Gets a module from cache or loads it from scratch
    *
    * @remarks
-   * If module is not found, it logs an error and throws an exception.
+   * If module is not found, logs an error and throws an exception.
    *
    * @param modulePath - Path to the module to be loaded
    * @typeParam Type - Type of the module to be loaded
@@ -81,7 +98,7 @@ export const moduleHandler = {
    * An exception if the module cannot be loaded.
    */
   get: <Type>(modulePath: string): Type => {
-    const resolvedModulePath = require.resolve(modulePath);
+    const resolvedModulePath = resolve(modulePath);
     return (
       modules[resolvedModulePath] || moduleHandler.load(resolvedModulePath)
     );

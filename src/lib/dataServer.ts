@@ -4,6 +4,7 @@ import { setConfig } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir';
 import { queryRunner } from '@lib/query';
 import { RunMode, DataServerReturn } from './dataServer.types';
+import { moduleHandler } from './utils/module';
 
 export const dataServer = {
   /**

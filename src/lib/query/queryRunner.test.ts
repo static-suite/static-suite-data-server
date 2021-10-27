@@ -15,7 +15,7 @@ let random = 0;
 
 describe('QueryRunner test', () => {
   describe('getAvailableQueryIds', () => {
-    it(`Returns correct querys ids from fixtures`, () => {
+    it('Returns correct queries ids from fixtures', () => {
       expect(queryRunner.getAvailableQueryIds()).toEqual([
         'error.query',
         'query1.query',
@@ -25,7 +25,7 @@ describe('QueryRunner test', () => {
   });
 
   describe('run', () => {
-    it(`Returns query data`, () => {
+    it('Returns query data', () => {
       cache.reset('query');
       const queryResponse = queryRunner.run('query1.query', {
         x: 'x',
@@ -37,7 +37,7 @@ describe('QueryRunner test', () => {
       ({ random } = data);
     });
 
-    it(`Returns query data from cache`, () => {
+    it('Returns query data from cache', () => {
       const queryResponse = queryRunner.run('query1.query', {
         x: 'x',
         y: '33',
@@ -49,7 +49,7 @@ describe('QueryRunner test', () => {
       expect(response?.data?.[0]?.random).toEqual(random);
     });
 
-    it(`Logs error when query fails`, () => {
+    it('Logs error when query fails', () => {
       logger.error = jest.fn();
       try {
         queryRunner.run('error.query', {});
