@@ -1,12 +1,10 @@
-import { Store } from "@lib/store/store.types";
-import { Request, Response } from "express";
-
+import { Request, Response } from 'express';
 import mime from 'mime-types';
-import { dataDirManager } from '@lib/store/dataDir';
+import { store } from '@lib/store';
 import { logger } from '@lib/utils/logger';
 
-const serveDataFile = (req: Request, res: Response, storeItem:any) => {
-  logger.debug(`DEBUG: type ${typeof storeItem}` );
+const serveDataFile = (req: Request, res: Response, storeItem: any) => {
+  logger.debug(`DEBUG: type ${typeof storeItem}`);
   logger.warn(
     `Rendering "${storeItem.__FILENAME__ || 'unknown filename'}" (route: ${
       req.params[0]
@@ -25,11 +23,8 @@ const data = (req: Request, res: Response) => {
   const storePathParts =
     !paramPath || paramPath === '' ? null : paramPath.split('/');
   const storeItem = storePathParts
-    ? storePathParts.reduce(
-        (prev, curr) => prev && prev[curr],
-        dataDirManager.store.data,
-      )
-    : dataDirManager.store.data;
+    ? storePathParts.reduce((prev, curr) => prev && prev[curr], store.data)
+    : store.data;
 
   if (storeItem && (storeItem.__FILENAME__ || typeof storeItem === 'string')) {
     return serveDataFile(req, res, storeItem);
@@ -97,4 +92,4 @@ const data = (req: Request, res: Response) => {
   return res.render('data', vars);
 };
 
-export {data}
+export { data };

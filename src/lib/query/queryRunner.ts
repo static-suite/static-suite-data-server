@@ -1,12 +1,11 @@
-import path from 'path';
 import microtime from 'microtime';
 import { config } from '@lib/config';
 import { store } from '@lib/store';
 import { moduleHandler } from '@lib/utils/module';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
-import { findFilesInDir } from '@lib/utils/fs';
 import { RunMode } from '@lib/dataServer.types';
+import { queryManager } from './queryManager';
 import {
   QueryRunner,
   QueryModule,
@@ -17,80 +16,57 @@ import {
 
 let count = 0;
 
+/**
+ * CReates a QueryErrorResponse object ready to be returned to clients.
+ *
+ * @param message - Error message
+ *
+ * @returns A JSON object with an error key
+ *
+ * @internal
+ */
 const createErrorResponse = (message: string): QueryErrorResponse => {
   logger.error(message);
   return { error: message };
 };
 
 /**
- * QueryRunner
- * @property {Function} configure - Configure the query runner.
- * @property {Function} run - Run a query.
+ * A service to handle the execution of queries
  */
-const queryRunner: QueryRunner = {
+export const queryRunner: QueryRunner = {
   /**
-   * Get a list of available query IDs.
+   * Runs a query and returns its results with metadata.
    *
-   * Check any module inside config.queryDir that exports a function called "queryHandler".
+   * @remarks
+   * It checks several validations before a query is run, and then it tries to get
+   * the query result from cache. If cache is empty, query is executed and saved
+   * in the cache.
    *
-   * @returns Array with available query IDs.
-   */
-  getAvailableQueryIds: (): string[] => {
-    const availableQueries: string[] = [];
-
-    if (config.queryDir) {
-      const { queryDir } = config;
-      const allQueryModulesRelativePath = findFilesInDir(
-        queryDir,
-        '**/*.query.js',
-      );
-
-      allQueryModulesRelativePath.forEach(queryModuleRelativePath => {
-        const queryModuleAbsolutePath = path.join(
-          queryDir,
-          queryModuleRelativePath,
-        );
-
-        try {
-          const queryModule = moduleHandler.get<QueryModule>(
-            queryModuleAbsolutePath,
-          );
-          if (
-            queryModule.queryHandler &&
-            typeof queryModule.queryHandler === 'function'
-          ) {
-            availableQueries.push(
-              queryModuleRelativePath.split('.').slice(0, -1).join('.'),
-            );
-          }
-        } catch (e) {
-          // noop
-        }
-      });
-    }
-
-    return availableQueries;
-  },
-  /**
-   * Run a query.
+   * It logs an error and throws an exception if any problem occurs during the
+   * query execution.
    *
-   * This function should not throw any error, so each consumer can handle exceptions
-   * in a different way.
-   *
-   * @param queryId - ID (filename without extension) of the query to be executed.
+   * @param queryId - ID (filename without extension and suffix) of the query
+   * to be executed.
    * @param args - Optional object with query arguments.
    *
-   * @return {QueryResponse | QueryErrorResponse} The result of the query.
+   * @returns The result of the query as a JSON object with data and metadata keys.
+   *
+   * @throws
+   * Exception thrown if any problem occurs during the query execution.
    */
   run: (
     queryId: string,
     args: Record<string, string>,
   ): QueryResponse | QueryErrorResponse => {
     if (!config.queryDir) {
-      return createErrorResponse('No query directory configured');
+      return createErrorResponse('No query directory ("queryDir") configured');
     }
     if (!queryId) {
       return createErrorResponse('No query ID received');
+    }
+    const queryModulePath = queryManager.getQueryModulePath(queryId);
+    if (!queryModulePath) {
+      return createErrorResponse(`Query module for ID ${queryId} not found`);
     }
 
     count += 1;
@@ -100,10 +76,9 @@ const queryRunner: QueryRunner = {
 
     // Implement a query cache.
     const cacheId = `${queryId}--${argsString}`;
-    const queryModulePath = `${path.join(config.queryDir, queryId)}.js`;
     let isCacheMiss = false;
     const queryCache = cache.bin('query');
-    let queryResult = queryCache.get(cacheId);
+    let queryResult = RunMode.PROD && queryCache.get(cacheId);
     if (!queryResult) {
       try {
         const queryModule = moduleHandler.get<QueryModule>(queryModulePath);
@@ -147,11 +122,9 @@ const queryRunner: QueryRunner = {
   },
 
   /**
-   * Get number of queries executed.
+   * Gets number of executed queries.
    *
-   * @return {number} Number of queries executed.
+   * @returns Number of executed queries.
    */
   getCount: (): number => count,
 };
-
-export { queryRunner };

@@ -2,34 +2,50 @@ import fs from 'fs';
 import { resolve } from 'path';
 import { RunMode } from '@lib/dataServer.types';
 import { hasKey } from '@lib/utils/object';
-import { Config } from './config.types';
+import { ConfigOptions } from './config.types';
+import {
+  InvalidRunMode,
+  MissingDirectory,
+  MissingRequiredOption,
+} from './error';
 
-const config: Config = Object.create(null); // no inherited properties
+const config: ConfigOptions = Object.create(null); // no inherited properties
 
 /**
- * Configure the data server.
+ * Configures the data server.
  *
- * @param options Configuration options
- * @param options.dataDir - Relative path to the directory where data is stored.
- * @param {string} options.workDir - Relative path to the directory where work data is stored.
- * @param {string} options.queryDir - Relative path to the directory where queries are stored.
- * @param {string} options.postProcessor - Relative path to the post processor module.
- * @param {string} options.runMode - Run mode (dev or prod).
+ * @remarks
+ * It validates provided configuration and returns a sanitized and immutable
+ * configuration object. It throws several errors if validation is not passing.
  *
- * @return {Object} - The config object.
+ * @param options - Configuration options
+ *
+ * @returns - The sanitized and immutable configuration object.
+ *
+ * @throws {@link MissingRequiredOption}
+ * Exception thrown if the dataDir or runMode are not provided.
+ *
+ * @throws {@link MissingDirectory}
+ * Exception thrown if any of the provided paths (dataDir, workDir,
+ * queryDir or hookDir) is not found.
+ *
+ * @throws {@link InvalidRunMode}
+ * Exception thrown if runMode is not valid.
  */
-const setConfig = (options: Config): Config => {
+const setConfig = (options: ConfigOptions): ConfigOptions => {
   const localOptions = options;
-  // Check that required options are provided
+  // Check that required options are provided.
+  // Since this method is publicly accessible at runtime, it is not
+  // possible to rely on TypeScript type safety.
   if (!localOptions.dataDir) {
-    throw Error('Required option not provided: "dataDir".');
+    throw new MissingRequiredOption('dataDir');
   }
   localOptions.dataDir = resolve(localOptions.dataDir);
   if (
     !fs.existsSync(localOptions.dataDir) ||
     !fs.lstatSync(localOptions.dataDir).isDirectory()
   ) {
-    throw Error(`Cannot find dataDir directory: "${localOptions.dataDir}"`);
+    throw new MissingDirectory('dataDir', localOptions.dataDir);
   }
 
   if (localOptions.workDir) {
@@ -38,7 +54,7 @@ const setConfig = (options: Config): Config => {
       !fs.existsSync(localOptions.workDir) ||
       !fs.lstatSync(localOptions.workDir).isDirectory()
     ) {
-      throw Error(`Cannot find workDir directory: "${localOptions.workDir}"`);
+      throw new MissingDirectory('workDir', localOptions.workDir);
     }
   }
 
@@ -48,28 +64,25 @@ const setConfig = (options: Config): Config => {
       !fs.existsSync(localOptions.queryDir) ||
       !fs.lstatSync(localOptions.queryDir).isDirectory()
     ) {
-      throw Error(`Cannot find queryDir directory: ${localOptions.queryDir}`);
+      throw new MissingDirectory('queryDir', localOptions.queryDir);
     }
   }
 
-  if (localOptions.postProcessor) {
-    localOptions.postProcessor = resolve(localOptions.postProcessor);
-    if (!fs.existsSync(localOptions.postProcessor)) {
-      throw Error(
-        `Cannot find postProcessor module: ${localOptions.postProcessor}`,
-      );
+  if (localOptions.hookDir) {
+    localOptions.hookDir = resolve(localOptions.hookDir);
+    if (
+      !fs.existsSync(localOptions.hookDir) ||
+      !fs.lstatSync(localOptions.hookDir).isDirectory()
+    ) {
+      throw new MissingDirectory('hookDir', localOptions.hookDir);
     }
   }
 
   if (!localOptions.runMode) {
-    throw Error('Required option not provided: "runMode"');
+    throw new MissingRequiredOption('runMode');
   }
   if (!Object.values(RunMode).includes(localOptions.runMode)) {
-    throw Error(
-      `Invalid value provided for "runMode": "${
-        localOptions.runMode
-      }". Valid options are ${Object.values(RunMode).join(' or ')}`,
-    );
+    throw new InvalidRunMode(localOptions.runMode);
   }
 
   Object.keys(localOptions).forEach(key => {

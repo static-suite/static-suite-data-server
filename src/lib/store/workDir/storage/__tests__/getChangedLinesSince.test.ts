@@ -1,6 +1,6 @@
 import { config } from '@lib/config';
 import { resolve } from 'path';
-import { getChangedLinesSince } from './getChangedLinesSince';
+import { getChangedLinesSince } from '../getChangedLinesSince';
 
 describe('workDir storage getChangedLinesSince test', () => {
   describe('getChangedLinesSince', () => {

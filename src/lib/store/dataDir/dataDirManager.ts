@@ -11,40 +11,41 @@ import { DataDirManager } from './dataDir.types';
  */
 export const dataDirManager: DataDirManager = {
   /**
-   * The data store
-   */
-  store,
-
-  /**
-   * Load all files inside a directory into the store.
+   * Loads all files inside the data directory into the store.
    *
-   * By default, it loads all files from disc and read their contents, unless
-   * options.useCache is set to true. In such case, we ask the metadata helper
-   * for updated files, and read data from disc only for those updated files.
+   * @remarks
+   * By default, it loads all files from disc and reads their contents, unless
+   * options.incremental is set to true. In such case, it ask the work dir helper
+   * for updated files, and reads data from disc only for those updated files.
    *
    * The only drawback of this approach is that data can be updated without
-   * informing the metadata system (exporting data from Drupal using a batch process).
+   * informing the work dir system (exporting data from Drupal using a batch process).
    * For such cases, Data Server should be completely restarted, or this function
-   * should be called with `options.useCache = false`
+   * should be called with `options.incremental = false`.
    *
    * @param options - Configuration options
-   *
    */
-  loadDataDir: (options = { useCache: false }) => {
+  load: (options = { incremental: false }) => {
     logger.info('Loading data dir...');
+    const dataDirModificationDate = dataDirManager.getModificationDate();
+    // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
+    // processes loading the data directory at the same time.
+    const storeLastSyncDate = store.syncDate;
+    store.syncDate = dataDirModificationDate;
     const files = findFilesInDir(config.dataDir);
     const startDate = Date.now();
 
     let updatedFiles: string[] = [];
     // Look for updated files since last update
-    if (options.useCache) {
-      if (store.updated) {
-        ({ updated: updatedFiles } = workDirHelper.getChangedFilesSince(
-          store.updated,
-        ));
-      }
+    if (options.incremental) {
+      if (storeLastSyncDate) {
+        // No need to support deleted files, since we have all files
+        // inside the dataDir (and deleted ones are already gone) and
+        // we are using store's stage, which avoids mixing data from current
+        // store with data from this operation.
+        ({ updated: updatedFiles } =
+          workDirHelper.getChangedFilesSince(storeLastSyncDate));
 
-      if (updatedFiles.length > 0) {
         updatedFiles.forEach(file => {
           logger.info(`Loading updated file "${file}"`);
         });
@@ -52,7 +53,7 @@ export const dataDirManager: DataDirManager = {
     }
 
     // Clear all file cache so new cache data doesn't contain any stale data or file.
-    if (!options.useCache) {
+    if (!options.incremental) {
       cache.reset('file');
     }
 
@@ -65,7 +66,6 @@ export const dataDirManager: DataDirManager = {
       });
     });
 
-    store.updated = new Date();
     store.promoteStage();
     cache.reset('query');
 
@@ -74,27 +74,28 @@ export const dataDirManager: DataDirManager = {
   },
 
   /**
-   * Update the store with the files that have changed since last update.
+   * Updates the store with the files that have changed since last sync.
    *
-   * It's main difference with loadDataDir() is that, instead of loading the whole store,
-   * updateDataDir() checks if something has changed, not doing anything if nothing
-   * has changed. Thus, this method is way faster than loadDataDir().
+   * @remarks
+   * It's main difference with load() is that, instead of loading the whole store,
+   * update() checks if something has changed, not doing anything if nothing
+   * has changed. Thus, this method is way faster than load().
    *
    * @returns The store manager.
    */
-  updateDataDir: () => {
-    // Get when was data dir last updated.
-    const dataDirLastUpdate = dataDirManager.getDataDirLastUpdate();
-    if (dataDirLastUpdate && store.updated) {
-      if (dataDirLastUpdate > store.updated) {
-        // Save store.updated to a variable and set the new value from dataDirLastUpdate ASAP.
-        const storeLastUpdate = store.updated;
-        store.updated = dataDirLastUpdate;
+  update: () => {
+    const dataDirModificationDate = dataDirManager.getModificationDate();
+    if (store.syncDate) {
+      if (dataDirModificationDate > store.syncDate) {
+        // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
+        // processes updating the data directory at the same time.
+        const storeLastSyncDate = store.syncDate;
+        store.syncDate = dataDirModificationDate;
         logger.debug(
-          `Data dir outdated. Current data loaded at ${storeLastUpdate?.toISOString()} but last updated at ${dataDirLastUpdate.toISOString()}`,
+          `Data dir outdated. Current data loaded at ${storeLastSyncDate.toISOString()} but last updated at ${dataDirModificationDate.toISOString()}`,
         );
         const changedFiles =
-          workDirHelper.getChangedFilesSince(storeLastUpdate);
+          workDirHelper.getChangedFilesSince(storeLastSyncDate);
         changedFiles.updated.forEach(file =>
           store.update(config.dataDir, file),
         );
@@ -102,17 +103,26 @@ export const dataDirManager: DataDirManager = {
         cache.reset('query');
       } else {
         logger.debug(
-          `Data dir up to date. Current data loaded at ${store.updated?.toISOString()} and last updated at ${dataDirLastUpdate.toISOString()}`,
+          `Data dir up to date. Current data loaded at ${store.syncDate.toISOString()} and last updated at ${dataDirModificationDate.toISOString()}`,
         );
       }
+    } else {
+      logger.debug(`Data dir not yet loaded, so it cannot be updated.`);
     }
   },
 
   /**
-   * Get date of last update of metadata dir (work dir).
+   * Get date of last modification of data directory.
    *
-   * @returns The date of last update of metadata dir (work dir).
+   * @remarks
+   * Metadata about when and how is the data directory updated is
+   * stored in the work directory. If that directory is not present or
+   * not initialized with proper data, it returns the sync date of the store.
+   * If the store is not yet loaded, it returns a date in the past,
+   * the Unix Epoch (00:00:00 UTC on 1 January 1970).
+   *
+   * @returns The date of last modification of data directory
    */
-  getDataDirLastUpdate: (): Date | null =>
-    workDirHelper.getLastUpdate() || store.updated,
+  getModificationDate: (): Date =>
+    workDirHelper.getModificationDate() || store.syncDate || new Date(0),
 };

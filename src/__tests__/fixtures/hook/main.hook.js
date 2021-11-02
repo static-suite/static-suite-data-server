@@ -1,10 +1,7 @@
-import { PostProcessor } from '@lib/store/postProcessor/postProcessor.types';
-import { FileType } from '@lib/utils/fs/fs.types';
-
-const main: PostProcessor = {
+const main = {
   processFile: (_dataDir, _file, fileContent /* , _store */) => {
     // Do something...
-    return <FileType>{
+    return {
       raw: fileContent.raw,
       json: fileContent.json,
     };

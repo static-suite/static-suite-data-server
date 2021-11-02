@@ -1,7 +1,9 @@
-import { configureLogger, logger, LogLevel, LogFile } from '@lib/utils/logger';
-import { initWatcher } from '@lib/utils/watcher';
+import { configureLogger, logger } from '@lib/utils/logger';
+import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
+import { initWatcher } from '@lib/watcher';
 import { setConfig } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir';
+import { store } from '@lib/store';
 import { queryRunner } from '@lib/query';
 import { RunMode, DataServerReturn } from './dataServer.types';
 
@@ -16,7 +18,7 @@ export const dataServer = {
    * @param {string} options.dataDir - Path to the directory where data is stored.
    * @param {string} options.workDir - Path to the directory where work data is stored.
    * @param {string} options.queryDir - Path to the directory where queries are stored.
-   * @param {string} options.postProcessor - Path to the post processor file.
+   * @param {string} options.hookDir - Path to the directory where hooks are stored.
    * @param {string} options.runMode - Run mode (dev or prod).
    *
    * @return {Object} - An object with store, dataDirManager, queryRunner and logger.
@@ -27,29 +29,31 @@ export const dataServer = {
     dataDir: string;
     workDir?: string;
     queryDir?: string;
-    postProcessor?: string;
+    hookDir?: string;
     runMode: RunMode;
   }): DataServerReturn => {
     // Configure logger.
     configureLogger(options.logLevel, options.logFile);
 
     // Configure data server.
-    setConfig({
+    const config = setConfig({
       dataDir: options.dataDir,
       workDir: options.workDir,
       queryDir: options.queryDir,
-      postProcessor: options.postProcessor,
+      hookDir: options.hookDir,
       runMode: options.runMode,
     });
 
     // Start watcher.
-    initWatcher();
+    if (config.runMode === RunMode.DEV) {
+      initWatcher();
+    }
 
     // Load data from dataDir.
-    dataDirManager.loadDataDir({ useCache: false });
+    dataDirManager.load({ incremental: false });
 
     return {
-      data: dataDirManager.store.data,
+      data: store.data,
       dataDirManager,
       queryRunner,
       logger,

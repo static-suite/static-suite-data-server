@@ -1,7 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
-// import decache from 'decache';
 import { logger } from '@lib/utils/logger';
 
 /**
@@ -22,6 +21,7 @@ const resolve = (modulePath: string): string => {
     return modulePath;
   }
 };
+
 /**
  * Module system that manages the caching of modules.
  *
@@ -34,7 +34,7 @@ export const moduleHandler = {
    *
    * @remarks
    * Removes a module from Node.js cache, and loads it from scratch.
-   * If module is not found, it logs an error and throws an exception.
+   * If the module is not found, it logs an error and throws an exception.
    *
    * @param modulePath - Path to the module to be loaded
    * @typeParam Type - Type of the module to be loaded

@@ -1,6 +1,6 @@
 import { config } from '@lib/config';
 import { resolve } from 'path';
-import { workDirHelper } from './workDirHelper';
+import { workDirHelper } from '../workDirHelper';
 
 describe('workDirHelper test', () => {
   describe('getChangedFilesSince', () => {

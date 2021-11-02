@@ -3,8 +3,9 @@ import { RunMode } from '@lib/dataServer.types';
 import { cache } from '@lib/utils/cache';
 import { logger } from '@lib/utils/logger';
 import { resolve } from 'path';
-import { isQueryErrorResponse } from './query.types';
-import { queryRunner } from './queryRunner';
+import { isQueryErrorResponse } from '../query.types';
+import { queryRunner } from '../queryRunner';
+import { queryManager } from '../queryManager';
 
 beforeEach(() => {
   config.queryDir = resolve('src/mocks/fixtures/query');
@@ -16,7 +17,7 @@ let random = 0;
 describe('QueryRunner test', () => {
   describe('getAvailableQueryIds', () => {
     it('Returns correct queries ids from fixtures', () => {
-      expect(queryRunner.getAvailableQueryIds()).toEqual([
+      expect(queryManager.getAvailableQueryIds()).toEqual([
         'error.query',
         'query1.query',
         'query2.query',

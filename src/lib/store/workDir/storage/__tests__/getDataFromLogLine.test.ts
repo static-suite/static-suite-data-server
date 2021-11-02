@@ -1,4 +1,4 @@
-import { getDataFromLogLine } from '.';
+import { getDataFromLogLine } from '..';
 
 describe('workDir storage getDataFromLogLine test', () => {
   describe('getDataFromLogLine', () => {

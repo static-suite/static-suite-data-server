@@ -3,11 +3,10 @@
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import 'module-alias/register';
-import { httpServer } from '@http/httpServer';
+// import { httpServer } from '@http/httpServer';
 import { dataServer } from '@lib/dataServer';
-import { LogLevel } from '@lib/utils/logger';
 import { RunMode, RunModeStrings } from '@lib/dataServer.types';
-import { LogLevelStrings } from '@lib/utils/logger/logger.types';
+import { LogLevel, LogLevelStrings } from '@lib/utils/logger/logger.types';
 
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 http --data-dir [path]')
@@ -34,16 +33,16 @@ const argv = yargs(hideBin(process.argv))
       demandOption: false,
       type: 'string',
     },
+    'hook-dir': {
+      describe: 'Path to the directory where hooks are stored',
+      type: 'string',
+    },
     'run-mode': {
       demandOption: true,
       default: 'prod',
       describe:
         'Run mode (dev or prod). Dev mode disables all caches and watches for changes on external modules (queries and post processors)',
       choices: ['dev', 'prod'],
-    },
-    'post-processor': {
-      describe: 'Path to the post processor module',
-      type: 'string',
     },
     'log-level': {
       describe: 'Log level verbosity',
@@ -85,10 +84,11 @@ dataServer.init({
   dataDir: argv['data-dir'],
   workDir: argv['work-dir'],
   queryDir: argv['query-dir'],
-  postProcessor: argv['post-processor'],
+  hookDir: argv['hook-dir'],
   runMode: RunMode[argv['run-mode'].toUpperCase() as RunModeStrings],
 });
-// Start server.
+
+/* // Start server.
 if (argv._.includes('http')) {
   httpServer.start(argv['--port']);
-}
+} */

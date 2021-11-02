@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
 import { logger } from '@lib/utils/logger';
-import { moduleHandler } from './moduleHandler';
+import { moduleHandler } from '../moduleHandler';
 
 /* const mockModuleHandler = () => {
   const originalLoad = moduleHandler.load;
@@ -101,7 +101,7 @@ describe('moduleHandler test', () => {
       jest.isolateModules(() => {
         const {
           moduleHandler: isolatedModuleHandler,
-        } = require('./moduleHandler');
+        } = require('../moduleHandler');
         const { dummyObject: dummyObject1 } =
           isolatedModuleHandler.get(dummyModulePath);
         isolatedModuleHandler.removeAll(/dummyModule/);

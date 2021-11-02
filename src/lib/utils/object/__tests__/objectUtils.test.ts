@@ -1,4 +1,4 @@
-import { isEmptyObject, hasKey, deepClone } from './objectUtils';
+import { isEmptyObject, hasKey, deepClone } from '../objectUtils';
 
 describe('Objsct utils test', () => {
   describe('isEmptyObject', () => {

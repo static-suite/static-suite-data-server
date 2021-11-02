@@ -9,7 +9,7 @@ const data = new Map<string, CacheBin>();
  * If a cache bin already exists, it clears it, creating a new one.
  * If the cache bin doesn't exist, it simply creates it.
  *
- * @param binId - The id of the bin
+ * @param binId - The id of the bin.
  * @returns The initialized cache bin.
  *
  */
@@ -29,7 +29,7 @@ export const cache = {
   /**
    * Gets a cache bin by its id.
    *
-   * @param binId - The id of the bin
+   * @param binId - The id of the bin.
    * @returns The cache bin.
    */
   bin: (binId: string): CacheBin => {
@@ -46,7 +46,7 @@ export const cache = {
   /**
    * Resets a cache bin, clearing its contents.
    *
-   * @param binId - The id of the bin
+   * @param binId - The id of the bin.
    * @returns  The cleared cache bin.
    */
   reset: (binId: string): CacheBin => initBin(binId),

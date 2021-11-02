@@ -1,5 +1,5 @@
 import { logger } from '@lib/utils/logger';
-import { parseJsonString, getVariantKey } from './stringUtils';
+import { parseJsonString, getVariantKey } from '../stringUtils';
 
 describe('String utils test', () => {
   describe('parseJsonString', () => {

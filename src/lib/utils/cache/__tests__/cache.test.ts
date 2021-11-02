@@ -1,4 +1,4 @@
-import { cache } from './cacheBinManager';
+import { cache } from '../cacheBinManager';
 
 describe('Cache test', () => {
   it('newly created cache bins are empty', () => {
@@ -8,7 +8,7 @@ describe('Cache test', () => {
   it('gets the keys of all cache bins', () => {
     cache.bin('bin1');
     cache.bin('bin2');
-    expect(cache.keys()).toStrictEqual(['bin1', 'bin2']);
+    expect(cache.keys()).toEqual(['bin1', 'bin2']);
   });
 
   it('atomically resets a given cache bin out of several ones', () => {

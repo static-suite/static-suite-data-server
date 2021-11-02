@@ -1,5 +1,4 @@
-import { Request, Response } from "express";
-
+import { Request, Response } from 'express';
 import { dataDirManager } from '@lib/store/dataDir';
 import { queryRunner } from '@lib/query';
 import { config } from '@lib/config';
@@ -8,7 +7,7 @@ import { cache } from '@lib/utils/cache';
 export const status = (req: Request, res: Response) => {
   const response = {
     config,
-    dataDirLastUpdate: dataDirManager.getDataDirLastUpdate(),
+    dataDirLastUpdate: dataDirManager.getModificationDate(),
     query: {
       numberOfExecutions: queryRunner.getCount(),
       numberOfCachedQueries: cache.bin('query').size,

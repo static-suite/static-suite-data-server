@@ -8,6 +8,7 @@
   "dependencies": {
     "@creativebulma/bulma-tooltip": "^1.2.0",
     "@types/jest": "^27.0.2",
+    "@types/tap": "^15.0.5",
     "bulma": "^0.9.3",
     "chokidar": "^3.5.2",
     "clear-module": "^4.1.1",
@@ -36,7 +37,7 @@
     "dev": "tsc-watch --onSuccess \"yarn lint\"",
     "build": "yarn lint && tsc && yarn copy-http-files",
     "post-build": "yarn rimraf dist/mocks dist/**/*.test.js",
-    "serve": "node ./dist/bin/serve.js http --port=57471 --data-dir=./src/mocks/fixtures/data --work-dir=./src/mocks/fixtures/work --query-dir=./src/mocks/fixtures/query --run-mode=dev",
+    "serve": "node ./dist/bin/serve.js http --port=57471 --data-dir=./src/__tests__/fixtures/data --work-dir=./src/__tests__/fixtures/work --query-dir=./src/__tests__/fixtures/query  --hook-dir=./src/__tests__/fixtures/hook --run-mode=dev",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
@@ -69,7 +70,7 @@
     "@bin": "dist/bin",
     "@http": "dist/http",
     "@lib": "dist/lib",
-    "@mocks": "dist/mocks"
+    "@__tests__": "dist/__tests__"
   },
   "jest": {
     "preset": "ts-jest",
@@ -82,7 +83,7 @@
       "^@bin/(.*)$": "<rootDir>/src/bin/$1",
       "^@http/(.*)$": "<rootDir>/src/http/$1",
       "^@lib/(.*)$": "<rootDir>/src/lib/$1",
-      "^@mocks/(.*)$": "<rootDir>/src/mocks/$1"
+      "^@__tests__/(.*)$": "<rootDir>/src/__tests__/$1"
     }
   }
 }

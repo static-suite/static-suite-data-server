@@ -1,33 +1,33 @@
 type ObjectType = Record<string, unknown>;
 
 /**
- * Checks if one object contains any key
+ * Checks if an object is empty (i.e.- contains zero keys)
  *
  * @param object - An object
  *
- * @returns true if the object has not any key, false otherwise.
+ * @returns True if the object contains zero keys, false otherwise.
  */
 export const isEmptyObject = (object: ObjectType): boolean =>
   Object.keys(object).length === 0;
 
 /**
- * Checks if one object contains a key
+ * Checks if an object contains a key
  *
  * @param object - An object
- * @param key - A key
+ * @param key - The name of a key
  *
- * @returns true if the object has the given key, false otherwise.
+ * @returns True if the object has the given key, false otherwise.
  */
 export const hasKey = <O>(object: O, key: PropertyKey): key is keyof O => {
   return key in object;
 };
 
 /**
- * Gets one clone of one object without references to nested objects
+ * Clones an object and all its nested objects
  *
- * @param object - An object
+ * @param object - An object to be cloned
  *
- * @returns An identical object without references.
+ * @returns An identical object without references to nested objects
  */
 export const deepClone = (object: ObjectType): ObjectType =>
   JSON.parse(JSON.stringify(object));

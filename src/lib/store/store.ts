@@ -6,7 +6,7 @@ import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
 import { deepClone } from '@lib/utils/object';
 import { Store } from './store.types';
-import { postProcessorManager } from './postProcessor';
+import { hookManager } from './hook';
 
 const JSON_ITEMS = '_json';
 const MAIN = 'main';
@@ -100,89 +100,10 @@ const storeDataSkeleton: StoreDataLeaf = {
   },
 };
 
-/**
- * @typedef {Object} Store
- * @property {Date} updated - Date to tell when was the store last updated.
- * @property {Object} data - Object that holds all data.
- * @property {Function} add - Add a file to the store
- * @property {Function} remove - Remove a file from the store
- */
 export const store: Store = {
-  /**
-   * Date to tell when was the store last updated.
-   */
-  updated: null,
-
-  /**
-   * Object that holds all data for all path files.
-   *
-   * Every directory path contains an special entry named "_json", which is an
-   * object that contains "main" and "variants":
-   *  - "main":     an array that contains, recursively, all files inside that directory
-   *                that are not a variant.
-   *  - "variants": an object keyed with available variants, that contains, recursively,
-   *                all variants inside that directory.
-   *
-   * @example
-   * // Find articles that contain "foo" inside their title.
-   * const results = store.data.en.entity.node.article._json.main.filter(
-   *    article => article.data.content.title.indexOf('foo') !== 1
-   * );
-   *
-   * @example
-   * // Find "teaser" article variants that contain "foo" inside their title.
-   * const results = store.data.en.entity.node.article._json.variant.teaser.filter(
-   *    article => article.data.content.title.indexOf('foo') !== 1
-   * );
-   */
+  syncDate: null,
   data: deepClone(storeDataSkeleton),
-
-  /**
-   * Temporary object to be able to make changes to data without touching "store.data".
-   */
   stage: deepClone(storeDataSkeleton),
-
-  /**
-   * Add a file to the store, into a tree structure.
-   *
-   * Each file is stored in a tree-like object, where directories and filenames
-   * are transformed into object properties. For example, the filepath
-   * "/en/entity/node/article/40000/41234.json" is transformed into:
-   * store.data.en.entity.node.article['40000']['41234.json']
-   *
-   * Every JSON_ITEMS file is also added to a special "_json" object inside every
-   * tree leaf, so the above file will be available in:
-   * store.data._json.main
-   * store.data.en._json.main
-   * store.data.en.entity._json.main
-   * store.data.en.entity.node._json.main
-   * store.data.en.entity.node.article._json.main
-   * store.data.en.entity.node.article['40000']._json.main
-   *
-   * Given a variant file named "/en/entity/node/article/40000/41234--teaser.json",
-   * it would be added to the following "_json" object:
-   * store.data._json.variants.teaser
-   * store.data.en._json.variants.teaser
-   * store.data.en.entity._json.variants.teaser
-   * store.data.en.entity.node._json.variants.teaser
-   * store.data.en.entity.node.article._json.variants.teaser
-   * store.data.en.entity.node.article['40000']._json.variants.teaser
-   *
-   * This way, queries can be run on any set of data, limiting the amount of data to by analyzed.
-   *
-   * Each "_json" contains all files inside that level, recursively.
-   * For example:
-   * - "store.data._json" contains all files in the store
-   * - "store.data.en.entity.node.article._json" contains all articles in the store
-   *
-   * @param {string} dataDir - Relative path to the data directory where files are stored.
-   * @param {string} file - Relative path to the file to be added.
-   * @param {Object} options Configuration options
-   * @param {boolean} options.useStage - Add data to a temporary "store.stage" that will later replace "store.data".
-   * @param {boolean} options.useCache - Obtain data from cache.
-   *
-   * @return {Store} store - The store object, to allow chaining.
-   */
   add: (
     dataDir: string,
     file: string,
@@ -200,16 +121,13 @@ export const store: Store = {
     }
     let fileContent: FileType = cache.bin('file').get(filePath);
 
-    // Post process file.
-    const postProcessor = postProcessorManager.getPostProcessor();
-    if (postProcessor?.processFile) {
-      fileContent = postProcessor.processFile(
-        dataDir,
-        file,
-        fileContent,
-        store,
-      );
-    }
+    // Invoke "process file" hook.
+    const hookModules = hookManager.getHookModules();
+    hookModules.forEach(hookModule => {
+      if (hookModule.processFile) {
+        fileContent = hookModule.processFile(dataDir, file, fileContent, store);
+      }
+    });
 
     const rootLeaf = options.useStage ? store.stage : store.data;
     let leaf = rootLeaf;
@@ -248,10 +166,12 @@ export const store: Store = {
       }
     });
 
-    // Post process file.
-    if (postProcessor?.storeAdd) {
-      postProcessor.storeAdd(dataDir, file, fileContent, store);
-    }
+    // Invoke "store add" hook.
+    hookModules.forEach(hookModule => {
+      if (hookModule.storeAdd) {
+        hookModule.storeAdd(dataDir, file, fileContent, store);
+      }
+    });
 
     return store;
   },
@@ -287,11 +207,13 @@ export const store: Store = {
       }
     });
 
-    // Post process file.
-    const postProcessor = postProcessorManager.getPostProcessor();
-    if (postProcessor?.storeRemove) {
-      postProcessor.storeRemove(file, store);
-    }
+    // Invoke "store remove" hook.
+    const hookModules = hookManager.getHookModules();
+    hookModules.forEach(hookModule => {
+      if (hookModule.storeRemove) {
+        hookModule.storeRemove(file, store);
+      }
+    });
 
     return store;
   },

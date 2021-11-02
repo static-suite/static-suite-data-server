@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 import { dataDirManager } from '@lib/store/dataDir';
 
 export const reset = (req: Request, res: Response) => {
   const startDate = Date.now();
-  dataDirManager.loadDataDir({ useCache: false });
+  dataDirManager.load({ incremental: false });
   const endDate = Date.now();
 
   res.status(200);

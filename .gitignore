@@ -3,3 +3,5 @@ lib/http/public
 dist/
 docs/
 coverage/
+.idea
+.vscode/settings.json

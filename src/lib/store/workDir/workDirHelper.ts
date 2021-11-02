@@ -9,18 +9,13 @@ import {
 
 const changedFileCache: Record<number, ChangedFiles> = {};
 
-/**
- * @typedef {Object} MetadataHelper
- * @property {Function} getLastUpdate
- * @property {Function} getChangedFilesSince
- */
 const workDirHelper = {
   /**
-   * Get date of last update of metadata dir (work dir).
+   * Gets date of last modification of work directory.
    *
-   * @returns The date of last update of metadata dir (work dir).
+   * @returns The date of last modification of work directory.
    */
-  getLastUpdate: (): Date | null => getModificationDate(getLogFile()),
+  getModificationDate: (): Date | null => getModificationDate(getLogFile()),
 
   /**
    * Get changed files since a date.

@@ -1,5 +1,4 @@
 type QueryRunner = {
-  getAvailableQueryIds(): string[];
   run(
     queryId: string,
     args: Record<string, string>,

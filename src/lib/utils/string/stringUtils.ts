@@ -2,10 +2,6 @@ import path from 'path';
 import { logger } from '@lib/utils/logger';
 
 /**
- * A set of various functions related to the file system
- */
-
-/**
  * Separator for variant data files saved to storage.
  *
  * @remarks
@@ -43,7 +39,7 @@ export const parseJsonString = (jsonString: string): any => {
  *
  * @param filePath - Absolute path to the data file
  *
- * @returns The file's variant key, or null on error
+ * @returns The file's variant key, or null if not found
  */
 export const getVariantKey = (filePath: string): string | null => {
   const fileName = path.parse(filePath).name;

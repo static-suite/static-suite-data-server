@@ -1,15 +1,15 @@
 import { RunMode } from '@lib/dataServer.types';
-import { setConfig } from './config';
-import { Config } from './config.types';
+import { setConfig } from '../config';
+import { ConfigOptions } from '../config.types';
 
 describe('Config test', () => {
   describe('setConfig', () => {
     it('Returns correct config', () => {
-      const config: Config = {
+      const config: ConfigOptions = {
         dataDir: 'src/mocks/fixtures/data/',
         workDir: 'src/mocks/fixtures/work/',
         queryDir: 'src/mocks/fixtures/query',
-        postProcessor: 'src/mocks/fixtures/post-processor/postProcessor.ts',
+        hookDir: 'src/mocks/fixtures/hook',
         runMode: RunMode.DEV,
       };
       expect(setConfig(config)).toEqual(config);
@@ -49,7 +49,7 @@ describe('Config test', () => {
     });
 
     it('Wrong dataDir returns expected error', () => {
-      const config: Config = {
+      const config: ConfigOptions = {
         dataDir: 'non-existent-dir',
         runMode: RunMode.DEV,
       };
@@ -59,7 +59,7 @@ describe('Config test', () => {
     });
 
     it('Wrong workDir returns expected error', () => {
-      const config: Config = {
+      const config: ConfigOptions = {
         dataDir: 'src/mocks/fixtures/data',
         workDir: 'non-existent-dir',
         runMode: RunMode.DEV,
@@ -70,7 +70,7 @@ describe('Config test', () => {
     });
 
     it('Wrong queryDir returns expected error', () => {
-      const config: Config = {
+      const config: ConfigOptions = {
         dataDir: 'src/mocks/fixtures/data',
         queryDir: 'non-existent-dir',
         runMode: RunMode.DEV,
@@ -81,9 +81,9 @@ describe('Config test', () => {
     });
 
     it('Wrong postProcessor returns expected error', () => {
-      const config: Config = {
+      const config: ConfigOptions = {
         dataDir: 'src/mocks/fixtures/data',
-        postProcessor: 'non-existent-file',
+        hookDir: 'non-existent-file',
         runMode: RunMode.DEV,
       };
       expect(() => setConfig(config)).toThrowError(

@@ -1,4 +1,4 @@
-import { getArgs } from './functionUtils';
+import { getArgs } from '../functionUtils';
 
 describe('Function utils test', () => {
   describe('getArgs', () => {
