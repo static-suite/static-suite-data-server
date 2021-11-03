@@ -11,15 +11,15 @@ export const dataServer = {
   /**
    * Init the data server.
    *
-   * @param {Object} options Configuration options
-   * @param {string} options.logLevel - Log level.
-   * @param {string} options.logFile - Path to log file.
-   * @param {string} options.logFileLevel - Log level for log file.
-   * @param {string} options.dataDir - Path to the directory where data is stored.
-   * @param {string} options.workDir - Path to the directory where work data is stored.
-   * @param {string} options.queryDir - Path to the directory where queries are stored.
-   * @param {string} options.hookDir - Path to the directory where hooks are stored.
-   * @param {string} options.runMode - Run mode (dev or prod).
+   * @param options - Configuration options
+   * @param options.logLevel - Log level.
+   * @param options.logFile - Path to log file.
+   * @param options.logFileLevel - Log level for log file.
+   * @param options.dataDir - Path to the directory where data is stored.
+   * @param options.workDir - Path to the directory where work data is stored.
+   * @param options.queryDir - Path to the directory where queries are stored.
+   * @param options.hookDir - Path to the directory where hooks are stored.
+   * @param options.runMode - Run mode (dev or prod).
    *
    * @return {Object} - An object with store, dataDirManager, queryRunner and logger.
    */

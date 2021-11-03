@@ -1,22 +1,34 @@
+type StoreAddOptions = {
+  /**
+   * Flag to add data to a temporary "store.stage" that will later replace "store.data".
+   */
+  useStage: boolean;
+
+  /**
+   * Flag to obtain file data from cache instead of the file system.
+   */
+  useCache: boolean;
+};
+
 export type Store = {
   /**
-   * Date to tell when was the store last updated.
+   * Date to tell when was the store last synced.
    *
    * Every time the store is updated, syncDate is set with the last modification
-   * date of the data directory, not the current Date when we finish updating the
-   * store.
+   * date of the data directory, not the date when the store haa finished updating.
    *
    * Given this scenario:
    * - Data directory modified at 12:30:00
-   * - Syncing the store takes 3 seconds and finishes at 12:30:05
+   * - Syncing the store takes 3 seconds and finishes at 12:30:03
    *
-   * ...syncDate will contain 12:30:00, not 12:30:03.
+   * ...syncDate will be 12:30:00, not 12:30:03.
    *
    * Doing it the other way round can cause data inconsistencies, because syncing files
-   * to the store takes time and it is done sequentially:
+   * to the store takes time, it is done sequentially, and in the meanwhile, other
+   * modifications can happen:
    * - Store last syncDate is 12:29:00
    * - Data directory is modified at 12:30:00
-   * - We ask for modified files after 12:29:00 and get 3 files (1.json, 2.json and 3.json)
+   * - We ask for modified files after 12:29:00 and got 3 files (1.json, 2.json and 3.json)
    * - File "1.json" is processed and added to the store at 12:30:01
    * - While "2.json" is being processed and added to the store, data directory is modified
    * again at 12:30:02 and "1.json" is changed.
@@ -25,14 +37,14 @@ export type Store = {
    * At this moment, there are two options:
    *
    * 1) Setting syncDate to the current date:
-   * - Store syncDate is set as 12:30:03
+   * - Store syncDate is set to 12:30:03
    * - Data directory is modified again at 12:30:10 and only "3.json" is changed
    * - We ask for modified files after 12:30:03 and get only "3.json"
    * - Modification done at 12:30:02 to "1.json" is lost and cannot be recovered unless "1.json" is
    * modified again, or Data Server is restarted
    *
    * 2) Setting syncDate to the last modification date of the data directory:
-   * - Store syncDate is set as 12:30:00
+   * - Store syncDate is set to 12:30:00
    * - Data directory is modified again at 12:30:10 and only "3.json" is changed
    * - We ask for modified files after 12:30:00 and get "1.json" and "3.json"
    * - Modification done at 12:30:02 to "1.json" is properly processed
@@ -53,24 +65,24 @@ export type Store = {
    * @example
    * // Find articles that contain "foo" inside their title.
    * const results = store.data.en.entity.node.article._json.main.filter(
-   *    article => article.data.content.title.indexOf('foo') !== 1
+   *    article =\> article.data.content.title.indexOf('foo') !== 1
    * );
    *
    * @example
    * // Find "teaser" article variants that contain "foo" inside their title.
    * const results = store.data.en.entity.node.article._json.variant.teaser.filter(
-   *    article => article.data.content.title.indexOf('foo') !== 1
+   *    article =\> article.data.content.title.indexOf('foo') !== 1
    * );
    */
   data: any;
 
   /**
-   * Temporary object to be able to make changes to data without touching "store.data".
+   * Temporary object aimed at making changes to data without touching "store.data".
    */
   stage: any;
 
   /**
-   * Add a file to the store, into a tree structure.
+   * Adds a file to the store, into a tree structure.
    *
    * @remarks
    * Each file is stored in a tree-like object, where directories and filenames
@@ -78,7 +90,7 @@ export type Store = {
    * "/en/entity/node/article/40000/41234.json" is transformed into:
    * store.data.en.entity.node.article['40000']['41234.json']
    *
-   * Every JSON_ITEMS file is also added to a special "_json" object inside every
+   * Every JSON file is also added to a special "_json" object inside every
    * tree leaf, so the above file will be available in:
    * store.data._json.main
    * store.data.en._json.main
@@ -103,23 +115,47 @@ export type Store = {
    * - "store.data._json" contains all files in the store
    * - "store.data.en.entity.node.article._json" contains all articles in the store
    *
-   * @param dataDir - Relative path to the data directory where files are stored.
-   * @param file - Relative path to the file to be added.
-   * @param {Object} options Configuration options
-   * @param {boolean} options.useStage - Add data to a temporary "store.stage" that will later replace "store.data".
-   * @param {boolean} options.useCache - Obtain data from cache.
+   * It invokes "process file" and "store add" hooks.
+   *
+   * @param dataDir - Path to the data directory where files are stored.
+   * @param file - Relative path, inside dataDir, to the file to be added.
+   * @param options - Configuration options.
    *
    * @returns The store object, to allow chaining.
    */
-  add(
-    dataDir: string,
-    file: string,
-    options?: {
-      useStage: boolean;
-      useCache: boolean;
-    },
-  ): Store;
+  add(dataDir: string, file: string, options?: StoreAddOptions): Store;
+
+  /**
+   * Removes a file from the store.
+   *
+   * @remarks
+   * It removes the object and all its references across the tree structure.
+   * It invokes the "store remove" hook.
+   *
+   * @param file - Relative path to the file to be removed.
+   *
+   * @returns The store object, to allow chaining.
+   */
   remove(file: string): Store;
+
+  /**
+   * Updates a file from the store.
+   *
+   * @remarks
+   * It removes the object and all its references across the tree structure, and
+   * adds it again to the structure.
+   *
+   * @param dataDir - Path to the data directory where files are stored.
+   * @param file - Relative path, inside dataDir, to the file to be updated.
+   *
+   * @returns The store object, to allow chaining.
+   */
   update(dataDir: string, file: string): Store;
+
+  /**
+   * Promotes data stored in "store.stage" to "store.data".
+   *
+   * @returns The store object, to allow chaining.
+   */
   promoteStage(): Store;
 };

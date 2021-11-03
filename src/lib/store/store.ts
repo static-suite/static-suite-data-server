@@ -176,15 +176,6 @@ export const store: Store = {
     return store;
   },
 
-  /**
-   * Remove a file from the store.
-   *
-   * It removes the object and all its references across the tree structure.
-   *
-   * @param {string} file - Relative path to the file to be removed.
-   *
-   * @return {Store} store - The store object, to allow chaining.
-   */
   remove: (file: string): Store => {
     const pathParts = file.split('/');
 
@@ -218,40 +209,12 @@ export const store: Store = {
     return store;
   },
 
-  /**
-   * Updates a file from the store.
-   *
-   * It removes the object and all its references across the tree structure, and
-   * adds it again to the structure.
-   *
-   * @param {string} dataDir - Relative path to the data directory where files are stored.
-   * @param {string} file - Relative path to the file to be updated.
-   *
-   * @return {Store} store - The store object, to allow chaining.
-   */
   update: (dataDir: string, file: string): Store => {
     store.remove(file);
     store.add(dataDir, file);
     return store;
   },
 
-  /**
-   * Get a file from the store.
-   *
-   * @param {string} file - Relative path to the file to be retrieved.
-   *
-   * @return {(Array|Object|null)} An array or object coming from JSON, or a string otherwise.
-  get: (file: string): [] | object | string | null => {
-    const pathParts = file.split('/');
-    return pathParts.reduce((prev, curr) => prev && prev[curr], store.data);
-  },
-   */
-
-  /**
-   * Promotes data stored in "store.stage" to "store.data".
-   *
-   * @return {Store} store - The store object, to allow chaining.
-   */
   promoteStage: () => {
     store.data = store.stage;
     store.stage = deepClone(storeDataSkeleton);
