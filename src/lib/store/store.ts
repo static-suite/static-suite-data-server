@@ -102,8 +102,11 @@ const storeDataSkeleton: StoreDataLeaf = {
 
 export const store: Store = {
   syncDate: null,
+
   data: deepClone(storeDataSkeleton),
+
   stage: deepClone(storeDataSkeleton),
+
   add: (
     dataDir: string,
     file: string,
@@ -117,13 +120,16 @@ export const store: Store = {
 
     const filePath = path.join(dataDir, file);
     if (!options.useCache || !cache.bin('file').get(filePath)) {
-      cache.bin('file').set(filePath, getFileContent(filePath));
+      cache.bin<FileType>('file').set(filePath, getFileContent(filePath));
     }
-    let fileContent: FileType = cache.bin('file').get(filePath);
+    // Using "as FileType" because we are sure that it will not return undefined,
+    // since its value has been set by ourselves.
+    let fileContent = cache.bin<FileType>('file').get(filePath) as FileType;
 
     // Invoke "process file" hook.
-    const hookModules = hookManager.getHookModules();
-    hookModules.forEach(hookModule => {
+    const hookModulesInfo = hookManager.getModuleGroupInfo();
+    hookModulesInfo.forEach(hookInfo => {
+      const hookModule = hookInfo.getModule();
       if (hookModule.processFile) {
         fileContent = hookModule.processFile(dataDir, file, fileContent, store);
       }
@@ -167,7 +173,8 @@ export const store: Store = {
     });
 
     // Invoke "store add" hook.
-    hookModules.forEach(hookModule => {
+    hookModulesInfo.forEach(hookInfo => {
+      const hookModule = hookInfo.getModule();
       if (hookModule.storeAdd) {
         hookModule.storeAdd(dataDir, file, fileContent, store);
       }
@@ -199,8 +206,9 @@ export const store: Store = {
     });
 
     // Invoke "store remove" hook.
-    const hookModules = hookManager.getHookModules();
-    hookModules.forEach(hookModule => {
+    const hookModulesInfo = hookManager.getModuleGroupInfo();
+    hookModulesInfo.forEach(hookInfo => {
+      const hookModule = hookInfo.getModule();
       if (hookModule.storeRemove) {
         hookModule.storeRemove(file, store);
       }

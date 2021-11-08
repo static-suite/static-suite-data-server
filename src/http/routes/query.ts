@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-
 import { dataDirManager } from '@lib/store/dataDir';
 import { queryRunner } from '@lib/query';
 import { queryManager } from '@lib/query';
 import { QueryErrorResponse, QueryResponse } from '@lib/query/query.types';
 
 const queryIndex = (req: Request, res: Response) => {
-  const queryIds = queryManager.getAvailableQueryIds();
+  const queryIds = Array.from(queryManager.getModuleGroupInfo().keys());
   res.render('queryIndex', {
     queryIds:
       queryIds.length > 0 ? queryIds.map(query => `/query/${query}`) : null,

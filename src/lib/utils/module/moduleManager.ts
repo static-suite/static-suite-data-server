@@ -1,12 +1,39 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
+import { config } from '@lib/config';
 import { logger } from '@lib/utils/logger';
 
 /**
  * Internal module cache.
+ *
+ * @remarks
+ * It does not use the shared cache util since this cache must to be
+ * managed only by this module, and should not be accessible nor
+ * managed from the outside.
  */
-const modules: Record<string, any> = {};
+const internalModuleCache: Record<string, any> = {};
+
+/**
+ * Validates a module path, throwing an error if validation fails.
+ *
+ * @param modulePath - Module file path to be validated.
+ *
+ * @returns True if it is a valid path, or false otherwise.
+ *
+ * @throws
+ * An exception if the module path does not pass validation.
+ */
+const validate = (modulePath: string) => {
+  const isValidModule =
+    (!!config.queryDir && modulePath.startsWith(config.queryDir)) ||
+    (!!config.hookDir && modulePath.startsWith(config.hookDir));
+  if (!isValidModule) {
+    const errorMessage = `Module "${modulePath}" is not valid. Only query and hook modules can be managed by moduleManager.`;
+    logger.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
 
 /**
  * Resolves a path to a module
@@ -25,16 +52,22 @@ const resolve = (modulePath: string): string => {
 /**
  * Module system that manages the caching of modules.
  *
+ * @remarks
  * Modules are cached by Node.js when they are required. This module handler
  * is able to remove them from Node.js cache and reload them from scratch.
+ *
+ * This manager is aimed at handling "user-land" modules, i.e.- modules managed
+ * by users and not part of the Data Server core. Those "user-land" modules are
+ * queries and hooks, so trying to manage other kind of module will throw and error.
  */
-export const moduleHandler = {
+export const moduleManager = {
   /**
    * Loads a module from scratch
    *
    * @remarks
    * Removes a module from Node.js cache, and loads it from scratch.
-   * If the module is not found, it logs an error and throws an exception.
+   * If the module is not valid or not found, it logs an error and throws
+   * an exception.
    *
    * @param modulePath - Path to the module to be loaded
    * @typeParam Type - Type of the module to be loaded
@@ -42,19 +75,20 @@ export const moduleHandler = {
    * @returns - The requested module
    *
    * @throws
-   * An exception if the module cannot be loaded.
+   * An exception if the module is not valid or it cannot be loaded.
    */
   load: <Type>(modulePath: string): Type => {
+    validate(modulePath);
     const resolvedModulePath = resolve(modulePath);
-    moduleHandler.remove(resolvedModulePath);
+    moduleManager.remove(resolvedModulePath);
     try {
-      modules[resolvedModulePath] = require(resolvedModulePath);
+      internalModuleCache[resolvedModulePath] = require(resolvedModulePath);
     } catch (e) {
       logger.error(`Module "${resolvedModulePath}" not found.`);
       throw e;
     }
     logger.debug(`Module ${resolvedModulePath} successfully loaded.`);
-    return modules[resolvedModulePath];
+    return internalModuleCache[resolvedModulePath];
   },
 
   /**
@@ -63,9 +97,10 @@ export const moduleHandler = {
    * @param modulePath - Path to the module to be removed
    */
   remove: (modulePath: string): void => {
+    validate(modulePath);
     const resolvedModulePath = resolve(modulePath);
     clearModule(resolvedModulePath);
-    delete modules[resolvedModulePath];
+    delete internalModuleCache[resolvedModulePath];
     logger.debug(`Module ${resolvedModulePath} successfully removed.`);
   },
 
@@ -79,7 +114,7 @@ export const moduleHandler = {
       modulePath => regex.test(modulePath),
     );
     modulePathsToBeRemoved.forEach(modulePath =>
-      moduleHandler.remove(modulePath),
+      moduleManager.remove(modulePath),
     );
   },
 
@@ -98,9 +133,11 @@ export const moduleHandler = {
    * An exception if the module cannot be loaded.
    */
   get: <Type>(modulePath: string): Type => {
+    validate(modulePath);
     const resolvedModulePath = resolve(modulePath);
     return (
-      modules[resolvedModulePath] || moduleHandler.load(resolvedModulePath)
+      internalModuleCache[resolvedModulePath] ||
+      moduleManager.load(resolvedModulePath)
     );
   },
 };

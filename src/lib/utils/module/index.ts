@@ -1,1 +1,2 @@
-export * from './moduleHandler';
+export * from './moduleManager';
+export * from './dirBasedModuleGroupManager';

@@ -17,7 +17,7 @@ let random = 0;
 describe('QueryRunner test', () => {
   describe('getAvailableQueryIds', () => {
     it('Returns correct queries ids from fixtures', () => {
-      expect(queryManager.getAvailableQueryIds()).toEqual([
+      expect(Array.from(queryManager.getModuleGroupInfo().keys())).toEqual([
         'error.query',
         'query1.query',
         'query2.query',

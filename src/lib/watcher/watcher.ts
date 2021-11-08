@@ -1,19 +1,26 @@
-import path from 'path';
 import { config } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir/dataDirManager';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
-import { moduleHandler } from '@lib/utils/module';
 import { watch } from '@lib/utils/fs';
+import { hookManager } from '@lib/store/hook';
+import { queryManager } from '@lib/query';
 
 /**
  * Initializes a watcher on any file inside queryDir and hookDir.
  *
  * @remarks
  * If queryDir and/or hookDir are defined by current configuration, a watcher
- * is initialized on them. When something changes inside those directories:
- * 1) Any query module and the query cache are deleted
- * 2) Any hook module is deleted and the store reloaded
+ * is initialized on them.
+ *
+ * When something changes inside query directory:
+ * 1) Clear the query manager, so Remove all modules inside the query directory, so they are required again.
+ * 2) Clear the query cache.
+ *
+ * When something changes inside hook directory:
+ * 1) Remove all modules inside the hook directory, so they are required again.ç
+ * 2) Reload the whole data directory so hooks can be reapplied.
+ * 3) Clear the query cache.
  */
 export const initWatcher = (): void => {
   const paths: string[] = [];
@@ -21,20 +28,26 @@ export const initWatcher = (): void => {
     paths.push(config.queryDir);
   }
   if (config.hookDir) {
-    paths.push(path.dirname(config.hookDir));
+    paths.push(config.hookDir);
   }
 
   const listener = (filePath: string) => {
-    paths.forEach(p => moduleHandler.removeAll(new RegExp(`^${p}`)));
+    // Remove all modules inside the query directory.
+    if (config.queryDir && filePath.startsWith(config.queryDir)) {
+      queryManager.reset();
+    }
+
+    // Remove all modules inside the hook directory and reload the whole
+    // data directory so hooks can be reapplied.
     if (config.hookDir && filePath.startsWith(config.hookDir)) {
-      // When a hook changes, reload the whole data dir so hooks can be reapplied.
+      hookManager.reset();
       dataDirManager.load({ incremental: true });
       logger.debug(`Re-building store done`);
-    } else {
-      // When a query changes, clear the query cache.
-      cache.reset('query');
-      logger.debug(`Query cache cleared`);
     }
+
+    // In both cases, clear the query cache, which is now stale.
+    cache.reset('query');
+    logger.debug(`Query cache cleared`);
   };
 
   watch(paths, {

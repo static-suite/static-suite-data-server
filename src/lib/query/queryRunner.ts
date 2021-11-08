@@ -1,14 +1,12 @@
 import microtime from 'microtime';
 import { config } from '@lib/config';
 import { store } from '@lib/store';
-import { moduleHandler } from '@lib/utils/module';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
 import { RunMode } from '@lib/dataServer.types';
 import { queryManager } from './queryManager';
 import {
   QueryRunner,
-  QueryModule,
   CacheStatus,
   QueryResponse,
   QueryErrorResponse,
@@ -64,8 +62,8 @@ export const queryRunner: QueryRunner = {
     if (!queryId) {
       return createErrorResponse('No query ID received');
     }
-    const queryModulePath = queryManager.getQueryModulePath(queryId);
-    if (!queryModulePath) {
+    const queryModuleInfo = queryManager.getModuleGroupInfo().get(queryId);
+    if (!queryModuleInfo) {
       return createErrorResponse(`Query module for ID ${queryId} not found`);
     }
 
@@ -81,7 +79,7 @@ export const queryRunner: QueryRunner = {
     let queryResult = RunMode.PROD && queryCache.get(cacheId);
     if (!queryResult) {
       try {
-        const queryModule = moduleHandler.get<QueryModule>(queryModulePath);
+        const queryModule = queryModuleInfo.getModule();
         const queryResponse = queryModule.queryHandler({
           data: store.data,
           args,

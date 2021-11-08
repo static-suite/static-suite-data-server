@@ -3,7 +3,7 @@
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import 'module-alias/register';
-// import { httpServer } from '@http/httpServer';
+import { httpServer } from '@http/httpServer';
 import { dataServer } from '@lib/dataServer';
 import { RunMode, RunModeStrings } from '@lib/dataServer.types';
 import { LogLevel, LogLevelStrings } from '@lib/utils/logger/logger.types';
@@ -88,7 +88,7 @@ dataServer.init({
   runMode: RunMode[argv['run-mode'].toUpperCase() as RunModeStrings],
 });
 
-/* // Start server.
+// Start server.
 if (argv._.includes('http')) {
   httpServer.start(argv['--port']);
-} */
+}

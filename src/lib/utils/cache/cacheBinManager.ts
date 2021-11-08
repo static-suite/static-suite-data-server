@@ -1,6 +1,6 @@
-type CacheBin = Map<string, any>;
+type CacheBin<Type> = Map<string, Type>;
 
-const data = new Map<string, CacheBin>();
+const data = new Map<string, CacheBin<any>>();
 
 /**
  * Initializes a cache bin.
@@ -13,9 +13,9 @@ const data = new Map<string, CacheBin>();
  * @returns The initialized cache bin.
  *
  */
-const initBin = (binId: string): CacheBin => {
-  data.set(binId, new Map<string, any>());
-  return data.get(binId) as CacheBin;
+const initBin = <Type>(binId: string): CacheBin<Type> => {
+  data.set(binId, new Map<string, Type>());
+  return data.get(binId) as CacheBin<Type>;
 };
 
 /**
@@ -32,8 +32,10 @@ export const cache = {
    * @param binId - The id of the bin.
    * @returns The cache bin.
    */
-  bin: (binId: string): CacheBin => {
-    return data.has(binId) ? (data.get(binId) as CacheBin) : initBin(binId);
+  bin: <Type>(binId: string): CacheBin<Type> => {
+    return data.has(binId)
+      ? (data.get(binId) as CacheBin<Type>)
+      : initBin<Type>(binId);
   },
 
   /**
@@ -49,5 +51,5 @@ export const cache = {
    * @param binId - The id of the bin.
    * @returns  The cleared cache bin.
    */
-  reset: (binId: string): CacheBin => initBin(binId),
+  reset: <Type>(binId: string): CacheBin<Type> => initBin<Type>(binId),
 };
