@@ -1,5 +1,7 @@
 /**
  * A service to handle the execution of queries.
+ *
+ * @public
  */
 export type QueryRunner = {
   /**
@@ -55,6 +57,8 @@ export type QueryRunner = {
 
 /**
  * An object with query arguments.
+ *
+ * @public
  */
 export type QueryArgs = Record<string, any>;
 
@@ -109,6 +113,8 @@ export type QueryModuleResult = {
 
 /**
  * Possible values for a cache get operation: miss or hit.
+ *
+ * @public
  */
 export enum CacheStatus {
   MISS,
@@ -121,6 +127,8 @@ export enum CacheStatus {
  * @remarks
  * It takes the results from a QueryModule#queryHandler, and wraps them into an
  * structure with metadata. @see {@link QueryModule#queryHandler}
+ *
+ * @public
  */
 export type QuerySuccessfulResponse = {
   /**
@@ -160,6 +168,8 @@ export type QuerySuccessfulResponse = {
  * @remarks
  * It takes an string from QueryModule#queryHandler, and wraps them into an
  * structure with metadata. @see {@link QueryModule#queryHandler}
+ *
+ * @public
  */
 export type QueryErrorResponse = {
   /**

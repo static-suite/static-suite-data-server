@@ -1,15 +1,10 @@
-import { Logger, LogLevel, LogFile } from '@lib/utils/logger/logger.types';
+import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
 import { QueryRunner } from '@lib/query/query.types';
 
-/* * @param options.logFile - .
-* @param options.logFileLevel - Log level for log file.
-* @param options.dataDir - Path to the directory where data is stored.
-* @param options.workDir - Path to the directory where work data is stored.
-* @param options.queryDir - Path to the directory where queries are stored.
-* @param options.hookDir - Path to the directory where hooks are stored.
-* @param options.runMode - Run mode (dev or prod).
-
-
+/**
+ * Init options for Data Server.
+ *
+ * @public
  */
 export type DataServerInitOptions = {
   /**
@@ -54,7 +49,9 @@ export type DataServerInitOptions = {
 };
 
 /**
- * Available run modes: dev or prod
+ * Available run modes: dev or prod.
+ *
+ * @public
  */
 export enum RunMode {
   DEV = 'dev',
@@ -68,6 +65,8 @@ export type RunModeStrings = keyof typeof RunMode;
 
 /**
  * Data returned by Data Server once initialized.
+ *
+ * @public
  */
 export type DataServerReturn = {
   /**
@@ -79,9 +78,4 @@ export type DataServerReturn = {
    * The query runner, to be able to run queries on demand.
    */
   queryRunner: QueryRunner;
-
-  /**
-   * The logger service.
-   */
-  logger: Logger;
 };
