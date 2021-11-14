@@ -1,5 +1,5 @@
 const main = {
-  processFile: (_dataDir, _file, fileContent /* , _store */) => {
+  processFile: ({ fileContent }) => {
     // Do something...
     return {
       raw: fileContent.raw,
