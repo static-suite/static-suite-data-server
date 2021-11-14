@@ -9,11 +9,11 @@ import {
 
 const changedFileCache: Record<number, ChangedFiles> = {};
 
-const workDirHelper = {
+export const workDirHelper = {
   /**
    * Gets date of last modification of work directory.
    *
-   * @returns The date of last modification of work directory.
+   * @returns The date of last modification of work directory, or null if directory not found.
    */
   getModificationDate: (): Date | null => getModificationDate(getLogFile()),
 
@@ -39,14 +39,14 @@ const workDirHelper = {
 
       const updated = linesData
         .filter(data => data.operation === 'write')
-        .map(data => data.file.path);
+        .map(data => data.file.relativePath);
       updated.forEach(file => {
         logger.debug(`Found updated file "${file}"`);
       });
 
       const deleted = linesData
         .filter(data => data.operation === 'delete')
-        .map(data => data.file.path);
+        .map(data => data.file.relativePath);
       deleted.forEach(file => {
         logger.debug(`Found deleted file "${file}"`);
       });
@@ -57,5 +57,3 @@ const workDirHelper = {
     return changedFileCache[sinceDateTimestamp];
   },
 };
-
-export { workDirHelper };

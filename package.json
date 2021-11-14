@@ -39,7 +39,7 @@
     "post-build": "yarn rimraf dist/mocks dist/**/*.test.js",
     "serve": "node ./dist/bin/serve.js http --port=57471 --data-dir=./src/__tests__/fixtures/data --work-dir=./src/__tests__/fixtures/work --query-dir=./src/__tests__/fixtures/query  --hook-dir=./src/__tests__/fixtures/hook --run-mode=dev",
     "lint": "eslint . --ext .ts",
-    "docs": "yarn typedoc --out docs src/lib/utils/**/*.ts",
+    "docs": "yarn typedoc --entryPointStrategy expand --out docs src/",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "test": "jest --watch",
     "copy-http-files": "cp ./src/http/public/ ./dist/http/ -r && cp ./src/http/views/ ./dist/http/ -r && cp README.md ./dist/http/"

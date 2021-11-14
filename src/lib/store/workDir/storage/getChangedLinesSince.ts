@@ -9,7 +9,7 @@ import { getLogFile } from './getLogFile';
 
   * @returns Array of changed lines
    */
-const getChangedLinesSince = (sinceDate: Date): string[] => {
+export const getChangedLinesSince = (sinceDate: Date): string[] => {
   let allLines: string[] = [];
   const logFile = getLogFile();
   try {
@@ -43,5 +43,3 @@ const getChangedLinesSince = (sinceDate: Date): string[] => {
   });
   return changedLines;
 };
-
-export { getChangedLinesSince };

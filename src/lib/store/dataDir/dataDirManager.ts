@@ -14,7 +14,7 @@ export const dataDirManager: DataDirManager = {
     // processes loading the data directory at the same time.
     const storeLastSyncDate = store.syncDate;
     store.syncDate = dataDirModificationDate;
-    const files = findFilesInDir(config.dataDir);
+    const relativeFilePaths = findFilesInDir(config.dataDir);
     const startDate = Date.now();
 
     let updatedFiles: string[] = [];
@@ -36,23 +36,26 @@ export const dataDirManager: DataDirManager = {
 
     // Clear all file cache so new cache data doesn't contain any stale data or file.
     if (!options.incremental) {
-      cache.reset('file');
+      cache.bin('file').clear();
     }
 
     // Add all files, one by one, taking cache option into account.
     const updatedFilesIsEmpty = updatedFiles.length === 0;
-    files.forEach(file => {
-      store.add(config.dataDir, file, {
+    relativeFilePaths.forEach(relativeFilePath => {
+      store.add(relativeFilePath, {
         useStage: true,
-        useCache: !updatedFilesIsEmpty && !updatedFiles.includes(file),
+        useCache:
+          !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
       });
     });
 
     store.promoteStage();
-    cache.reset('query');
+    cache.bin('query').clear();
 
     const endDate = Date.now();
-    logger.info(`${files.length} files loaded in ${endDate - startDate}ms.`);
+    logger.info(
+      `${relativeFilePaths.length} files loaded in ${endDate - startDate}ms.`,
+    );
   },
 
   update: () => {
@@ -72,7 +75,7 @@ export const dataDirManager: DataDirManager = {
           store.update(config.dataDir, file),
         );
         changedFiles.deleted.forEach(file => store.remove(file));
-        cache.reset('query');
+        cache.bin('query').clear();
       } else {
         logger.debug(
           `Data dir up to date. Current data loaded at ${store.syncDate.toISOString()} and last updated at ${dataDirModificationDate.toISOString()}`,

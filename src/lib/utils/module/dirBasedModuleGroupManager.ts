@@ -33,6 +33,7 @@ import { ModuleGroupManager, ModuleInfo } from './module.types';
  * for those kind of directories.
  */
 export const dirBasedModuleGroupManager = <ModuleType>(
+  // Key needs to be explictly defined to make TypeScript happy.
   key: 'hook' | 'query',
 ): ModuleGroupManager<ModuleType> => {
   /**

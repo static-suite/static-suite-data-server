@@ -27,7 +27,7 @@ describe('QueryRunner test', () => {
 
   describe('run', () => {
     it('Returns query data', () => {
-      cache.reset('query');
+      cache.bin('query').clear();
       const queryResponse = queryRunner.run('query1.query', {
         x: 'x',
         y: '33',

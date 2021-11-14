@@ -1,3 +1,6 @@
+/**
+ * A manager for the data dir from Static Suite.
+ */
 export type DataDirManager = {
   /**
    * Loads all files inside the data directory into the store.

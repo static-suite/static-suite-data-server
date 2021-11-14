@@ -8,14 +8,15 @@ import { queryManager } from './queryManager';
 import {
   QueryRunner,
   CacheStatus,
-  QueryResponse,
+  QuerySuccessfulResponse,
   QueryErrorResponse,
+  QueryModuleResult,
 } from './query.types';
 
 let count = 0;
 
 /**
- * CReates a QueryErrorResponse object ready to be returned to clients.
+ * Creates a QueryErrorResponse object ready to be returned to clients.
  *
  * @param message - Error message
  *
@@ -28,34 +29,8 @@ const createErrorResponse = (message: string): QueryErrorResponse => {
   return { error: message };
 };
 
-/**
- * A service to handle the execution of queries
- */
 export const queryRunner: QueryRunner = {
-  /**
-   * Runs a query and returns its results with metadata.
-   *
-   * @remarks
-   * It checks several validations before a query is run, and then it tries to get
-   * the query result from cache. If cache is empty, query is executed and saved
-   * in the cache.
-   *
-   * It logs an error and throws an exception if any problem occurs during the
-   * query execution.
-   *
-   * @param queryId - ID (filename without extension and suffix) of the query
-   * to be executed.
-   * @param args - Optional object with query arguments.
-   *
-   * @returns The result of the query as a JSON object with data and metadata keys.
-   *
-   * @throws
-   * Exception thrown if any problem occurs during the query execution.
-   */
-  run: (
-    queryId: string,
-    args: Record<string, string>,
-  ): QueryResponse | QueryErrorResponse => {
+  run: (queryId, args): QuerySuccessfulResponse | QueryErrorResponse => {
     if (!config.queryDir) {
       return createErrorResponse('No query directory ("queryDir") configured');
     }
@@ -75,7 +50,7 @@ export const queryRunner: QueryRunner = {
     // Implement a query cache.
     const cacheId = `${queryId}--${argsString}`;
     let isCacheMiss = false;
-    const queryCache = cache.bin('query');
+    const queryCache = cache.bin<QueryModuleResult>('query');
     let queryResult = RunMode.PROD && queryCache.get(cacheId);
     if (!queryResult) {
       try {
@@ -84,7 +59,10 @@ export const queryRunner: QueryRunner = {
           data: store.data,
           args,
         });
-        queryResult = queryResponse?.result;
+        queryResult = {
+          result: queryResponse?.result,
+          contentType: queryResponse?.contentType || 'application/json',
+        };
         isCacheMiss = true;
         if (
           config.runMode === RunMode.PROD &&
@@ -101,28 +79,19 @@ export const queryRunner: QueryRunner = {
       }
     }
     const execTimeMs = (microtime.now() - startDate) / 1000;
-    const response: QueryResponse = {
-      data: queryResult,
+    const response: QuerySuccessfulResponse = {
+      data: queryResult.result,
       metadata: {
-        contentType: 'application/json',
+        contentType: queryResult?.contentType || 'application/json',
         execTimeMs,
-        // queriesPerSecond: Math.round(1000 / execTimeMs),
         cache: isCacheMiss ? CacheStatus.MISS : CacheStatus.HIT,
       },
     };
-    if (queryResult && Array.isArray(queryResult)) {
-      response.metadata.num = queryResult.length;
-    }
 
     logger.debug(`#${count} Query "${queryId}" took ${execTimeMs} ms.`);
 
     return response;
   },
 
-  /**
-   * Gets number of executed queries.
-   *
-   * @returns Number of executed queries.
-   */
   getCount: (): number => count,
 };

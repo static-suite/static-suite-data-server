@@ -1,4 +1,4 @@
-type CacheBin<Type> = Map<string, Type>;
+export type CacheBin<Type> = Map<string, Type>;
 
 const data = new Map<string, CacheBin<any>>();
 
@@ -39,17 +39,9 @@ export const cache = {
   },
 
   /**
-   * Gets the keys of all available cache bins.
+   * Gets an array of keys of all available cache bins.
    *
    * @returns An array of cache bin keys.
    */
   keys: (): string[] => Array.from(data.keys()),
-
-  /**
-   * Resets a cache bin, clearing its contents.
-   *
-   * @param binId - The id of the bin.
-   * @returns  The cleared cache bin.
-   */
-  reset: <Type>(binId: string): CacheBin<Type> => initBin<Type>(binId),
 };

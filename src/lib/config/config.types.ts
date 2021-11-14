@@ -16,3 +16,28 @@ export type ConfigOptions = {
   hookDir?: string;
   runMode: RunMode;
 };
+
+/**
+ * Non-sanitized configuration options.
+ *
+ * @remarks
+ * Options received by Data Server before validating them. They are the same as
+ * {@link ConfigOptions} but with an optional runMode.
+ *
+ * @see {@link ConfigOptions}
+ */
+export type NonSanitizedConfigOptions = OptionalProps<ConfigOptions, 'runMode'>;
+
+/**
+ * Makes a property from a type optional.
+ */
+export type OptionalProps<Type extends unknown, Key extends keyof Type> = {
+  [TK in keyof Type]: TK extends Key ? Optional<Type[TK]> : Type[TK];
+};
+
+/**
+ * Makes all properties of a type optional.
+ */
+export type Optional<Type> = {
+  [Property in keyof Type]+?: Type[Property];
+};

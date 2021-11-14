@@ -1,4 +1,39 @@
-type StoreAddOptions = {
+import { Json } from '@lib/utils/string/string.types';
+import { JSON_ITEMS, MAIN, VARIANTS } from './store.constants';
+
+/**
+ * The structure of a leaf inside the data store.
+ */
+export type StoreDataLeaf = {
+  /**
+   * An object containing any kind of data inside: other leafs, JSON items, strings, arrays, etc
+   */
+  [key: string]: Json | string | Array<any> | StoreDataLeaf;
+
+  /**
+   * An object containing JSON items, grouped by main or variant key.
+   */
+  [JSON_ITEMS]: {
+    /**
+     * An array of main JSON items.
+     */
+    [MAIN]: Json[];
+    /**
+     * An object containing all of variant JSON items, keyed by variant key.
+     */
+    [VARIANTS]: {
+      /**
+       * An array of variant JSON items, keyed by variant key.
+       */
+      [key: string]: Json[];
+    };
+  };
+};
+
+/**
+ * Options for the store.add() function. @see {@link Store#add}
+ */
+export type StoreAddOptions = {
   /**
    * Flag to add data to a temporary "store.stage" that will later replace "store.data".
    */
@@ -10,6 +45,9 @@ type StoreAddOptions = {
   useCache: boolean;
 };
 
+/**
+ * The manager that handles the store data.
+ */
 export type Store = {
   /**
    * Date to tell when was the store last synced.
@@ -63,16 +101,20 @@ export type Store = {
    *                all variants inside that directory.
    *
    * @example
+   * ```
    * // Find articles that contain "foo" inside their title.
    * const results = store.data.en.entity.node.article._json.main.filter(
    *    article =\> article.data.content.title.indexOf('foo') !== 1
    * );
+   * ```
    *
    * @example
+   * ```
    * // Find "teaser" article variants that contain "foo" inside their title.
    * const results = store.data.en.entity.node.article._json.variant.teaser.filter(
    *    article =\> article.data.content.title.indexOf('foo') !== 1
    * );
+   * ```
    */
   data: any;
 
@@ -117,13 +159,12 @@ export type Store = {
    *
    * It invokes "process file" and "store add" hooks.
    *
-   * @param dataDir - Path to the data directory where files are stored.
-   * @param file - Relative path, inside dataDir, to the file to be added.
+   * @param relativeFilepath - Relative file path, inside dataDir, to the file to be added.
    * @param options - Configuration options.
    *
    * @returns The store object, to allow chaining.
    */
-  add(dataDir: string, file: string, options?: StoreAddOptions): Store;
+  add(relativeFilepath: string, options?: StoreAddOptions): Store;
 
   /**
    * Removes a file from the store.

@@ -2,7 +2,7 @@ import fs from 'fs';
 import { resolve } from 'path';
 import { RunMode } from '@lib/dataServer.types';
 import { hasKey } from '@lib/utils/object';
-import { ConfigOptions } from './config.types';
+import { ConfigOptions, NonSanitizedConfigOptions } from './config.types';
 import {
   InvalidRunMode,
   MissingDirectory,
@@ -18,7 +18,7 @@ const config: ConfigOptions = Object.create(null); // no inherited properties
  * It validates provided configuration and returns a sanitized and immutable
  * configuration object. It throws several errors if validation is not passing.
  *
- * @param options - Configuration options
+ * @param options - Configuration options, @see {@link ConfigOptions}
  *
  * @returns - The sanitized and immutable configuration object.
  *
@@ -32,7 +32,7 @@ const config: ConfigOptions = Object.create(null); // no inherited properties
  * @throws {@link InvalidRunMode}
  * Exception thrown if runMode is not valid.
  */
-const setConfig = (options: ConfigOptions): ConfigOptions => {
+const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
   const localOptions = options;
   // Check that required options are provided.
   // Since this method is publicly accessible at runtime, it is not
@@ -79,7 +79,7 @@ const setConfig = (options: ConfigOptions): ConfigOptions => {
   }
 
   if (!localOptions.runMode) {
-    throw new MissingRequiredOption('runMode');
+    localOptions.runMode = RunMode.PROD;
   }
   if (!Object.values(RunMode).includes(localOptions.runMode)) {
     throw new InvalidRunMode(localOptions.runMode);

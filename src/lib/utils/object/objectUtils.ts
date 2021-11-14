@@ -1,4 +1,4 @@
-type ObjectType = Record<string, unknown>;
+export type ObjectType = Record<string, unknown>;
 
 /**
  * Checks if an object is empty (i.e.- contains zero keys)

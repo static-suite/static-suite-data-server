@@ -46,7 +46,7 @@ export const initWatcher = (): void => {
     }
 
     // In both cases, clear the query cache, which is now stale.
-    cache.reset('query');
+    cache.bin('query').clear();
     logger.debug(`Query cache cleared`);
   };
 
