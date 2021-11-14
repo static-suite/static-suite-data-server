@@ -19,16 +19,19 @@ const isJson = (filepath: string): boolean => filepath.substr(-5) === '.json';
 /**
  * Reads a file and logs an error on failure.
  *
- * @param absoluteFilePath - Absolute path to the file.
+ * @param filePath - A path to a file.
  *
  * @returns The file contents as a string if file is found, or null otherwise.
  */
-export const readFile = (absoluteFilePath: string): string | null => {
+export const readFile = (filePath: string): string | null => {
   let contents = null;
   try {
-    contents = fs.readFileSync(absoluteFilePath, 'utf8');
+    contents = fs.readFileSync(filePath, 'utf8');
   } catch (error) {
-    logger.error(`Error reading file "${absoluteFilePath}": ${error}`);
+    // When an error is thrown, contents is undefined, so ensure
+    // it is converted to null.
+    contents = null;
+    logger.error(`Error reading file "${filePath}": ${error}`);
   }
   return contents;
 };
@@ -36,19 +39,19 @@ export const readFile = (absoluteFilePath: string): string | null => {
 /**
  * Gets raw and JSON parsed content from a file.
  *
- * @param absoluteFilePath - Relative path to the file.
+ * @param filePath - A path to a file.
  *
  * @returns Object with two properties, "raw" and "json", which contain
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-export const getFileContent = (absoluteFilePath: string): FileType => {
-  const raw = readFile(absoluteFilePath);
+export const getFileContent = (filePath: string): FileType => {
+  const raw = readFile(filePath);
   let json = null;
-  if (isJson(absoluteFilePath) && raw) {
+  if (isJson(filePath) && raw) {
     json = parseJsonString(raw);
     if (!json) {
-      logger.error(`Error getting JSON from file "${absoluteFilePath}"`);
+      logger.error(`Error getting JSON from file "${filePath}"`);
     }
   }
   return { raw, json };
@@ -88,7 +91,7 @@ export const findFilesInDir = (
 export const getModificationDate = (filePath: string): Date | null => {
   let modificationDate = null;
   try {
-    modificationDate = fs.statSync(filePath).mtime;
+    modificationDate = new Date(fs.statSync(filePath).mtime);
   } catch (e) {
     logger.error(`Error getting modification date for ${`path`}: ${e}`);
   }
