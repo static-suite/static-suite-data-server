@@ -5,7 +5,7 @@ import { logger } from '@lib/utils/logger';
 import routes from './routes';
 
 export const httpServer = {
-  start: (port: Number) => {
+  start: (port: number) => {
     const app = express();
     app.use(express.static(`${__dirname}/public`));
     app.use(cors());
@@ -13,9 +13,9 @@ export const httpServer = {
     app.set('view engine', 'pug');
 
     app.use(routes);
-    
+
     app.listen(port, () => {
-      logger.info(`Data server listening at http://localhost:${port}`);
+      logger.info(`Data Server listening at http://localhost:${port}`);
     });
   },
 };
