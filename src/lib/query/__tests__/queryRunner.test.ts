@@ -8,7 +8,7 @@ import { queryRunner } from '../queryRunner';
 import { queryManager } from '../queryManager';
 
 beforeEach(() => {
-  config.queryDir = resolve('src/mocks/fixtures/query');
+  config.queryDir = resolve('src/__tests__/fixtures/query');
   config.runMode = RunMode.PROD;
 });
 
@@ -18,9 +18,10 @@ describe('QueryRunner test', () => {
   describe('getAvailableQueryIds', () => {
     it('Returns correct queries ids from fixtures', () => {
       expect(Array.from(queryManager.getModuleGroupInfo().keys())).toEqual([
-        'error.query',
-        'query1.query',
-        'query2.query',
+        'error',
+        'noHandler',
+        'query1',
+        'query2',
       ]);
     });
   });
@@ -28,7 +29,7 @@ describe('QueryRunner test', () => {
   describe('run', () => {
     it('Returns query data', () => {
       cache.bin('query').clear();
-      const queryResponse = queryRunner.run('query1.query', {
+      const queryResponse = queryRunner.run('query1', {
         x: 'x',
         y: '33',
       });
@@ -39,7 +40,7 @@ describe('QueryRunner test', () => {
     });
 
     it('Returns query data from cache', () => {
-      const queryResponse = queryRunner.run('query1.query', {
+      const queryResponse = queryRunner.run('query1', {
         x: 'x',
         y: '33',
       });
@@ -53,7 +54,7 @@ describe('QueryRunner test', () => {
     it('Logs error when query fails', () => {
       logger.error = jest.fn();
       try {
-        queryRunner.run('error.query', {});
+        queryRunner.run('error', {});
       } catch (e) {
         // none
       }

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
+import { config } from '@lib/config';
 import { logger } from '@lib/utils/logger';
+import { resolve } from 'path';
 import { moduleManager } from '../moduleManager';
 
 /* const mockModuleHandler = () => {
@@ -10,11 +12,12 @@ import { moduleManager } from '../moduleManager';
     .mockImplementation((modulePath: string) => originalLoad(modulePath));
 }; */
 
-const dummyModulePath = '../../../mocks/dummyModule';
+const dummyModulePath = resolve('src/__tests__/mocks/dummyModule.query');
 
 beforeEach(() => {
   logger.error = jest.fn();
   jest.resetModules();
+  config.queryDir = resolve('src/__tests__/mocks/');
 });
 
 describe('moduleHandler test', () => {
@@ -102,6 +105,7 @@ describe('moduleHandler test', () => {
         const {
           moduleManager: isolatedModuleManager,
         } = require('../moduleManager');
+
         const { dummyObject: dummyObject1 } =
           isolatedModuleManager.get(dummyModulePath);
         isolatedModuleManager.removeAll(/dummyModule/);

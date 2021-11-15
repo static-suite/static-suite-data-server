@@ -1,18 +1,30 @@
 import { RunMode } from '@lib/dataServer.types';
+import { resolve } from 'path';
 import { setConfig } from '../config';
-import { ConfigOptions } from '../config.types';
+import { ConfigOptions, NonSanitizedConfigOptions } from '../config.types';
+import {
+  InvalidRunMode,
+  MissingDirectory,
+  MissingRequiredOption,
+} from '../error';
 
 describe('Config test', () => {
   describe('setConfig', () => {
     it('Returns correct config', () => {
-      const config: ConfigOptions = {
-        dataDir: 'src/mocks/fixtures/data/',
-        workDir: 'src/mocks/fixtures/work/',
-        queryDir: 'src/mocks/fixtures/query',
-        hookDir: 'src/mocks/fixtures/hook',
-        runMode: RunMode.DEV,
+      const testConfig: NonSanitizedConfigOptions = {
+        dataDir: 'src/__tests__/fixtures/data/',
+        workDir: 'src/__tests__/fixtures/work/',
+        queryDir: 'src/__tests__/fixtures/query',
+        hookDir: 'src/__tests__/fixtures/hook',
       };
-      expect(setConfig(config)).toEqual(config);
+      const expectedconfig = {
+        dataDir: resolve(testConfig.dataDir),
+        workDir: resolve(<string>testConfig.workDir),
+        queryDir: resolve(<string>testConfig.queryDir),
+        hookDir: resolve(<string>testConfig.hookDir),
+        runMode: 'prod',
+      };
+      expect(setConfig(testConfig)).toEqual(expectedconfig);
     });
 
     it('Required option dataDir returns expected error', () => {
@@ -21,31 +33,17 @@ describe('Config test', () => {
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      expect(() => setConfig(config)).toThrowError(
-        'Required option not provided: "dataDir".',
-      );
-    });
-    it('Required option runMode returns expected error', () => {
-      const config = {
-        dataDir: 'src/mocks/fixtures/data/',
-      };
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      expect(() => setConfig(config)).toThrowError(
-        'Required option not provided: "runMode"',
-      );
+      expect(() => setConfig(config)).toThrowError(MissingRequiredOption);
     });
 
     it('wrong option runMode returns expected error', () => {
       const config = {
-        dataDir: 'src/mocks/fixtures/data/',
+        dataDir: 'src/__tests__/fixtures/data/',
         runMode: 'xx',
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      expect(() => setConfig(config)).toThrowError(
-        'Invalid value provided for "runMode": ',
-      );
+      expect(() => setConfig(config)).toThrowError(InvalidRunMode);
     });
 
     it('Wrong dataDir returns expected error', () => {
@@ -53,42 +51,63 @@ describe('Config test', () => {
         dataDir: 'non-existent-dir',
         runMode: RunMode.DEV,
       };
-      expect(() => setConfig(config)).toThrowError(
-        'Cannot find dataDir directory: ',
-      );
+
+      expect.assertions(2);
+
+      try {
+        setConfig(config);
+      } catch (error) {
+        expect(error).toBeInstanceOf(MissingDirectory);
+        expect(error).toHaveProperty('directoryId', 'dataDir');
+      }
     });
 
     it('Wrong workDir returns expected error', () => {
       const config: ConfigOptions = {
-        dataDir: 'src/mocks/fixtures/data',
+        dataDir: 'src/__tests__/fixtures/data/',
         workDir: 'non-existent-dir',
         runMode: RunMode.DEV,
       };
-      expect(() => setConfig(config)).toThrowError(
-        'Cannot find workDir directory: ',
-      );
+      expect.assertions(2);
+
+      try {
+        setConfig(config);
+      } catch (error) {
+        expect(error).toBeInstanceOf(MissingDirectory);
+        expect(error).toHaveProperty('directoryId', 'workDir');
+      }
     });
 
     it('Wrong queryDir returns expected error', () => {
       const config: ConfigOptions = {
-        dataDir: 'src/mocks/fixtures/data',
+        dataDir: 'src/__tests__/fixtures/data/',
         queryDir: 'non-existent-dir',
         runMode: RunMode.DEV,
       };
-      expect(() => setConfig(config)).toThrowError(
-        'Cannot find queryDir directory: ',
-      );
+      expect.assertions(2);
+
+      try {
+        setConfig(config);
+      } catch (error) {
+        expect(error).toBeInstanceOf(MissingDirectory);
+        expect(error).toHaveProperty('directoryId', 'queryDir');
+      }
     });
 
-    it('Wrong postProcessor returns expected error', () => {
-      const config: ConfigOptions = {
-        dataDir: 'src/mocks/fixtures/data',
-        hookDir: 'non-existent-file',
+    it('Wrong hookDir returns expected error', () => {
+      const config = {
+        dataDir: 'src/__tests__/fixtures/data/',
+        hookDir: 'non-existent-dir',
         runMode: RunMode.DEV,
       };
-      expect(() => setConfig(config)).toThrowError(
-        'Cannot find postProcessor module: ',
-      );
+      expect.assertions(2);
+
+      try {
+        setConfig(config);
+      } catch (error) {
+        expect(error).toBeInstanceOf(MissingDirectory);
+        expect(error).toHaveProperty('directoryId', 'hookDir');
+      }
     });
   });
 });
