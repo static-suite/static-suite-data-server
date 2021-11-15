@@ -75,7 +75,7 @@ export type QueryModule = {
    *
    * @param options - An object with options for the query: data and args
    */
-  queryHandler(options: {
+  default(options: {
     /**
      * Store data to be used in the query
      */
@@ -126,13 +126,13 @@ export enum CacheStatus {
  *
  * @remarks
  * It takes the results from a QueryModule#queryHandler, and wraps them into an
- * structure with metadata. @see {@link QueryModule#queryHandler}
+ * structure with metadata. @see {@link QueryModule#default}
  *
  * @public
  */
 export type QuerySuccessfulResponse = {
   /**
-   * Data returned by the query. @see {@link QueryModule#queryHandler}
+   * Data returned by the query. @see {@link QueryModule#default}
    */
   data: any;
 
@@ -167,7 +167,7 @@ export type QuerySuccessfulResponse = {
  *
  * @remarks
  * It takes an string from QueryModule#queryHandler, and wraps them into an
- * structure with metadata. @see {@link QueryModule#queryHandler}
+ * structure with metadata. @see {@link QueryModule#default}
  *
  * @public
  */

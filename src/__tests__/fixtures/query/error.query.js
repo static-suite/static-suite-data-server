@@ -3,4 +3,4 @@ const error = () => {
   throw new Error('oops');
 };
 
-module.exports.queryHandler = error;
+module.exports.default = error;

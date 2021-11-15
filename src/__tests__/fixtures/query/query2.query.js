@@ -11,4 +11,4 @@ const query2 = () => {
   };
 };
 
-module.exports.queryHandler = query2;
+module.exports.default = query2;

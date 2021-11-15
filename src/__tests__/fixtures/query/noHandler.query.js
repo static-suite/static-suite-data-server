@@ -11,4 +11,4 @@ const query2 = () => {
   };
 };
 
-module.exports.query = query2;
+module.exports = query2;

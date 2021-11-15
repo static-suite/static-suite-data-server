@@ -55,7 +55,7 @@ export const queryRunner: QueryRunner = {
     if (!queryResult) {
       try {
         const queryModule = queryModuleInfo.getModule();
-        const queryResponse = queryModule.queryHandler({
+        const queryResponse = queryModule.default({
           data: store.data,
           args,
         });

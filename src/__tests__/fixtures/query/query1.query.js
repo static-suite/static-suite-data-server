@@ -12,4 +12,4 @@ const query1 = ({ args }) => {
   };
 };
 
-module.exports.queryHandler = query1;
+module.exports.default = query1;
