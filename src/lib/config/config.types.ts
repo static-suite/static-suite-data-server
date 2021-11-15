@@ -2,18 +2,31 @@ import { RunMode } from '@lib/dataServer.types';
 
 /**
  * Configuration options.
- *
- * @param dataDir - Path to the directory where data is stored.
- * @param workDir - Path to the directory where work data is stored. Optional.
- * @param queryDir - Path to the directory where queries are stored. Optional.
- * @param hookDir - Path to the directory where hooks are stored. Optional.
- * @param runMode - Run mode (dev or prod).
  */
 export type ConfigOptions = {
+  /**
+   * Path to the directory where data is stored.
+   */
   dataDir: string;
+
+  /**
+   * Path to the directory where work data is stored. Optional.
+   */
   workDir?: string;
+
+  /**
+   * Path to the directory where queries are stored. Optional.
+   */
   queryDir?: string;
+
+  /**
+   * Path to the directory where hooks are stored. Optional.
+   */
   hookDir?: string;
+
+  /**
+   * Run mode (dev or prod).
+   */
   runMode: RunMode;
 };
 
@@ -26,18 +39,29 @@ export type ConfigOptions = {
  *
  * @see {@link ConfigOptions}
  */
-export type NonSanitizedConfigOptions = OptionalProps<ConfigOptions, 'runMode'>;
+export type NonSanitizedConfigOptions = {
+  /**
+   * Path to the directory where data is stored.
+   */
+  dataDir: string;
 
-/**
- * Makes a property from a type optional.
- */
-export type OptionalProps<Type extends unknown, Key extends keyof Type> = {
-  [TK in keyof Type]: TK extends Key ? Optional<Type[TK]> : Type[TK];
-};
+  /**
+   * Path to the directory where work data is stored. Optional.
+   */
+  workDir?: string;
 
-/**
- * Makes all properties of a type optional.
- */
-export type Optional<Type> = {
-  [Property in keyof Type]+?: Type[Property];
+  /**
+   * Path to the directory where queries are stored. Optional.
+   */
+  queryDir?: string;
+
+  /**
+   * Path to the directory where hooks are stored. Optional.
+   */
+  hookDir?: string;
+
+  /**
+   * Run mode (dev or prod).
+   */
+  runMode?: RunMode;
 };
