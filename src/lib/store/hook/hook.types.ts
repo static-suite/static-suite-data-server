@@ -8,11 +8,6 @@ import { FileType } from '@lib/utils/fs/fs.types';
  * Since hooks are user-land modules, they do not have access to configuration
  * or any other part of the Data Server. All data they need to function must be
  * passed as parameters.
- *
- * @param dataDir - Path to the data directory.
- * @param relativeFilepath - Relative file path inside the data dir.
- * @param fileContent - Optional file contents, an object with "raw" and "json" members.
- * @param store - The data store.
  */
 export type HookOptions = {
   /**
@@ -57,7 +52,7 @@ export type HookModule = {
    *
    * @returns The file contents, and object with "raw" and "json" members.
    */
-  processFile?(options: HookOptions): FileType;
+  onProcessFile?(options: HookOptions): FileType;
 
   /**
    * A hook executed after a file is added into the store.
@@ -68,7 +63,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link HookOptions}
    */
-  storeAdd?(options: HookOptions): void;
+  onStoreAdd?(options: HookOptions): void;
 
   /**
    * A hook executed after a file is removed from the store.
@@ -79,5 +74,5 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link HookOptions}
    */
-  storeRemove?(options: HookOptions): void;
+  onStoreRemove?(options: HookOptions): void;
 };

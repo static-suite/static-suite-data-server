@@ -142,8 +142,8 @@ export const store: Store = {
     const hookModulesInfo = hookManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
-      if (hookModule.processFile) {
-        fileContent = hookModule.processFile({
+      if (hookModule.onProcessFile) {
+        fileContent = hookModule.onProcessFile({
           dataDir: config.dataDir,
           relativeFilepath,
           fileContent,
@@ -192,8 +192,8 @@ export const store: Store = {
     // Invoke "store add" hook.
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
-      if (hookModule.storeAdd) {
-        hookModule.storeAdd({
+      if (hookModule.onStoreAdd) {
+        hookModule.onStoreAdd({
           dataDir: config.dataDir,
           relativeFilepath,
           fileContent,
@@ -231,8 +231,8 @@ export const store: Store = {
     const hookModulesInfo = hookManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
-      if (hookModule.storeRemove) {
-        hookModule.storeRemove({
+      if (hookModule.onStoreRemove) {
+        hookModule.onStoreRemove({
           dataDir: config.dataDir,
           relativeFilepath,
           store,
