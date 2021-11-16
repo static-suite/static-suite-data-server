@@ -29,7 +29,7 @@ const validate = (modulePath: string) => {
     (!!config.queryDir && modulePath.startsWith(config.queryDir)) ||
     (!!config.hookDir && modulePath.startsWith(config.hookDir));
   if (!isValidModule) {
-    const errorMessage = `Module "${modulePath}" is not valid. Only query and hook modules can be managed by moduleManager.`;
+    const errorMessage = `Module "${modulePath}" is not valid. Only query and hook modules can be managed by moduleManager. ${config.queryDir}`;
     logger.error(errorMessage);
     throw new Error(errorMessage);
   }

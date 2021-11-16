@@ -105,7 +105,7 @@ describe('moduleHandler test', () => {
         const {
           moduleManager: isolatedModuleManager,
         } = require('../moduleManager');
-
+        config.queryDir = resolve('src/__tests__/mocks/');
         const { dummyObject: dummyObject1 } =
           isolatedModuleManager.get(dummyModulePath);
         isolatedModuleManager.removeAll(/dummyModule/);

@@ -82,6 +82,10 @@
       "node_modules",
       "src"
     ],
+    "testPathIgnorePatterns": [
+      "src/__tests__/fixtures/*",
+      "src/__tests__/mocks/*"
+    ],
     "moduleNameMapper": {
       "^@bin/(.*)$": "<rootDir>/src/bin/$1",
       "^@http/(.*)$": "<rootDir>/src/http/$1",

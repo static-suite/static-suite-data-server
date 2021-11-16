@@ -11,7 +11,7 @@ describe('workDir storage getDataFromLogLine test', () => {
         file: {
           id: '10',
           label: 'Give it a go and grow your own herbs',
-          path: 'en/entity/node/article/10.json',
+          relativePath: 'en/entity/node/article/10.json',
         },
         operation: 'write',
         uniqueId: '2021-08-16_07-12-45.771095__5959',

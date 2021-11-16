@@ -4,7 +4,7 @@ import { workDirHelper } from '../workDirHelper';
 
 describe('workDirHelper test', () => {
   describe('getChangedFilesSince', () => {
-    config.workDir = resolve('src/mocks/fixtures/work');
+    config.workDir = resolve('src/__tests__/fixtures/work');
 
     it(`Gets modified and deleted files from static-suite log`, () => {
       expect(

@@ -4,7 +4,7 @@ import { getChangedLinesSince } from '../getChangedLinesSince';
 
 describe('workDir storage getChangedLinesSince test', () => {
   describe('getChangedLinesSince', () => {
-    config.workDir = resolve('src/mocks/fixtures/work');
+    config.workDir = resolve('src/__tests__/fixtures/work');
 
     it(`Gets lines of log since given date`, () => {
       expect(getChangedLinesSince(new Date('2021-08-01'))).toEqual([
