@@ -1,3 +1,4 @@
+import { getObjectValue } from '..';
 import { isEmptyObject, hasKey, deepClone } from '../objectUtils';
 
 describe('Objsct utils test', () => {
@@ -26,6 +27,18 @@ describe('Objsct utils test', () => {
       expect(clonedObject).toStrictEqual(anObject);
       anotherObject.z = 22;
       expect(clonedObject).not.toStrictEqual(anObject);
+    });
+  });
+  describe('getObjectValue', () => {
+    const testObject = { x: { y: { z: 'xx' } } };
+    it('gets object value with default separator', () => {
+      expect(getObjectValue(testObject, 'x.y.z')).toBe('xx');
+    });
+    it('gets object value with custom separator', () => {
+      expect(getObjectValue(testObject, 'x/y/z', '/')).toBe('xx');
+    });
+    it('gets undefined when path does not exist', () => {
+      expect(getObjectValue(testObject, 'x.z.z')).toBeUndefined();
     });
   });
 });

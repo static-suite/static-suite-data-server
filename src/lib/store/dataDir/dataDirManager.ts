@@ -5,6 +5,7 @@ import { logger } from '@lib/utils/logger';
 import { workDirHelper } from '@lib/store/workDir';
 import { cache } from '@lib/utils/cache';
 import { DataDirManager } from './dataDir.types';
+import { storeManager } from '../storeManager';
 
 export const dataDirManager: DataDirManager = {
   load: (options = { incremental: false }) => {
@@ -22,9 +23,7 @@ export const dataDirManager: DataDirManager = {
     if (options.incremental) {
       if (storeLastSyncDate) {
         // No need to support deleted files, since we have all files
-        // inside the dataDir (and deleted ones are already gone) and
-        // we are using store's stage, which avoids mixing data from current
-        // store with data from this operation.
+        // inside the dataDir (and deleted ones are already gone).
         ({ updated: updatedFiles } =
           workDirHelper.getChangedFilesSince(storeLastSyncDate));
 
@@ -42,14 +41,13 @@ export const dataDirManager: DataDirManager = {
     // Add all files, one by one, taking cache option into account.
     const updatedFilesIsEmpty = updatedFiles.length === 0;
     relativeFilePaths.forEach(relativeFilePath => {
-      store.add(relativeFilePath, {
-        useStage: true,
+      storeManager.add(relativeFilePath, {
         useCache:
           !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
       });
     });
 
-    store.promoteStage();
+    storeManager.includeParse();
     cache.bin('query').clear();
 
     const endDate = Date.now();
@@ -71,10 +69,14 @@ export const dataDirManager: DataDirManager = {
         );
         const changedFiles =
           workDirHelper.getChangedFilesSince(storeLastSyncDate);
-        changedFiles.updated.forEach(file =>
-          store.update(config.dataDir, file),
-        );
-        changedFiles.deleted.forEach(file => store.remove(file));
+        changedFiles.updated.forEach(file => {
+          storeManager.update(file);
+          const fileContent = file
+            .split('/')
+            .reduce((prev: any, curr: any) => prev && prev[curr], store.data);
+          storeManager.includeParseFile(fileContent);
+        });
+        changedFiles.deleted.forEach(file => storeManager.remove(file));
         cache.bin('query').clear();
       } else {
         logger.debug(

@@ -29,7 +29,6 @@ const data = (req: Request, res: Response) => {
   if (storeItem && (storeItem.__FILENAME__ || typeof storeItem === 'string')) {
     return serveDataFile(req, res, storeItem);
   }
-
   const storePath = storePathParts
     ? storePathParts.reduce((prev, curr) => {
         if (curr.match(/^[_a-zA-Z0-9]+$/) && !curr.match(/^[0-9]+$/)) {
@@ -38,6 +37,32 @@ const data = (req: Request, res: Response) => {
         return `${prev}['${curr}']`;
       }, '')
     : '';
+  const breadcrumbs = storePathParts
+    ? storePathParts.map((pathPart, index) => ({
+        title: pathPart,
+        url: storePathParts.slice(0, index + 1).join('/'),
+      }))
+    : [];
+
+  if (storeItem && storeItem instanceof Map) {
+    const items: any = [];
+    storeItem.forEach((item, key) => {
+      items.push({
+        name: key,
+        type: typeof item,
+      });
+    });
+    const vars = {
+      base: '',
+      path: storePath,
+      breadcrumbs,
+      items,
+      count: items.length,
+      hasContentInfo: false,
+    };
+
+    return res.render('data', vars);
+  }
 
   const keys = storeItem ? Object.keys(storeItem) : [];
   let hasContentInfo = false;
@@ -72,13 +97,6 @@ const data = (req: Request, res: Response) => {
       info,
     };
   });
-
-  const breadcrumbs = storePathParts
-    ? storePathParts.map((pathPart, index) => ({
-        title: pathPart,
-        url: storePathParts.slice(0, index + 1).join('/'),
-      }))
-    : [];
 
   const vars = {
     base: paramPath ? `${paramPath}/` : '',

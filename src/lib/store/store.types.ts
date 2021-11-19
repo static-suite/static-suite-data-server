@@ -1,5 +1,5 @@
 import { Json } from '@lib/utils/string/string.types';
-import { JSON_ITEMS, MAIN, VARIANTS } from './store.constants';
+import { INDEX, JSON_ITEMS, MAIN, VARIANTS } from './store.constants';
 
 /**
  * The structure of a leaf inside the data store.
@@ -8,7 +8,7 @@ export type StoreDataLeaf = {
   /**
    * An object containing any kind of data inside: other leafs, JSON items, strings, arrays, etc
    */
-  [key: string]: Json | string | Array<any> | StoreDataLeaf;
+  [key: string]: any;
 
   /**
    * An object containing JSON items, grouped by main or variant key.
@@ -30,15 +30,12 @@ export type StoreDataLeaf = {
   };
 };
 
+export type RootStoreDataLeaf = StoreDataLeaf & { [INDEX]: any };
+
 /**
  * Options for the store.add() function. @see {@link Store#add}
  */
 export type StoreAddOptions = {
-  /**
-   * Flag to add data to a temporary "store.stage" that will later replace "store.data".
-   */
-  useStage: boolean;
-
   /**
    * Flag to obtain file data from cache instead of the file system.
    */
@@ -117,12 +114,9 @@ export type Store = {
    * ```
    */
   data: any;
+};
 
-  /**
-   * Temporary object aimed at making changes to data without touching "store.data".
-   */
-  stage: any;
-
+export type StoreManager = {
   /**
    * Adds a file to the store, into a tree structure.
    *
@@ -186,17 +180,22 @@ export type Store = {
    * It removes the object and all its references across the tree structure, and
    * adds it again to the structure.
    *
-   * @param dataDir - Path to the data directory where files are stored.
    * @param file - Relative path, inside dataDir, to the file to be updated.
    *
    * @returns The store object, to allow chaining.
    */
-  update(dataDir: string, file: string): Store;
+  update(file: string): Store;
 
   /**
-   * Promotes data stored in "store.stage" to "store.data".
+   * Parses all static includes (entity, config, locale and custom) from data stored in "store.data".
    *
    * @returns The store object, to allow chaining.
    */
-  promoteStage(): Store;
+  includeParse(): Store;
+  /**
+   * Parses all static includes (entity, config, locale and custom) from one file.
+   *
+   * @returns The store object, to allow chaining.
+   */
+  includeParseFile(json: Json): Store;
 };

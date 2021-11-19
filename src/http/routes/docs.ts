@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import path from 'path';
 import marked from 'marked';
 import { readFile } from '@lib/utils/fs/fsUtils';

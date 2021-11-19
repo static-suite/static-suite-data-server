@@ -31,3 +31,19 @@ export const hasKey = <O>(object: O, key: PropertyKey): key is keyof O => {
  */
 export const deepClone = (object: ObjectType): ObjectType =>
   JSON.parse(JSON.stringify(object));
+
+/**
+ * Gets object property by property path
+ *
+ * @param object - An object
+ *
+ * @returns Value of the path or undefined
+ */
+export const getObjectValue = (
+  object: ObjectType,
+  path: string,
+  separator = '.',
+): any | undefined =>
+  path
+    .split(separator)
+    .reduce((previous: any, current: any) => previous?.[current], object);

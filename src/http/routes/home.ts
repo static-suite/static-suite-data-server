@@ -1,7 +1,6 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
-export const home = (req : Request, res : Response) => {
-  
+export const home = (req: Request, res: Response) => {
   res.render('home', {
     links: {
       '/data': 'Browse all data loaded into the server',

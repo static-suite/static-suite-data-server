@@ -1,3 +1,36 @@
 {
-  "name": "article1"
+  "data": {
+    "content": {
+      "id": "58724",
+      "title": "Título 1",
+      "author": {
+        "entity": {
+          "entityInclude": "en/entity/node/article/article2.json"
+        }
+      },
+      "image": {
+        "entity": {
+          "entityInclude": "en/entity/node/article/article2.json"
+        }
+      },
+      "queryInclude": "lastPublishedContents",
+      "article2CustomInclude": "en/entity/node/article/article2.json",
+      "customInclude": "en/entity/node/article/article2.json",
+      "localeInclude": "en/entity/node/article/article2.json",
+      "configInclude": "en/entity/node/article/article2.json",
+      "thisConfigInclude": "en/entity/node/article/article2.json"
+    }
+  },
+  "metadata": {
+    "includes": [
+      "data.content.author.entity.entityInclude",
+      "data.content.image.entity.entityInclude",
+      "data.content.queryInclude",
+      "data.content.article2CustomInclude",
+      "data.content.customInclude",
+      "data.content.localeInclude",
+      "data.content.configInclude",
+      "data.content.thisConfigInclude"
+    ]
+  }
 }

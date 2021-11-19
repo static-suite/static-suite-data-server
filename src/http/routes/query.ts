@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { dataDirManager } from '@lib/store/dataDir';
-import { queryRunner } from '@lib/query';
-import { queryManager } from '@lib/query';
+import { queryRunner, queryManager } from '@lib/query';
 import {
   QueryErrorResponse,
   QuerySuccessfulResponse,

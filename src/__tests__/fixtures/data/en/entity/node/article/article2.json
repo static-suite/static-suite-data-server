@@ -1,3 +1,7 @@
 {
-  "name": "article2"
+  "data": {
+    "content": {
+      "name": "article2"
+    }
+  }
 }
