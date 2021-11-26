@@ -119,9 +119,7 @@ export const watch = (
       persistent: true,
     });
 
-    // Add event listeners. None of these events need to clear any query cache,
-    // since they only run on dev mode, where caches are disabled. They only
-    // need to rebuild the store if a post processor changes.
+    // Add event listeners.
     watcher.on('ready', () => {
       logger.debug(`Watcher listening for changes on ${paths.join(',')}`);
       watcher
