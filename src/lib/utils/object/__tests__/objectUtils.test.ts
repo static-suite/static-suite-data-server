@@ -1,24 +1,26 @@
 import { isEmptyObject, hasKey, deepClone } from '../objectUtils';
 
-describe('Objsct utils test', () => {
+describe('Object utils test', () => {
   describe('isEmptyObject', () => {
-    it('gets true on empty object', () => {
-      expect(isEmptyObject({})).toBeTruthy();
+    it('returns true for an empty object', () => {
+      expect(isEmptyObject({})).toBe(true);
     });
-    it('gets false on non empty object', () => {
-      expect(isEmptyObject({ x: 1 })).toBeFalsy();
+    it('returns false for a non empty object', () => {
+      expect(isEmptyObject({ x: 1 })).toBe(false);
     });
   });
+
   describe('hasKey', () => {
-    it('gets true on when an object has the key', () => {
-      expect(hasKey({ x: 1 }, 'x')).toBeTruthy();
+    it('returns true if an object has a given key', () => {
+      expect(hasKey({ x: 1 }, 'x')).toBe(true);
     });
-    it('gets false on when an object has not the key', () => {
-      expect(hasKey({ x: 1 }, 'y')).toBeFalsy();
+    it('returns false if an object does not have a given key', () => {
+      expect(hasKey({ x: 1 }, 'y')).toBe(false);
     });
   });
+
   describe('deepClone', () => {
-    it('returns an object equal to the given without references to nested objects', () => {
+    it('returns an object equal to the given one, without references to nested objects', () => {
       const anObject = { x: 1, y: {} };
       const anotherObject = { z: 34 };
       anObject.y = anotherObject;
