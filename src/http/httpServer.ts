@@ -5,7 +5,7 @@ import { logger } from '@lib/utils/logger';
 import routes from './routes';
 
 export const httpServer = {
-  start: (port: number) => {
+  start: (port: number): void => {
     const app = express();
     app.use(express.static(`${__dirname}/public`));
     app.use(cors());

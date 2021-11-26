@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 import { dataDirManager } from '@lib/store/dataDir';
-import { queryRunner } from '@lib/query';
-import { queryManager } from '@lib/query';
+import { queryRunner, queryManager } from '@lib/query';
 import {
   QueryErrorResponse,
   QuerySuccessfulResponse,
 } from '@lib/query/query.types';
 
-const queryIndex = (req: Request, res: Response) => {
+const queryIndex = (req: Request, res: Response): void => {
   const queryIds = Array.from(queryManager.getModuleGroupInfo().keys());
   res.render('queryIndex', {
     queryIds:
@@ -15,7 +14,7 @@ const queryIndex = (req: Request, res: Response) => {
   });
 };
 
-const runQuery = (req: Request, res: Response) => {
+const runQuery = (req: Request, res: Response): void => {
   dataDirManager.update();
   const args: any = req.query;
   const queryId = req.params[0];
@@ -23,7 +22,7 @@ const runQuery = (req: Request, res: Response) => {
     queryRunner.run(queryId, args);
   res.status(200);
   res.set('application/json');
-  return res.send(response);
+  res.send(response);
 };
 
 export { queryIndex, runQuery };
