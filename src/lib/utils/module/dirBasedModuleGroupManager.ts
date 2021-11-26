@@ -33,7 +33,7 @@ import { ModuleGroupManager, ModuleInfo } from './module.types';
  * for those kind of directories.
  */
 export const dirBasedModuleGroupManager = <ModuleType>(
-  // Key needs to be explictly defined to make TypeScript happy.
+  // Key needs to be explicitly defined to make TypeScript happy.
   key: 'hook' | 'query',
 ): ModuleGroupManager<ModuleType> => {
   /**
@@ -46,21 +46,19 @@ export const dirBasedModuleGroupManager = <ModuleType>(
       // Use config here, because outside this function, the config object is not
       // already defined.
       const dir = config[`${key}Dir`];
-      if (dir) {
-        if (moduleGroupInfo.size === 0) {
-          // For each detected module, get all its information.
-          findFilesInDir(dir, `**/*.${key}.js`).forEach(filepath => {
-            const replace = `.${key}.js$`;
-            const moduleId = filepath.replace(new RegExp(replace), '');
-            const absolutePath = path.join(dir, filepath);
-            moduleGroupInfo.set(moduleId, {
-              id: moduleId,
-              absolutePath,
-              relativePath: filepath,
-              getModule: () => moduleManager.get<ModuleType>(absolutePath),
-            });
+      if (dir && moduleGroupInfo.size === 0) {
+        // For each detected module, get all its information.
+        findFilesInDir(dir, `**/*.${key}.js`).forEach(filepath => {
+          const replace = `.${key}.js$`;
+          const moduleId = filepath.replace(new RegExp(replace), '');
+          const absolutePath = path.join(dir, filepath);
+          moduleGroupInfo.set(moduleId, {
+            id: moduleId,
+            absolutePath,
+            relativePath: filepath,
+            getModule: () => moduleManager.get<ModuleType>(absolutePath),
           });
-        }
+        });
       }
 
       return moduleGroupInfo;

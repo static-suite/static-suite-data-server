@@ -1,7 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
-import { config } from '@lib/config';
 import { logger } from '@lib/utils/logger';
 
 /**
@@ -13,27 +12,6 @@ import { logger } from '@lib/utils/logger';
  * managed from the outside.
  */
 const internalModuleCache: Record<string, any> = {};
-
-/**
- * Validates a module path, throwing an error if validation fails.
- *
- * @param modulePath - Module file path to be validated.
- *
- * @returns True if it is a valid path, or false otherwise.
- *
- * @throws
- * An exception if the module path does not pass validation.
- */
-const validate = (modulePath: string) => {
-  const isValidModule =
-    (!!config.queryDir && modulePath.startsWith(config.queryDir)) ||
-    (!!config.hookDir && modulePath.startsWith(config.hookDir));
-  if (!isValidModule) {
-    const errorMessage = `Module "${modulePath}" is not valid. Only query and hook modules can be managed by moduleManager. ${config.queryDir}`;
-    logger.error(errorMessage);
-    throw new Error(errorMessage);
-  }
-};
 
 /**
  * Resolves a path to a module
@@ -78,7 +56,6 @@ export const moduleManager = {
    * An exception if the module is not valid or it cannot be loaded.
    */
   load: <Type>(modulePath: string): Type => {
-    validate(modulePath);
     const resolvedModulePath = resolve(modulePath);
     moduleManager.remove(resolvedModulePath);
     try {
@@ -97,7 +74,6 @@ export const moduleManager = {
    * @param modulePath - Path to the module to be removed
    */
   remove: (modulePath: string): void => {
-    validate(modulePath);
     const resolvedModulePath = resolve(modulePath);
     clearModule(resolvedModulePath);
     delete internalModuleCache[resolvedModulePath];
@@ -133,7 +109,6 @@ export const moduleManager = {
    * An exception if the module cannot be loaded.
    */
   get: <Type>(modulePath: string): Type => {
-    validate(modulePath);
     const resolvedModulePath = resolve(modulePath);
     return (
       internalModuleCache[resolvedModulePath] ||

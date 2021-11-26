@@ -1,4 +1,4 @@
 node_modules
 dist
 scripts
-src/http
+__mocks__
