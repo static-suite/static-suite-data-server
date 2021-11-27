@@ -18,7 +18,7 @@ const serveDataFile = (req: Request, res: Response, storeItem: any) => {
   res.send(storeItem);
 };
 
-const data = (req: Request, res: Response) => {
+const data = (req: Request, res: Response): void => {
   const paramPath = req.params[0];
   const storePathParts =
     !paramPath || paramPath === '' ? null : paramPath.split('/');

@@ -4,7 +4,7 @@ import { queryRunner } from '@lib/query';
 import { config } from '@lib/config';
 import { cache } from '@lib/utils/cache';
 
-export const status = (req: Request, res: Response) => {
+export const status = (req: Request, res: Response): void => {
   const response = {
     config,
     dataDirLastUpdate: dataDirManager.getModificationDate(),
