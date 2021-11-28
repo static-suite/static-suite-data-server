@@ -41,7 +41,7 @@ const argv = yargs(hideBin(process.argv))
       demandOption: true,
       default: 'prod',
       describe:
-        'Run mode (dev or prod). Dev mode disables all caches and watches for changes on external modules (queries and post processors)',
+        'Run mode (dev or prod). Dev mode watches for changes on user-land modules (queries and hooks)',
       choices: ['dev', 'prod'],
     },
     'log-level': {

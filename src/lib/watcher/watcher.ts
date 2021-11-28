@@ -10,15 +10,15 @@ import { queryManager } from '@lib/query';
  * Initializes a watcher on any file inside queryDir and hookDir.
  *
  * @remarks
- * If queryDir and/or hookDir are defined by current configuration, a watcher
- * is initialized on them.
+ * If runMode is DEV and queryDir and/or hookDir are defined by current
+ * configuration, a watcher is initialized on them.
  *
  * When something changes inside query directory:
- * 1) Clear the query manager, so Remove all modules inside the query directory, so they are required again.
+ * 1) Remove all modules inside the query directory, so they are required again.
  * 2) Clear the query cache.
  *
  * When something changes inside hook directory:
- * 1) Remove all modules inside the hook directory, so they are required again.ç
+ * 1) Remove all modules inside the hook directory, so they are required again.
  * 2) Reload the whole data directory so hooks can be reapplied.
  * 3) Clear the query cache.
  */

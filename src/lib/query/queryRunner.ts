@@ -3,7 +3,6 @@ import { config } from '@lib/config';
 import { store } from '@lib/store';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
-import { RunMode } from '@lib/dataServer.types';
 import { queryManager } from './queryManager';
 import {
   QueryRunner,
@@ -51,7 +50,7 @@ export const queryRunner: QueryRunner = {
     const cacheId = `${queryId}--${argsString}`;
     let isCacheMiss = false;
     const queryCache = cache.bin<QueryModuleResult>('query');
-    let queryResult = RunMode.PROD && queryCache.get(cacheId);
+    let queryResult = queryCache.get(cacheId);
     if (!queryResult) {
       try {
         const queryModule = queryModuleInfo.getModule();
@@ -64,10 +63,7 @@ export const queryRunner: QueryRunner = {
           contentType: queryResponse?.contentType || 'application/json',
         };
         isCacheMiss = true;
-        if (
-          config.runMode === RunMode.PROD &&
-          queryResponse?.cacheable !== false
-        ) {
+        if (queryResponse?.cacheable !== false) {
           queryCache.set(cacheId, queryResult);
         }
       } catch (e) {
