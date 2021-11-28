@@ -19,21 +19,21 @@ export const dataDirManager: DataDirManager = {
 
     let updatedFiles: string[] = [];
     // Look for updated files since last update
-    if (options.incremental && storeLastSyncDate) {
-      // No need to support deleted files, since we have all files
-      // inside the dataDir (and deleted ones are already gone) and
-      // we are using store's stage, which avoids mixing data from current
-      // store with data from this operation.
-      ({ updated: updatedFiles } =
-        workDirHelper.getChangedFilesSince(storeLastSyncDate));
+    if (options.incremental) {
+      if (storeLastSyncDate) {
+        // No need to support deleted files, since we have all files
+        // inside the dataDir (and deleted ones are already gone) and
+        // we are using store's stage, which avoids mixing data from current
+        // store with data from this operation.
+        ({ updated: updatedFiles } =
+          workDirHelper.getChangedFilesSince(storeLastSyncDate));
 
-      updatedFiles.forEach(file => {
-        logger.info(`Loading updated file "${file}"`);
-      });
-    }
-
-    // Clear all file cache so new cache data doesn't contain any stale data or file.
-    if (!options.incremental) {
+        updatedFiles.forEach(file => {
+          logger.info(`Loading updated file "${file}"`);
+        });
+      }
+    } else {
+      // Clear all file cache so new cache data doesn't contain any stale data or file.
       cache.bin('file').clear();
     }
 
