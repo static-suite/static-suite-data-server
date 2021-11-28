@@ -31,10 +31,8 @@ export const dataDirManager: DataDirManager = {
           logger.info(`Loading updated file "${file}"`);
         });
       }
-    }
-
-    // Clear all file cache so new cache data doesn't contain any stale data or file.
-    if (!options.incremental) {
+    } else {
+      // Clear all file cache so new cache data doesn't contain any stale data or file.
       cache.bin('file').clear();
     }
 

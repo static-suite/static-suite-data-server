@@ -33,13 +33,6 @@ export type HookOptions = {
 
 /**
  * A module that defines several hooks.
- *
- * @remarks
- * Since hooks are user-land modules, they do not have access to configuration
- * or any other part of the Data Server. All data they need to function must be
- * passed as parameters.
- *
- * For example,
  */
 export type HookModule = {
   /**

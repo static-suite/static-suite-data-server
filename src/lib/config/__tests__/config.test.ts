@@ -17,14 +17,14 @@ describe('Config test', () => {
         queryDir: 'src/__tests__/fixtures/query',
         hookDir: 'src/__tests__/fixtures/hook',
       };
-      const expectedconfig = {
+      const expectedConfig = {
         dataDir: resolve(testConfig.dataDir),
         workDir: resolve(<string>testConfig.workDir),
         queryDir: resolve(<string>testConfig.queryDir),
         hookDir: resolve(<string>testConfig.hookDir),
         runMode: 'prod',
       };
-      expect(setConfig(testConfig)).toEqual(expectedconfig);
+      expect(setConfig(testConfig)).toEqual(expectedConfig);
     });
 
     it('Required option dataDir returns expected error', () => {
