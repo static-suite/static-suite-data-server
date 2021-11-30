@@ -1,5 +1,6 @@
 import { config } from '@lib/config';
 import { store } from '@lib/store';
+import { INDEX } from '@lib/store/store.constants';
 import { resolve } from 'path';
 import { includeParser } from '../includeParser';
 
@@ -37,6 +38,7 @@ store.data['article2.json'] = {
     },
   },
 };
+store.data[INDEX].set('article2.json', store.data['article2.json']);
 
 describe('staticIncludeParser', () => {
   it('sets correct value by reference', () => {
@@ -68,7 +70,7 @@ describe('queryIncludeParser', () => {
     includeParser.dinamic.run(dynamicFileContent);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(dinamicFileContent.data.content.query.data).toStrictEqual([
+    expect(dynamicFileContent.data.content.query.data).toStrictEqual([
       { id: '1' },
     ]);
   });
