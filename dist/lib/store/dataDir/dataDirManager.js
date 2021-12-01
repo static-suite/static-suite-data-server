@@ -11,13 +11,13 @@ const storeManager_1 = require("../storeManager");
 exports.dataDirManager = {
     load: (options = { incremental: false }) => {
         logger_1.logger.info('Loading data dir...');
+        const startDate = Date.now();
         const dataDirModificationDate = exports.dataDirManager.getModificationDate();
         // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
         // processes loading the data directory at the same time.
         const storeLastSyncDate = store_1.store.syncDate;
         store_1.store.syncDate = dataDirModificationDate;
         const relativeFilePaths = (0, fs_1.findFilesInDir)(config_1.config.dataDir);
-        const startDate = Date.now();
         let updatedFiles = [];
         // Look for updated files since last update
         if (options.incremental) {
@@ -37,15 +37,19 @@ exports.dataDirManager = {
         }
         // Add all files, one by one, taking cache option into account.
         const updatedFilesIsEmpty = updatedFiles.length === 0;
+        const storeHydrationStartDate = Date.now();
         relativeFilePaths.forEach(relativeFilePath => {
             storeManager_1.storeManager.add(relativeFilePath, {
-                useCache: !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
+                readFileFromCache: !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
             });
         });
         storeManager_1.storeManager.includeParse();
+        logger_1.logger.debug(`Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`);
+        // Clear all queries, since they are stale.
+        // No need to clear the store subset cache, since no
+        // file has been added/updated/deleted.
         cache_1.cache.bin('query').clear();
-        const endDate = Date.now();
-        logger_1.logger.info(`${relativeFilePaths.length} files loaded in ${endDate - startDate}ms.`);
+        logger_1.logger.info(`${relativeFilePaths.length} files loaded in ${Date.now() - startDate}ms.`);
     },
     update: () => {
         const dataDirModificationDate = exports.dataDirManager.getModificationDate();
@@ -65,6 +69,13 @@ exports.dataDirManager = {
                     storeManager_1.storeManager.includeParseFile(fileContent);
                 });
                 changedFiles.deleted.forEach(file => storeManager_1.storeManager.remove(file));
+                // Clear all store subsets and queries, since they are stale.
+                // In fact, the subset cache should be cleared only when files
+                // are added or deleted, but not when they are simply updated.
+                // Anyway, we currently do not have any means of distinguishing
+                // added files from updated ones, so we must clear the subset
+                // cache in all situations.
+                cache_1.cache.bin('store-subset').clear();
                 cache_1.cache.bin('query').clear();
             }
             else {

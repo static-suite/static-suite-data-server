@@ -11,8 +11,9 @@ export declare const workDirHelper: {
      *
      * @param sinceDate - Date to search
      *
-     * @returns Array of changed files.
-     *
+     * @returns Object with two properties:
+     * - updated: array of changed files.
+     * - deleted: array of deleted files.
      */
     getChangedFilesSince: (sinceDate: Date) => ChangedFiles;
 };

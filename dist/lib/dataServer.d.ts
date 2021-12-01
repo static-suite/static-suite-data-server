@@ -1,4 +1,5 @@
 import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
+import { Store } from '@lib/store/store.types';
 import { QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, CacheStatus } from '@lib/query/query.types';
 import { RunMode, DataServerReturn, DataServerInitOptions } from './dataServer.types';
 /**
@@ -16,5 +17,5 @@ declare const dataServer: {
      */
     init: (options: DataServerInitOptions) => DataServerReturn;
 };
-export { dataServer, DataServerInitOptions, DataServerReturn, RunMode, LogLevel, LogFile, QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, CacheStatus, };
+export { dataServer, DataServerInitOptions, DataServerReturn, RunMode, LogLevel, LogFile, Store, QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, CacheStatus, };
 //# sourceMappingURL=dataServer.d.ts.map

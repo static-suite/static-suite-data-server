@@ -17,11 +17,13 @@ const getLogFile_1 = require("./getLogFile");
 const getChangedLinesSince = (sinceDate) => {
     let allLines = [];
     const logFile = (0, getLogFile_1.getLogFile)();
-    try {
-        allLines = fs_1.default.readFileSync(logFile).toString().split('\n');
-    }
-    catch (e) {
-        logger_1.logger.error(`Error reading metadata log file located at ${`logFile`}: ${e}`);
+    if (logFile) {
+        try {
+            allLines = fs_1.default.readFileSync(logFile).toString().split('\n');
+        }
+        catch (e) {
+            logger_1.logger.error(`Error reading metadata log file located at ${`logFile`}: ${e}`);
+        }
     }
     // todo - Do not use dates and use timestamps in all cases
     //  to avoid having to fix offsets.

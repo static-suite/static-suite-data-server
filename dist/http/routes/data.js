@@ -4,70 +4,57 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.data = void 0;
+const path_1 = __importDefault(require("path"));
 const mime_types_1 = __importDefault(require("mime-types"));
 const store_1 = require("@lib/store");
 const logger_1 = require("@lib/utils/logger");
-const serveDataFile = (req, res, storeItem) => {
-    logger_1.logger.debug(`DEBUG: type ${typeof storeItem}`);
-    logger_1.logger.warn(`Rendering "${storeItem.__FILENAME__ || 'unknown filename'}" (route: ${req.params[0]})`);
-    res.status(200);
-    res.set({
-        'Content-Type': mime_types_1.default.lookup(storeItem.__FILENAME__ || req.params[0]) || 'text/plain',
-    });
-    res.send(storeItem);
-};
 const data = (req, res) => {
-    const paramPath = req.params[0];
-    const storePathParts = !paramPath || paramPath === '' ? null : paramPath.split('/');
-    const storeItem = storePathParts
-        ? storePathParts.reduce((prev, curr) => prev && prev[curr], store_1.store.data)
-        : store_1.store.data;
-    if (storeItem && (storeItem.__FILENAME__ || typeof storeItem === 'string')) {
-        return serveDataFile(req, res, storeItem);
-    }
-    const storePath = storePathParts
-        ? storePathParts.reduce((prev, curr) => {
-            if (curr.match(/^[_a-zA-Z0-9]+$/) && !curr.match(/^[0-9]+$/)) {
-                return `${prev}.${curr}`;
-            }
-            return `${prev}['${curr}']`;
-        }, '')
-        : '';
-    const breadcrumbs = storePathParts
-        ? storePathParts.map((pathPart, index) => ({
-            title: pathPart,
-            url: storePathParts.slice(0, index + 1).join('/'),
-        }))
-        : [];
-    if (storeItem && storeItem instanceof Map) {
+    const storeKey = req.params[0];
+    const storeKeyParts = !storeKey || storeKey === '' ? null : storeKey.split('/');
+    const storeFile = store_1.store.data.get(storeKey);
+    if (storeFile === undefined) {
+        // Render a directory
+        let dirKey = '';
+        if (storeKey) {
+            dirKey = storeKey.endsWith('/') ? storeKey : `${storeKey}/`;
+        }
+        logger_1.logger.debug(`Rendering directory "${dirKey}"`);
+        const storeDirSubset = store_1.store.subset({ dir: dirKey, recursive: false });
+        // Obtain breadcrumbs.
+        const breadcrumbs = storeKeyParts
+            ? storeKeyParts.map((keyPart, index) => ({
+                title: keyPart,
+                url: storeKeyParts.slice(0, index + 1).join('/'),
+            }))
+            : [];
         const items = [];
-        storeItem.forEach((item, key) => {
-            items.push({
-                name: key,
-                type: typeof item,
-            });
+        // Find directories, so they appear first on screen.
+        const mapKeys = Array.from(store_1.store.data.keys());
+        const foundDirs = new Map();
+        const pattern = `^${dirKey}([^/]+)/.+$`;
+        const regex = new RegExp(pattern);
+        mapKeys.forEach(k => {
+            const result = k.match(regex);
+            const dir = result?.[1];
+            if (dir && !foundDirs.has(dir)) {
+                foundDirs.set(dir, true);
+                items.push({
+                    name: result[1],
+                    type: 'directory',
+                });
+            }
         });
-        const vars = {
-            base: '',
-            path: storePath,
-            breadcrumbs,
-            items,
-            count: items.length,
-            hasContentInfo: false,
-        };
-        return res.render('data', vars);
-    }
-    const keys = storeItem ? Object.keys(storeItem) : [];
-    let hasContentInfo = false;
-    const items = keys.map(entry => {
+        // Add files so they appear after directories.
+        let hasContentInfo = false;
         let info = null;
-        if (storeItem[entry].__FILENAME__) {
+        storeDirSubset.items.forEach((item, key) => {
+            const filename = storeDirSubset.filenames[key];
             info = {
-                filename: storeItem[entry].__FILENAME__,
+                filename,
             };
             hasContentInfo = true;
-            if (storeItem[entry].data?.content) {
-                const content = storeItem[entry].data?.content;
+            if (item.data?.content) {
+                const content = item.data?.content;
                 const { id, type, bundle, isPublished, title } = content;
                 if (id || type || bundle || title) {
                     info = {
@@ -76,27 +63,36 @@ const data = (req, res) => {
                         bundle,
                         isPublished,
                         title,
-                        filename: storeItem[entry].__FILENAME__,
-                        size: JSON.stringify(storeItem[entry]).length,
+                        filename,
+                        size: JSON.stringify(item).length,
                     };
                     hasContentInfo = true;
                 }
             }
-        }
-        return {
-            name: entry,
-            type: Array.isArray(storeItem[entry]) ? 'array' : typeof storeItem[entry],
-            info,
+            items.push({
+                name: path_1.default.basename(filename),
+                type: Array.isArray(item) ? 'array' : typeof item,
+                info,
+            });
+        });
+        const vars = {
+            base: dirKey,
+            path: dirKey || '/',
+            breadcrumbs,
+            items,
+            count: items.length,
+            hasContentInfo,
         };
-    });
-    const vars = {
-        base: paramPath ? `${paramPath}/` : '',
-        path: storePath,
-        breadcrumbs,
-        items,
-        count: items.length,
-        hasContentInfo,
-    };
-    return res.render('data', vars);
+        res.render('data', vars);
+    }
+    else {
+        // Render a single file.
+        logger_1.logger.debug(`Rendering file "${storeKey}", type ${typeof storeFile}`);
+        res.status(200);
+        res.set({
+            'Content-Type': mime_types_1.default.lookup(storeKey) || 'text/plain',
+        });
+        res.send(storeFile);
+    }
 };
 exports.data = data;

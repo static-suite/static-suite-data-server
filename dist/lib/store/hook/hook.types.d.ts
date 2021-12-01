@@ -31,6 +31,16 @@ export declare type HookOptions = {
  */
 export declare type HookModule = {
     /**
+     * A hook executed before the store starts loading.
+     *
+     * @remarks
+     * This hook is aimed at bootstrapping some data structure, or establishing some connection
+     * to an external system before other hooks are run.
+     *
+     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     */
+    onStoreLoadStart?(options: HookOptions): void;
+    /**
      * A hook executed after a file is read from disk, before adding it to the store.
      *
      * @remarks
@@ -50,7 +60,37 @@ export declare type HookModule = {
      *
      * @param options - An object with options passed to the hook. @see {@link HookOptions}
      */
-    onStoreAdd?(options: HookOptions): void;
+    onStoreItemAdd?(options: HookOptions): void;
+    /**
+     * A hook executed when a file is updated in the store.
+     *
+     * @remarks
+     * This hook is aimed at adding some information to the store, e.g.- indexing all contents
+     * by their taxonomy.
+     *
+     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     */
+    onStoreLoadDone?(options: HookOptions): void;
+    /**
+     * A hook executed before the store starts updating.
+     *
+     * @remarks
+     * This hook is aimed at bootstrapping or updating some data structure
+     * before a set of update/delete operations starts.
+     *
+     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     */
+    onStoreUpdateStart?(options: HookOptions): void;
+    /**
+     * A hook executed when a file is updated in the store.
+     *
+     * @remarks
+     * This hook is aimed at adding some information to the store, e.g.- indexing all contents
+     * by their taxonomy.
+     *
+     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     */
+    onStoreItemUpdate?(options: HookOptions): void;
     /**
      * A hook executed after a file is removed from the store.
      *
@@ -60,6 +100,15 @@ export declare type HookModule = {
      *
      * @param options - An object with options passed to the hook. @see {@link HookOptions}
      */
-    onStoreRemove?(options: HookOptions): void;
+    onStoreItemRemove?(options: HookOptions): void;
+    /**
+     * A hook executed after the store ends updating.
+     *
+     * @remarks
+     * This hook is run after a set of update/delete operations finishes.
+     *
+     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     */
+    onStoreUpdateDone?(options: HookOptions): void;
 };
 //# sourceMappingURL=hook.types.d.ts.map

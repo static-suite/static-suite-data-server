@@ -48,6 +48,7 @@ key) => {
             // Use config here, because outside this function, the config object is not
             // already defined.
             const dir = config_1.config[`${key}Dir`];
+            // Scan directory only if moduleGroupInfo is empty.
             if (dir && moduleGroupInfo.size === 0) {
                 // For each detected module, get all its information.
                 (0, fs_1.findFilesInDir)(dir, `**/*.${key}.js`).forEach(filepath => {

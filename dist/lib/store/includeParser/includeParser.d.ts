@@ -3,7 +3,7 @@ export declare const includeParser: {
     static: {
         run: (fileContent: JsonIncludeMetadata) => void;
     };
-    dinamic: {
+    dynamic: {
         run: (fileContent: JsonIncludeMetadata) => void;
     };
 };

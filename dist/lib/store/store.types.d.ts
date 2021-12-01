@@ -1,46 +1,15 @@
 import { Json } from '@lib/utils/string/string.types';
-import { INDEX, JSON_ITEMS, MAIN, VARIANTS } from './store.constants';
 /**
- * The structure of a leaf inside the data store.
- */
-export declare type StoreDataLeaf = {
-    /**
-     * An object containing any kind of data inside: other leafs, JSON items, strings, arrays, etc
-     */
-    [key: string]: any;
-    /**
-     * An object containing JSON items, grouped by main or variant key.
-     */
-    [JSON_ITEMS]: {
-        /**
-         * An array of main JSON items.
-         */
-        [MAIN]: Json[];
-        /**
-         * An object containing all of variant JSON items, keyed by variant key.
-         */
-        [VARIANTS]: {
-            /**
-             * An array of variant JSON items, keyed by variant key.
-             */
-            [key: string]: Json[];
-        };
-    };
-};
-export declare type RootStoreDataLeaf = StoreDataLeaf & {
-    [INDEX]: any;
-};
-/**
- * Options for the store.add() function. @see {@link Store#add}
+ * Options for the store.add() function. @see {@link StoreManager#add}
  */
 export declare type StoreAddOptions = {
     /**
      * Flag to obtain file data from cache instead of the file system.
      */
-    useCache: boolean;
+    readFileFromCache: boolean;
 };
 /**
- * The manager that handles the store data.
+ * The store that holds all data.
  */
 export declare type Store = {
     /**
@@ -53,7 +22,7 @@ export declare type Store = {
      * - Data directory modified at 12:30:00
      * - Syncing the store takes 3 seconds and finishes at 12:30:03
      *
-     * ...syncDate will be 12:30:00, not 12:30:03.
+     * ... syncDate will be 12:30:00, not 12:30:03.
      *
      * Doing it the other way round can cause data inconsistencies, because syncing files
      * to the store takes time, it is done sequentially, and in the meanwhile, other
@@ -83,112 +52,171 @@ export declare type Store = {
      */
     syncDate: Date | null;
     /**
-     * Object that holds all data for all path files.
+     * Map that holds all data for all files.
      *
      * @remarks
-     * Every directory path contains an special entry named "_json", which is an
-     * object that contains "main" and "variants":
-     *  - "main":     an array that contains, recursively, all files inside that directory
-     *                that are not a variant.
-     *  - "variants": an object keyed with available variants, that contains, recursively,
-     *                all variants inside that directory.
+     * This map contains files, keyed by their relative filepath. No directory or
+     * any other structure is stored here.
+     *
+     * When executing a query, a common pattern is to create a subset of this
+     * map (e.g.- to get all articles of an specific language) and the execute the
+     * query against that subset. To do so, see {@link Store#subset}
      *
      * @example
      * ```
-     * // Find articles that contain "foo" inside their title.
-     * const results = store.data.en.entity.node.article._json.main.filter(
-     *    article =\> article.data.content.title.indexOf('foo') !== 1
-     * );
-     * ```
+     * // Find an specific article.
+     * const article = store.data.get('en/entity/node/article/123.json');
+     * const article = store.index.url.get('science/embvrosadas/sdaasd');
+     * const article = store.index.custom.get('taxonomies').get('12234');
      *
-     * @example
-     * ```
-     * // Find "teaser" article variants that contain "foo" inside their title.
-     * const results = store.data.en.entity.node.article._json.variant.teaser.filter(
-     *    article =\> article.data.content.title.indexOf('foo') !== 1
-     * );
+     * // Create a subset of all english articles.
+     * const results = store.data.subset({ dir: 'en/entity/node/article/', recursive: true });
      * ```
      */
-    data: any;
-};
-export declare type StoreManager = {
+    data: Map<string, any>;
     /**
-     * Adds a file to the store, into a tree structure.
+     * An object to hold accessory index data.
+     */
+    index: {
+        /**
+         * An index that holds all data for all files, keyed by their URL.
+         */
+        url: Map<string, any>;
+        /**
+         * An index to hold custom data defined in hooks or queries.
+         */
+        custom: Map<string, any>;
+    };
+    /**
+     * Create a subset with all files in store that match the given arguments.
      *
      * @remarks
-     * Each file is stored in a tree-like object, where directories and filenames
-     * are transformed into object properties. For example, the filepath
-     * "/en/entity/node/article/40000/41234.json" is transformed into:
-     * store.data.en.entity.node.article['40000']['41234.json']
+     * All subsets are automatically cached, so passing the same arguments
+     * will return the same subset from the cache.
      *
-     * Every JSON file is also added to a special "_json" object inside every
-     * tree leaf, so the above file will be available in:
-     * store.data._json.main
-     * store.data.en._json.main
-     * store.data.en.entity._json.main
-     * store.data.en.entity.node._json.main
-     * store.data.en.entity.node.article._json.main
-     * store.data.en.entity.node.article['40000']._json.main
+     * This is the preferred way of getting a subset of the store files,
+     * since is a simple function that most of the times only requires
+     * the first argument.
      *
-     * Given a variant file named "/en/entity/node/article/40000/41234--teaser.json",
-     * it would be added to the following "_json" object:
-     * store.data._json.variants.teaser
-     * store.data.en._json.variants.teaser
-     * store.data.en.entity._json.variants.teaser
-     * store.data.en.entity.node._json.variants.teaser
-     * store.data.en.entity.node.article._json.variants.teaser
-     * store.data.en.entity.node.article['40000']._json.variants.teaser
+     * @example
+     * ```
+     * // Get a subset of all nodes with "json" extension.
+     * dataServer.store.subset({ dir: 'en/entity/node/', variant: null });
      *
-     * This way, queries can be run on any set of data, limiting the amount of data to by analyzed.
+     * // Get a subset of all articles in all languages with "json" extension.
+     * dataServer.store.subset({ dir: '.+/entity/node/article/' });
      *
-     * Each "_json" contains all files inside that level, recursively.
-     * For example:
-     * - "store.data._json" contains all files in the store
-     * - "store.data.en.entity.node.article._json" contains all articles in the store
+     * // Get a subset of all articles regardless of their extension.
+     * dataServer.store.subset({ dir: 'en/entity/node/article/', ext: null });
      *
+     * // Get a subset of all card variants for articles with "json" extension.
+     * dataServer.store.subset({ dir: 'en/entity/node/article/', variant: null });
+     *
+     * // Get a subset of english articles, with "yml" extension, non-recursively.
+     * dataServer.store.subset({ dir: 'en/entity/node/article/', ext: 'yml', recursive: false });
+     * ```
+     *
+     * @param options - Object with options for creating a store subset.
+     *
+     * @returns An object with "filenames" and "items".
+     */
+    subset(options: StoreSubsetOptions): StoreSubset;
+};
+/**
+ * Options for subset() function.
+ */
+export declare type StoreSubsetOptions = {
+    /**
+     * Optional base directory to filter files.
+     *
+     * @remarks
+     * It requires a trailing slash, but not a leading slash, e.g.- "en/entity/node/article/"
+     */
+    dir?: string;
+    /**
+     * Optional name of a variant file.
+     *
+     * @remarks
+     * Use '_main' to obtain the default variant.
+     * Use any other string, e.g.- 'card', to obtain the card variant.
+     * Use null to avoid searching for any variant.
+     * Defaults to '_main'.
+     */
+    variant?: string;
+    /**
+     * Optional file extension, without dots. Defaults to 'json'.
+     */
+    ext?: string;
+    /**
+     * Optional flag to search for files recursively. True by default.
+     */
+    recursive?: boolean;
+};
+/**
+ * Object holding a subset of items from the store.
+ */
+export declare type StoreSubset = {
+    /**
+     * Array of filenames in this subset.
+     */
+    filenames: Array<string>;
+    /**
+     * Array of items in this subset.
+     */
+    items: Array<any>;
+};
+/**
+ * The manager that handles the store data.
+ */
+export declare type StoreManager = {
+    /**
+     * Adds a file to the store, into a Map structure keyed by its relative filepath.
+     *
+     * @remarks
      * It invokes "process file" and "store add" hooks.
      *
      * @param relativeFilepath - Relative file path, inside dataDir, to the file to be added.
      * @param options - Configuration options.
      *
-     * @returns The store object, to allow chaining.
+     * @returns The store manager, to allow chaining.
      */
-    add(relativeFilepath: string, options?: StoreAddOptions): Store;
+    add(relativeFilepath: string, options?: StoreAddOptions): StoreManager;
     /**
      * Removes a file from the store.
      *
      * @remarks
-     * It removes the object and all its references across the tree structure.
+     * It removes the file from the map structure.
      * It invokes the "store remove" hook.
      *
      * @param file - Relative path to the file to be removed.
      *
-     * @returns The store object, to allow chaining.
+     * @returns The store manager, to allow chaining.
      */
-    remove(file: string): Store;
+    remove(file: string): StoreManager;
     /**
      * Updates a file from the store.
      *
      * @remarks
-     * It removes the object and all its references across the tree structure, and
-     * adds it again to the structure.
+     * It removes the file from the map structure, and adds it again.
      *
      * @param file - Relative path, inside dataDir, to the file to be updated.
      *
-     * @returns The store object, to allow chaining.
+     * @returns The store manager, to allow chaining.
      */
-    update(file: string): Store;
+    update(file: string): StoreManager;
     /**
      * Parses all static includes (entity, config, locale and custom) from data stored in "store.data".
      *
-     * @returns The store object, to allow chaining.
+     * @returns The store manager, to allow chaining.
      */
-    includeParse(): Store;
+    includeParse(): StoreManager;
     /**
      * Parses all static includes (entity, config, locale and custom) from one file.
      *
-     * @returns The store object, to allow chaining.
+     * @param json - A JSON object.
+     *
+     * @returns The store manager, to allow chaining.
      */
-    includeParseFile(json: Json): Store;
+    includeParseFile(json: Json): StoreManager;
 };
 //# sourceMappingURL=store.types.d.ts.map

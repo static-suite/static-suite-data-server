@@ -30,6 +30,7 @@ const readFile = (filePath) => {
     let contents = null;
     try {
         contents = fs_1.default.readFileSync(filePath, 'utf8');
+        // contents = '{}';
     }
     catch (error) {
         // When an error is thrown, contents is undefined, so ensure
@@ -54,6 +55,7 @@ const getFileContent = (filePath) => {
     let json = null;
     if (isJson(filePath) && raw) {
         json = (0, string_1.parseJsonString)(raw);
+        // json = {};
         if (!json) {
             logger_1.logger.error(`Error getting JSON from file "${filePath}"`);
         }

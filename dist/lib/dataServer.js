@@ -44,7 +44,7 @@ const dataServer = {
         // Load data from dataDir.
         dataDir_1.dataDirManager.load({ incremental: false });
         return {
-            data: store_1.store.data,
+            store: store_1.store,
             queryRunner: query_1.queryRunner,
         };
     },

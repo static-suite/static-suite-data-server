@@ -7,5 +7,5 @@ const config_1 = require("@lib/config");
  *
  * @returns The absolute path to Static Suite's log file.
  */
-const getLogFile = () => `${config_1.config.workDir}/lock-executed.log`;
+const getLogFile = () => config_1.config.workDir ? `${config_1.config.workDir}/lock-executed.log` : null;
 exports.getLogFile = getLogFile;

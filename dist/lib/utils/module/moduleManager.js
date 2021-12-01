@@ -18,18 +18,32 @@ const logger_1 = require("@lib/utils/logger");
  */
 const internalModuleCache = {};
 /**
+ * Internal resolve cache.
+ *
+ * @remarks
+ * It does not use the shared cache util since this cache must to be
+ * managed only by this module, and should not be accessible nor
+ * managed from the outside.
+ */
+const internalResolveCache = {};
+/**
  * Resolves a path to a module
  *
  * @param modulePath - A path to a module
  * @returns The resolved path, or the passed unresolved path if module cannot be found
  */
 const resolve = (modulePath) => {
-    try {
-        return require.resolve(modulePath);
+    let resolvedModulePath = internalResolveCache[modulePath];
+    if (!resolvedModulePath) {
+        try {
+            resolvedModulePath = require.resolve(modulePath);
+        }
+        catch (e) {
+            resolvedModulePath = modulePath;
+        }
+        internalResolveCache[modulePath] = resolvedModulePath;
     }
-    catch (e) {
-        return modulePath;
-    }
+    return resolvedModulePath;
 };
 /**
  * Module system that manages the caching of modules.

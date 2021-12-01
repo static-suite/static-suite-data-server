@@ -1,1 +1,1 @@
-{"version":3,"file":"getChangedLinesSince.d.ts","sourceRoot":"","sources":["../../../../../src/lib/store/workDir/storage/getChangedLinesSince.ts"],"names":[],"mappings":"AAIA;;;;;;KAMK;AACL,eAAO,MAAM,oBAAoB,cAAe,IAAI,KAAG,MAAM,EAiC5D,CAAC"}
+{"version":3,"file":"getChangedLinesSince.d.ts","sourceRoot":"","sources":["../../../../../src/lib/store/workDir/storage/getChangedLinesSince.ts"],"names":[],"mappings":"AAIA;;;;;;KAMK;AACL,eAAO,MAAM,oBAAoB,cAAe,IAAI,KAAG,MAAM,EAmC5D,CAAC"}

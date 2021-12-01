@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVariantKey = exports.parseJsonString = void 0;
+exports.getVariantKey = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
 const path_1 = __importDefault(require("path"));
 const logger_1 = require("@lib/utils/logger");
 /**
@@ -20,7 +20,7 @@ const logger_1 = require("@lib/utils/logger");
  * @sealed
  * Not intended to be over ride.
  */
-const VARIANT_SEPARATOR = '--';
+exports.VARIANT_SEPARATOR = '--';
 /**
  * Parses a JSON string and logs an error on failure.
  *
@@ -48,8 +48,8 @@ exports.parseJsonString = parseJsonString;
  */
 const getVariantKey = (filePath) => {
     const fileName = path_1.default.parse(filePath).name;
-    if (fileName.indexOf(VARIANT_SEPARATOR) !== -1) {
-        return fileName.split(VARIANT_SEPARATOR).pop() || null;
+    if (fileName.indexOf(exports.VARIANT_SEPARATOR) !== -1) {
+        return fileName.split(exports.VARIANT_SEPARATOR).pop() || null;
     }
     return null;
 };
