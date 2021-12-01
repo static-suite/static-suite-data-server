@@ -43,7 +43,6 @@
         "enforceForRenamedProperties": false
       }
     ],
-    "no-underscore-dangle": ["error", { "allow": ["_json", "__FILENAME__"] }],
     "@typescript-eslint/no-explicit-any": "off",
     "tsdoc/syntax": "error"
   }

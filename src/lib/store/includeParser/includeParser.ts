@@ -1,19 +1,20 @@
 import { queryRunner } from '@lib/query';
 import { getObjectValue } from '@lib/utils/object';
 import { store } from '..';
-import { INDEX } from '../store.constants';
 import { JsonIncludeMetadata } from './includeParser.types';
-import { configIncludeParser } from './parsers/configIncludeParser';
-import { customIncludeParser } from './parsers/customIncludeParser';
-import { entityIncludeParser } from './parsers/entityIncludeParser';
-import { localeIncludeParser } from './parsers/localeIncludeParser';
 import { aliasWithoutTypeIncludeParser } from './parsers/types/aliasWithoutTypeIncludeParser';
+import {
+  configIncludeParser,
+  customIncludeParser,
+  entityIncludeParser,
+  localeIncludeParser,
+} from './parsers';
 
-const parseParams = (querystring: string) => {
-  // parse query string
-  const params = new URLSearchParams(querystring);
+const parseParams = (queryString: string) => {
+  // Parse query string.
+  const params = new URLSearchParams(queryString);
 
-  const obj: any = {};
+  const obj: Record<string, any> = {};
   Array.from(params.keys()).forEach((key: string) => {
     if (params.getAll(key).length > 1) {
       obj[key] = params.getAll(key);
@@ -32,7 +33,7 @@ export const includeParser = {
         if (jsonData.metadata?.includes) {
           jsonData.metadata?.includes.forEach((includePath: string) => {
             const includePathValue = getObjectValue(fileContent, includePath);
-            const includeData = store.data[INDEX].get(includePathValue);
+            const includeData = store.data.get(includePathValue);
 
             const mountPointPath = includePath.split('.');
             const includeKey = mountPointPath.pop();
@@ -75,7 +76,7 @@ export const includeParser = {
       }
     },
   },
-  dinamic: {
+  dynamic: {
     run: (fileContent: JsonIncludeMetadata): void => {
       if (fileContent) {
         const jsonData = fileContent;

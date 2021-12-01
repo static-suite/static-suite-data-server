@@ -10,13 +10,13 @@ import { storeManager } from '../storeManager';
 export const dataDirManager: DataDirManager = {
   load: (options = { incremental: false }) => {
     logger.info('Loading data dir...');
+    const startDate = Date.now();
     const dataDirModificationDate = dataDirManager.getModificationDate();
     // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
     // processes loading the data directory at the same time.
     const storeLastSyncDate = store.syncDate;
     store.syncDate = dataDirModificationDate;
     const relativeFilePaths = findFilesInDir(config.dataDir);
-    const startDate = Date.now();
 
     let updatedFiles: string[] = [];
     // Look for updated files since last update
@@ -38,19 +38,28 @@ export const dataDirManager: DataDirManager = {
 
     // Add all files, one by one, taking cache option into account.
     const updatedFilesIsEmpty = updatedFiles.length === 0;
+    const storeHydrationStartDate = Date.now();
     relativeFilePaths.forEach(relativeFilePath => {
       storeManager.add(relativeFilePath, {
-        useCache:
+        readFileFromCache:
           !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
       });
     });
 
     storeManager.includeParse();
+    logger.debug(
+      `Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`,
+    );
+
+    // Clear all queries, since they are stale.
+    // No need to clear the store subset cache, since no
+    // file has been added/updated/deleted.
     cache.bin('query').clear();
 
-    const endDate = Date.now();
     logger.info(
-      `${relativeFilePaths.length} files loaded in ${endDate - startDate}ms.`,
+      `${relativeFilePaths.length} files loaded in ${
+        Date.now() - startDate
+      }ms.`,
     );
   },
 
@@ -75,6 +84,13 @@ export const dataDirManager: DataDirManager = {
           storeManager.includeParseFile(fileContent);
         });
         changedFiles.deleted.forEach(file => storeManager.remove(file));
+        // Clear all store subsets and queries, since they are stale.
+        // In fact, the subset cache should be cleared only when files
+        // are added or deleted, but not when they are simply updated.
+        // Anyway, we currently do not have any means of distinguishing
+        // added files from updated ones, so we must clear the subset
+        // cache in all situations.
+        cache.bin('store-subset').clear();
         cache.bin('query').clear();
       } else {
         logger.debug(

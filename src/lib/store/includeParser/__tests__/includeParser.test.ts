@@ -29,24 +29,24 @@ const staticFileContent = {
     ],
   },
 };
-store.data['article2.json'] = {
+store.data.set('article2.json', {
   data: {
     content: {
       id: '58728',
       title: 'Título 2',
     },
   },
-};
+});
 
 describe('staticIncludeParser', () => {
   it('sets correct value by reference', () => {
     includeParser.static.run(staticFileContent);
     expect(staticFileContent.data.content.author.entity).toBe(
-      store.data['article2.json'].data.content,
+      store.data.get('article2.json').data.content,
     );
-    store.data['article2.json'].data.content.title = 'Título 3';
+    store.data.get('article2.json').data.content.title = 'Title 3';
     expect(staticFileContent.data.content.author.entity).toBe(
-      store.data['article2.json'].data.content,
+      store.data.get('article2.json').data.content,
     );
   });
 });
@@ -65,10 +65,10 @@ config.queryDir = resolve('src/__tests__/fixtures/query');
 
 describe('queryIncludeParser', () => {
   it('sets correct value', () => {
-    includeParser.dinamic.run(dynamicFileContent);
+    includeParser.dynamic.run(dynamicFileContent);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expect(dinamicFileContent.data.content.query.data).toStrictEqual([
+    expect(dynamicFileContent.data.content.query.data).toStrictEqual([
       { id: '1' },
     ]);
   });

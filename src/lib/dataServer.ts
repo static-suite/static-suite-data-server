@@ -4,6 +4,7 @@ import { initWatcher } from '@lib/watcher';
 import { setConfig } from '@lib/config';
 import { dataDirManager } from '@lib/store/dataDir';
 import { store } from '@lib/store';
+import { Store } from '@lib/store/store.types';
 import { queryRunner } from '@lib/query';
 import {
   QueryRunner,
@@ -53,7 +54,7 @@ const dataServer = {
     dataDirManager.load({ incremental: false });
 
     return {
-      data: store.data,
+      store,
       queryRunner,
     };
   },
@@ -66,6 +67,7 @@ export {
   RunMode,
   LogLevel,
   LogFile,
+  Store,
   QueryRunner,
   QuerySuccessfulResponse,
   QueryErrorResponse,

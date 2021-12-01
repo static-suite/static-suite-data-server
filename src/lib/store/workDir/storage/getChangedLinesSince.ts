@@ -12,12 +12,14 @@ import { getLogFile } from './getLogFile';
 export const getChangedLinesSince = (sinceDate: Date): string[] => {
   let allLines: string[] = [];
   const logFile = getLogFile();
-  try {
-    allLines = fs.readFileSync(logFile).toString().split('\n');
-  } catch (e) {
-    logger.error(
-      `Error reading metadata log file located at ${`logFile`}: ${e}`,
-    );
+  if (logFile) {
+    try {
+      allLines = fs.readFileSync(logFile).toString().split('\n');
+    } catch (e) {
+      logger.error(
+        `Error reading metadata log file located at ${`logFile`}: ${e}`,
+      );
+    }
   }
 
   // todo - Do not use dates and use timestamps in all cases

@@ -1,5 +1,6 @@
 import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
 import { QueryRunner } from '@lib/query/query.types';
+import { Store } from './store/store.types';
 
 /**
  * Init options for Data Server.
@@ -72,7 +73,7 @@ export type DataServerReturn = {
   /**
    * The data store.
    */
-  data: any;
+  store: Store;
 
   /**
    * The query runner, to be able to run queries on demand.

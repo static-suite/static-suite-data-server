@@ -15,12 +15,11 @@ import { queryManager } from '@lib/query';
  *
  * When something changes inside query directory:
  * 1) Remove all modules inside the query directory, so they are required again.
- * 2) Clear the query cache.
+ * 2) Clear the query cache, since that is not done by the queryManager.
  *
  * When something changes inside hook directory:
  * 1) Remove all modules inside the hook directory, so they are required again.
- * 2) Reload the whole data directory so hooks can be reapplied.
- * 3) Clear the query cache.
+ * 2) Reload the whole data directory so hooks can be reapplied (this implies clearing the query cache).
  */
 export const initWatcher = (): void => {
   const paths: string[] = [];
@@ -35,6 +34,10 @@ export const initWatcher = (): void => {
     // Remove all modules inside the query directory.
     if (config.queryDir && filePath.startsWith(config.queryDir)) {
       queryManager.reset();
+      // Clear all queries, since they are stale.
+      // No need to clear the store subset cache, since no
+      // file has been added/updated/deleted.
+      cache.bin('query').clear();
     }
 
     // Remove all modules inside the hook directory and reload the whole
@@ -44,10 +47,6 @@ export const initWatcher = (): void => {
       dataDirManager.load({ incremental: true });
       logger.debug(`Re-building store done`);
     }
-
-    // In both cases, clear the query cache, which is now stale.
-    cache.bin('query').clear();
-    logger.debug(`Query cache cleared`);
   };
 
   watch(paths, {

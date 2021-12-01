@@ -27,6 +27,7 @@ export const readFile = (filePath: string): string | null => {
   let contents = null;
   try {
     contents = fs.readFileSync(filePath, 'utf8');
+    // contents = '{}';
   } catch (error) {
     // When an error is thrown, contents is undefined, so ensure
     // it is converted to null.
@@ -50,6 +51,7 @@ export const getFileContent = (filePath: string): FileType => {
   let json = null;
   if (isJson(filePath) && raw) {
     json = parseJsonString(raw);
+    // json = {};
     if (!json) {
       logger.error(`Error getting JSON from file "${filePath}"`);
     }

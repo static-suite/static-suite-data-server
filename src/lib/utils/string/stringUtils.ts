@@ -15,7 +15,7 @@ import { logger } from '@lib/utils/logger';
  * @sealed
  * Not intended to be over ride.
  */
-const VARIANT_SEPARATOR = '--';
+export const VARIANT_SEPARATOR = '--';
 
 /**
  * Parses a JSON string and logs an error on failure.
