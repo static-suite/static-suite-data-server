@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.includeParser = void 0;
 const query_1 = require("@lib/query");
+const query_types_1 = require("@lib/query/query.types");
 const object_1 = require("@lib/utils/object");
 const __1 = require("..");
 const store_constants_1 = require("../store.constants");
@@ -87,7 +88,14 @@ exports.includeParser = {
                             if (queryData[1]) {
                                 queryArgs = parseParams(queryData[1]);
                             }
-                            const includeData = query_1.queryRunner.run(queryId, queryArgs);
+                            const queryResponse = query_1.queryRunner.run(queryId, queryArgs);
+                            let includeData;
+                            if ((0, query_types_1.isQueryErrorResponse)(queryResponse)) {
+                                includeData = queryResponse.error;
+                            }
+                            else {
+                                includeData = queryResponse.data;
+                            }
                             const mountPointPath = includePath.split('.');
                             const includeKey = mountPointPath.pop();
                             if (includeKey) {

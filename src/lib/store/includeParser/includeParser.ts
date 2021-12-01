@@ -1,4 +1,5 @@
 import { queryRunner } from '@lib/query';
+import { isQueryErrorResponse } from '@lib/query/query.types';
 import { getObjectValue } from '@lib/utils/object';
 import { store } from '..';
 import { INDEX } from '../store.constants';
@@ -90,7 +91,13 @@ export const includeParser = {
               if (queryData[1]) {
                 queryArgs = parseParams(queryData[1]);
               }
-              const includeData = queryRunner.run(queryId, queryArgs);
+              const queryResponse = queryRunner.run(queryId, queryArgs);
+              let includeData;
+              if (isQueryErrorResponse(queryResponse)) {
+                includeData = queryResponse.error;
+              } else {
+                includeData = queryResponse.data;
+              }
               const mountPointPath = includePath.split('.');
               const includeKey = mountPointPath.pop();
               if (includeKey) {
