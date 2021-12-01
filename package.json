@@ -63,6 +63,7 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
+    "husky": "^4.3.7",
     "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "ts-jest": "^27.0.7",
@@ -91,6 +92,11 @@
       "^@http/(.*)$": "<rootDir>/src/http/$1",
       "^@lib/(.*)$": "<rootDir>/src/lib/$1",
       "^@__tests__/(.*)$": "<rootDir>/src/__tests__/$1"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn build"
     }
   }
 }

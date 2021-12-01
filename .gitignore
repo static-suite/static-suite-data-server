@@ -1,6 +1,5 @@
 node_modules
 src/http/public
-dist/
 docs/
 coverage/
 .idea
