@@ -46,6 +46,7 @@ export const dirBasedModuleGroupManager = <ModuleType>(
       // Use config here, because outside this function, the config object is not
       // already defined.
       const dir = config[`${key}Dir`];
+      // Scan directory only if moduleGroupInfo is empty.
       if (dir && moduleGroupInfo.size === 0) {
         // For each detected module, get all its information.
         findFilesInDir(dir, `**/*.${key}.js`).forEach(filepath => {

@@ -23,7 +23,7 @@ block breadcrumbs
       a(href=`/data/${breadcrumb.url}`)=breadcrumb.title
 
 block content
-  h1(class="title is-1" id="data-path")=`data${path}`
+  h1(class="title is-1" id="data-path")=`${path}`
     span(class="icon is-medium ml-5")
       button(id="copy-to-clipboard" class="button  is-light" data-clipboard-text=`data${path}` style="padding-left:5px; padding-right:0" title="Copy to clipboard")
         span(class="has-tooltip-arrow" data-tooltip="Copy to clipboard")

@@ -15,15 +15,19 @@ export const workDirHelper = {
    *
    * @returns The date of last modification of work directory, or null if directory not found.
    */
-  getModificationDate: (): Date | null => getModificationDate(getLogFile()),
+  getModificationDate: (): Date | null => {
+    const logFile = getLogFile();
+    return logFile ? getModificationDate(logFile) : null;
+  },
 
   /**
    * Get changed files since a date.
    *
    * @param sinceDate - Date to search
    *
-   * @returns Array of changed files.
-   *
+   * @returns Object with two properties:
+   * - updated: array of changed files.
+   * - deleted: array of deleted files.
    */
   getChangedFilesSince: (sinceDate: Date): ChangedFiles => {
     const sinceDateTimestamp = sinceDate.getTime();
