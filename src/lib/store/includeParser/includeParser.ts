@@ -2,7 +2,7 @@ import { queryRunner } from '@lib/query';
 import { isQueryErrorResponse } from '@lib/query/query.types';
 import { getObjectValue } from '@lib/utils/object';
 import { store } from '..';
-import { JsonIncludeMetadata } from './includeParser.types';
+import { IncludeParser, JsonIncludeMetadata } from './includeParser.types';
 import { aliasWithoutTypeIncludeParser } from './parsers/types/aliasWithoutTypeIncludeParser';
 import {
   configIncludeParser,
@@ -40,7 +40,7 @@ const parseQueryParams = (queryString: string) => {
 /**
  * Global parser that is able to parse static and dynamic includes.
  */
-export const includeParser = {
+export const includeParser: IncludeParser = {
   static: (fileContent: JsonIncludeMetadata): void => {
     if (!fileContent) {
       return;
