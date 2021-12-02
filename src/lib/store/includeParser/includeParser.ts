@@ -108,9 +108,11 @@ export const includeParser: IncludeParser = {
       if (!includePath.toLowerCase().endsWith('queryinclude')) {
         return;
       }
-      const queryData = getObjectValue(fileContent, includePath).split('?');
-      const queryId = queryData[0];
-      const queryArgs = queryData[1] ? parseQueryParams(queryData[1]) : {};
+      const [queryId, rawQueryArgs] = getObjectValue(
+        fileContent,
+        includePath,
+      ).split('?');
+      const queryArgs = rawQueryArgs ? parseQueryParams(rawQueryArgs) : {};
       const queryResponse = queryRunner.run(queryId, queryArgs);
       const includeData = isQueryErrorResponse(queryResponse)
         ? queryResponse.error
