@@ -98,9 +98,8 @@ exports.includeParser = {
             if (!includePath.toLowerCase().endsWith('queryinclude')) {
                 return;
             }
-            const queryData = (0, object_1.getObjectValue)(fileContent, includePath).split('?');
-            const queryId = queryData[0];
-            const queryArgs = queryData[1] ? parseQueryParams(queryData[1]) : {};
+            const [queryId, rawQueryArgs] = (0, object_1.getObjectValue)(fileContent, includePath).split('?');
+            const queryArgs = rawQueryArgs ? parseQueryParams(rawQueryArgs) : {};
             const queryResponse = query_1.queryRunner.run(queryId, queryArgs);
             const includeData = (0, query_types_1.isQueryErrorResponse)(queryResponse)
                 ? queryResponse.error

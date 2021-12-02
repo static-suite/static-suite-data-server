@@ -35,6 +35,20 @@ export declare type JsonIncludeMetadata = Json & IncludeMetadata;
 declare type EntityDataContent = {
     data: any;
 };
+export declare type IncludeParser = {
+    /**
+     * Parse all static includes (entity, config, locale and custom).
+     *
+     * @param fileContent - String to be parsed.
+     */
+    static(fileContent: JsonIncludeMetadata): void;
+    /**
+     * Parse all dynamic includes (queryInclude at this moment)
+     *
+     * @param fileContent - String to be parsed.
+     */
+    dynamic(fileContent: JsonIncludeMetadata): void;
+};
 export declare type IncludeParserOptions = {
     fileContent: Json;
     includeData: Json | EntityDataContent;

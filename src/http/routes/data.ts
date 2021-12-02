@@ -18,7 +18,12 @@ const data = (req: Request, res: Response): void => {
       dirKey = storeKey.endsWith('/') ? storeKey : `${storeKey}/`;
     }
     logger.debug(`Rendering directory "${dirKey}"`);
-    const storeDirSubset = store.subset({ dir: dirKey, recursive: false });
+    const storeDirSubset = store.subset({
+      dir: dirKey,
+      variant: undefined,
+      ext: undefined,
+      recursive: false,
+    });
 
     // Obtain breadcrumbs.
     const breadcrumbs = storeKeyParts
