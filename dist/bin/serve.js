@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 "use strict";
+/* eslint-disable import/first */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs/yargs"));
 const helpers_1 = require("yargs/helpers");
-require("module-alias/register");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('module-alias')(`${__dirname}/../..`);
 const httpServer_1 = require("@http/httpServer");
 const dataServer_1 = require("@lib/dataServer");
 const dataServer_types_1 = require("@lib/dataServer.types");

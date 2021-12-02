@@ -1,8 +1,11 @@
 #!/usr/bin/env node
+/* eslint-disable import/first */
 
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
-import 'module-alias/register';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('module-alias')(`${__dirname}/../..`);
+
 import { httpServer } from '@http/httpServer';
 import { dataServer } from '@lib/dataServer';
 import { RunMode, RunModeStrings } from '@lib/dataServer.types';
