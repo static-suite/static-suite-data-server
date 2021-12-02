@@ -2,7 +2,6 @@
 import { config } from '@lib/config';
 import { getFileContent } from '@lib/utils/fs';
 import { FileType } from '@lib/utils/fs/fs.types';
-import { Json } from '@lib/utils/string/string.types';
 import { cache } from '@lib/utils/cache';
 import { StoreAddOptions, StoreManager } from './store.types';
 import { hookManager } from './hook';
@@ -120,19 +119,22 @@ export const storeManager: StoreManager = {
     return storeManager;
   },
 
-  includeParse: (): StoreManager => {
-    store.data.forEach((fileContent: Json) => {
-      storeManager.includeParseFile(fileContent);
+  parseIncludes: (): StoreManager => {
+    // Parses static includes.
+    store.data.forEach(fileContent => {
+      storeManager.parseSingleFileIncludes(fileContent);
     });
 
-    store.data.forEach((fileContent: Json) => {
-      includeParser.dynamic.run(fileContent);
+    // Parses dynamic includes.
+    store.data.forEach(fileContent => {
+      includeParser.dynamic(fileContent);
     });
+
     return storeManager;
   },
 
-  includeParseFile: (fileContent: Json): StoreManager => {
-    includeParser.static.run(fileContent);
+  parseSingleFileIncludes: (fileContent): StoreManager => {
+    includeParser.static(fileContent);
     return storeManager;
   },
 };

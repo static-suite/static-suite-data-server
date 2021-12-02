@@ -1,10 +1,10 @@
-import { IncludeParserOptions } from '../includeParser.types';
+import { EntityIncludeParserOptions } from '../includeParser.types';
 
 export const entityIncludeParser = ({
   fileContent,
   includeData,
   mountPointPath,
-}: IncludeParserOptions): void => {
+}: EntityIncludeParserOptions): void => {
   const includeKey = mountPointPath.pop();
   if (includeKey) {
     const mountPoint = mountPointPath.reduce(

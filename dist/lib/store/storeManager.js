@@ -98,17 +98,19 @@ exports.storeManager = {
         });
         return exports.storeManager;
     },
-    includeParse: () => {
-        _1.store.data.forEach((fileContent) => {
-            exports.storeManager.includeParseFile(fileContent);
+    parseIncludes: () => {
+        // Parses static includes.
+        _1.store.data.forEach(fileContent => {
+            exports.storeManager.parseSingleFileIncludes(fileContent);
         });
-        _1.store.data.forEach((fileContent) => {
-            includeParser_1.includeParser.dynamic.run(fileContent);
+        // Parses dynamic includes.
+        _1.store.data.forEach(fileContent => {
+            includeParser_1.includeParser.dynamic(fileContent);
         });
         return exports.storeManager;
     },
-    includeParseFile: (fileContent) => {
-        includeParser_1.includeParser.static.run(fileContent);
+    parseSingleFileIncludes: (fileContent) => {
+        includeParser_1.includeParser.static(fileContent);
         return exports.storeManager;
     },
 };

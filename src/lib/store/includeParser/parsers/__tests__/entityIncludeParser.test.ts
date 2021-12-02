@@ -15,7 +15,6 @@ describe('entityIncludeParser', () => {
       fileContent,
       includeData: { data: { content: { includedData: 'yyy' } } },
       mountPointPath: ['data', 'content', 'entity'],
-      includeKey: 'entityInclude',
     });
     expect(fileContent.data.content.entity).toStrictEqual({
       includedData: 'yyy',
@@ -35,7 +34,6 @@ describe('entityIncludeParser', () => {
       fileContent,
       includeData: { includedData: 'yyy' },
       mountPointPath: ['data', 'content', 'entity'],
-      includeKey: 'entityInclude',
     });
     expect(fileContent.data.content.entity).toBeUndefined();
   });

@@ -46,9 +46,14 @@ export const dataDirManager: DataDirManager = {
       });
     });
 
-    storeManager.includeParse();
     logger.debug(
       `Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`,
+    );
+
+    const includeParserStartDate = Date.now();
+    storeManager.parseIncludes();
+    logger.debug(
+      `Store include parser done in ${Date.now() - includeParserStartDate}ms.`,
     );
 
     // Clear all queries, since they are stale.
@@ -78,10 +83,8 @@ export const dataDirManager: DataDirManager = {
           workDirHelper.getChangedFilesSince(storeLastSyncDate);
         changedFiles.updated.forEach(file => {
           storeManager.update(file);
-          const fileContent = file
-            .split('/')
-            .reduce((prev: any, curr: any) => prev && prev[curr], store.data);
-          storeManager.includeParseFile(fileContent);
+          const fileContent = store.data.get(file);
+          storeManager.parseSingleFileIncludes(fileContent);
         });
         changedFiles.deleted.forEach(file => storeManager.remove(file));
         // Clear all store subsets and queries, since they are stale.

@@ -1,4 +1,3 @@
-import { Json } from '@lib/utils/string/string.types';
 /**
  * Options for the store.add() function. @see {@link StoreManager#add}
  */
@@ -209,14 +208,14 @@ export declare type StoreManager = {
      *
      * @returns The store manager, to allow chaining.
      */
-    includeParse(): StoreManager;
+    parseIncludes(): StoreManager;
     /**
      * Parses all static includes (entity, config, locale and custom) from one file.
      *
-     * @param json - A JSON object.
+     * @param fileContent - THe contents of a file.
      *
      * @returns The store manager, to allow chaining.
      */
-    includeParseFile(json: Json): StoreManager;
+    parseSingleFileIncludes(fileContent: any): StoreManager;
 };
 //# sourceMappingURL=store.types.d.ts.map

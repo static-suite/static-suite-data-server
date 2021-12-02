@@ -43,8 +43,10 @@ exports.dataDirManager = {
                 readFileFromCache: !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
             });
         });
-        storeManager_1.storeManager.includeParse();
         logger_1.logger.debug(`Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`);
+        const includeParserStartDate = Date.now();
+        storeManager_1.storeManager.parseIncludes();
+        logger_1.logger.debug(`Store include parser done in ${Date.now() - includeParserStartDate}ms.`);
         // Clear all queries, since they are stale.
         // No need to clear the store subset cache, since no
         // file has been added/updated/deleted.
@@ -63,10 +65,8 @@ exports.dataDirManager = {
                 const changedFiles = workDir_1.workDirHelper.getChangedFilesSince(storeLastSyncDate);
                 changedFiles.updated.forEach(file => {
                     storeManager_1.storeManager.update(file);
-                    const fileContent = file
-                        .split('/')
-                        .reduce((prev, curr) => prev && prev[curr], store_1.store.data);
-                    storeManager_1.storeManager.includeParseFile(fileContent);
+                    const fileContent = store_1.store.data.get(file);
+                    storeManager_1.storeManager.parseSingleFileIncludes(fileContent);
                 });
                 changedFiles.deleted.forEach(file => storeManager_1.storeManager.remove(file));
                 // Clear all store subsets and queries, since they are stale.

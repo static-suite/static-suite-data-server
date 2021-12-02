@@ -40,7 +40,7 @@ store.data.set('article2.json', {
 
 describe('staticIncludeParser', () => {
   it('sets correct value by reference', () => {
-    includeParser.static.run(staticFileContent);
+    includeParser.static(staticFileContent);
     expect(staticFileContent.data.content.author.entity).toBe(
       store.data.get('article2.json').data.content,
     );
@@ -65,7 +65,7 @@ config.queryDir = resolve('src/__tests__/fixtures/query');
 
 describe('queryIncludeParser', () => {
   it('sets correct value', () => {
-    includeParser.dynamic.run(dynamicFileContent);
+    includeParser.dynamic(dynamicFileContent);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     expect(dynamicFileContent.data.content.query.data).toStrictEqual([
