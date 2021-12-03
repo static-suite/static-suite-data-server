@@ -35,7 +35,7 @@ store.data.set('article2.json', {
   data: {
     content: {
       id: '58728',
-      title: 'Título 2',
+      title: 'Title 2',
     },
   },
 });

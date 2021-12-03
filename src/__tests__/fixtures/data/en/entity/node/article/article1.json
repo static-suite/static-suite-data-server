@@ -2,7 +2,7 @@
   "data": {
     "content": {
       "id": "58724",
-      "title": "Título 1",
+      "title": "Title 1",
       "author": {
         "entity": {
           "entityInclude": "en/entity/node/article/article2.json"
