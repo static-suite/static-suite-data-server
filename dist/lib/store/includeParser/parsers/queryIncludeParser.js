@@ -7,7 +7,11 @@ const object_1 = require("@lib/utils/object");
 const string_1 = require("@lib/utils/string");
 const aliasWithoutTypeIncludeParser_1 = require("./types/aliasWithoutTypeIncludeParser");
 const queryIncludeParser = ({ host, includePath, }) => {
-    const [queryId, rawQueryArgs] = (0, object_1.getObjValue)(host, includePath).split('?');
+    const queryDefinition = (0, object_1.getObjValue)(host, includePath);
+    if (!queryDefinition) {
+        return;
+    }
+    const [queryId, rawQueryArgs] = queryDefinition.split('?');
     const queryArgs = rawQueryArgs ? (0, string_1.parseURLSearchParams)(rawQueryArgs) : {};
     const queryResponse = query_1.queryRunner.run(queryId, queryArgs);
     const target = (0, query_types_1.isQueryErrorResponse)(queryResponse)

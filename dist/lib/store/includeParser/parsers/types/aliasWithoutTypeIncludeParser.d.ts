@@ -4,5 +4,5 @@ import { GenericIncludeParserOptions } from '@lib/store/includeParser/includePar
  * @param options - Object with options as defined in @see {@link IncludeParserOptions}
  * @param type - Type of include (custom, query, etc)
  */
-export declare const aliasWithoutTypeIncludeParser: (options: GenericIncludeParserOptions, type: string) => void;
+export declare const aliasWithoutTypeIncludeParser: ({ host, target, mountPath, includeKey }: GenericIncludeParserOptions, type: string) => void;
 //# sourceMappingURL=aliasWithoutTypeIncludeParser.d.ts.map

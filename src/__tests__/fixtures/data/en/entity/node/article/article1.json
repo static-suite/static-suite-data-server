@@ -22,15 +22,19 @@
     }
   },
   "metadata": {
-    "includes": [
-      "data.content.author.entity.entityInclude",
-      "data.content.image.entity.entityInclude",
-      "data.content.queryInclude",
-      "data.content.article2CustomInclude",
-      "data.content.customInclude",
-      "data.content.localeInclude",
-      "data.content.configInclude",
-      "data.content.thisConfigInclude"
-    ]
+    "includes": {
+      "static": [
+        "data.content.author.entity.entityInclude",
+        "data.content.image.entity.entityInclude",
+        "data.content.article2CustomInclude",
+        "data.content.customInclude",
+        "data.content.localeInclude",
+        "data.content.configInclude",
+        "data.content.thisConfigInclude"
+      ],
+      "dynamic": [
+        "data.content.queryInclude"
+      ]
+    }
   }
 }

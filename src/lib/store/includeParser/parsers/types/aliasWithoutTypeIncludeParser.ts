@@ -5,19 +5,12 @@ import { GenericIncludeParserOptions } from '@lib/store/includeParser/includePar
  * @param type - Type of include (custom, query, etc)
  */
 export const aliasWithoutTypeIncludeParser = (
-  options: GenericIncludeParserOptions,
+  { host, target, mountPath, includeKey }: GenericIncludeParserOptions,
   type: string,
 ): void => {
-  const {
-    host: fileContent,
-    target: includeData,
-    mountPath: mountPointPath,
-    includeKey,
-  } = options;
-
-  const mountPoint = mountPointPath.reduce(
+  const mountPoint = mountPath.reduce(
     (previous: any, current: any) => previous?.[current],
-    fileContent,
+    host,
   );
   const mountPointKey =
     includeKey.replace('Include', '') === type
@@ -26,6 +19,6 @@ export const aliasWithoutTypeIncludeParser = (
           `${type.charAt(0).toUpperCase() + type.slice(1)}Include`,
           '',
         );
-  mountPoint[mountPointKey] = includeData;
+  mountPoint[mountPointKey] = target;
   delete mountPoint[includeKey];
 };

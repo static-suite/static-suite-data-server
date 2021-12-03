@@ -37,7 +37,7 @@ export const deepClone = (object: ObjectType): ObjectType =>
  *
  * @param object - An object
  * @param path - A string or array of strings
- * @param separator - Optional separator if path is a string;
+ * @param separator - Optional separator if path is a string. '.' by default.
  *
  * @returns Value of the path or undefined
  */
@@ -47,7 +47,7 @@ export const getObjValue = (
   separator?: string,
 ): any | undefined => {
   const pathArray = Array.isArray(path) ? path : path.split(separator || '.');
-  pathArray.reduce(
+  return pathArray.reduce(
     (previous: any, current: any) => previous?.[current],
     object,
   );

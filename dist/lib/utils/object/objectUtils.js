@@ -36,7 +36,7 @@ exports.deepClone = deepClone;
  *
  * @param object - An object
  * @param path - A string or array of strings
- * @param separator - Optional separator if path is a string;
+ * @param separator - Optional separator if path is a string. '.' by default.
  *
  * @returns Value of the path or undefined
  */

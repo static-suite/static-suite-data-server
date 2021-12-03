@@ -9,7 +9,11 @@ export const queryIncludeParser = ({
   host,
   includePath,
 }: QueryIncludeParserOptions): void => {
-  const [queryId, rawQueryArgs] = getObjValue(host, includePath).split('?');
+  const queryDefinition = getObjValue(host, includePath);
+  if (!queryDefinition) {
+    return;
+  }
+  const [queryId, rawQueryArgs] = queryDefinition.split('?');
   const queryArgs = rawQueryArgs ? parseURLSearchParams(rawQueryArgs) : {};
   const queryResponse = queryRunner.run(queryId, queryArgs);
   const target = isQueryErrorResponse(queryResponse)
