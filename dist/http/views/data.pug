@@ -1,0 +1,71 @@
+extends includes/layout.pug
+
+block vars
+  - var title = "Data | Static Suite Data Server"
+
+block assets
+  link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css')
+  link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css')
+  script(src="https://cdn.jsdelivr.net/npm/simple-datatables@latest")
+  script(src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js")
+
+  script.
+    const dataTable = new simpleDatatables.DataTable("#data-table", {
+      paging: false
+            });
+    new ClipboardJS('#copy-to-clipboard');
+
+block breadcrumbs
+  li
+    a(href="/data")="data"
+  each breadcrumb in breadcrumbs
+    li
+      a(href=`/data/${breadcrumb.url}`)=breadcrumb.title
+
+block content
+  h1(class="title is-1" id="data-path")=`${path}`
+    span(class="icon is-medium ml-5")
+      button(id="copy-to-clipboard" class="button  is-light" data-clipboard-text=`data${path}` style="padding-left:5px; padding-right:0" title="Copy to clipboard")
+        span(class="has-tooltip-arrow" data-tooltip="Copy to clipboard")
+          svg(xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 1024 896")
+            path(d="M128 768h256v64H128v-64z m320-384H128v64h320v-64z m128 192V448L384 640l192 192V704h320V576H576z m-288-64H128v64h160v-64zM128 704h160v-64H128v64z m576 64h64v128c-1 18-7 33-19 45s-27 18-45 19H64c-35 0-64-29-64-64V192c0-35 29-64 64-64h192C256 57 313 0 384 0s128 57 128 128h192c35 0 64 29 64 64v320h-64V320H64v576h640V768zM128 256h512c0-35-29-64-64-64h-64c-35 0-64-29-64-64s-29-64-64-64-64 29-64 64-29 64-64 64h-64c-35 0-64 29-64 64z")
+  h2(class="subtitle")=`${count} items`
+
+  table(id="data-table" class="table is-fullwidth is-striped is-hoverable")
+    thead
+      tr
+        th="Item"
+        th="Type"
+        if hasContentInfo
+          th="Id"
+          th="Entity Type"
+          th="Bundle"
+          th="Published"
+          th="Title"
+          th="Filename"
+          th="Size"
+    tbody
+      for item in items
+        tr
+          td
+            a(href=`/data/${base}${item.name}`)= item.name
+          td=item.type
+          if item.info
+            td=item.info.id
+            td=item.info.type
+            td=item.info.bundle
+            td=item.info.isPublished
+            td=item.info.title
+            td=item.info.filename
+            td=item.info.size
+          else if hasContentInfo
+            td
+            td
+            td
+            td
+            td
+            td
+            td
+
+
+
