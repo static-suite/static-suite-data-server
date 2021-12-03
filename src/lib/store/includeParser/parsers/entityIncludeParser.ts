@@ -1,16 +1,16 @@
 import { EntityIncludeParserOptions } from '../includeParser.types';
 
 export const entityIncludeParser = ({
-  fileContent,
-  includeData,
-  mountPointPath,
+  host,
+  target,
+  mountPath,
 }: EntityIncludeParserOptions): void => {
-  const includeKey = mountPointPath.pop();
+  const includeKey = mountPath.pop();
   if (includeKey) {
-    const mountPoint = mountPointPath.reduce(
+    const mountPoint = mountPath.reduce(
       (previous: any, current: any) => previous?.[current],
-      fileContent,
+      host,
     );
-    mountPoint[includeKey] = includeData.data?.content;
+    mountPoint[includeKey] = target.data?.content;
   }
 };

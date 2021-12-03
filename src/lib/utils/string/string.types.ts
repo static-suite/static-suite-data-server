@@ -1,4 +1,1 @@
-export type Json = {
-  [key: string]: unknown;
-  __FILENAME__?: string;
-};
+export type URLSearchParamsObject = Record<string, string | string[] | null>;

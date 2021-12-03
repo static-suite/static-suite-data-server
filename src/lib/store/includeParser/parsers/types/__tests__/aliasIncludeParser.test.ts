@@ -8,9 +8,9 @@ describe('aliasIncludeParser', () => {
       },
     };
     aliasIncludeParser({
-      fileContent,
-      includeData: { includedData: 'yyy' },
-      mountPointPath: ['data'],
+      host: fileContent,
+      target: { includedData: 'yyy' },
+      mountPath: ['data'],
       includeKey: 'localeInclude',
     });
     expect(fileContent.data).toStrictEqual({
@@ -25,9 +25,9 @@ describe('aliasIncludeParser', () => {
       },
     };
     aliasIncludeParser({
-      fileContent,
-      includeData: { includedData: 'yyy' },
-      mountPointPath: ['data'],
+      host: fileContent,
+      target: { includedData: 'yyy' },
+      mountPath: ['data'],
       includeKey: 'myLocaleInclude',
     });
     expect(fileContent.data).toStrictEqual({

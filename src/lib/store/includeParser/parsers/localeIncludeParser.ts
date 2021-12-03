@@ -1,6 +1,8 @@
-import { IncludeParserOptions } from '../includeParser.types';
+import { GenericIncludeParserOptions } from '../includeParser.types';
 import { aliasIncludeParser } from './types/aliasIncludeParser';
 
-export const localeIncludeParser = (options: IncludeParserOptions): void => {
+export const localeIncludeParser = (
+  options: GenericIncludeParserOptions,
+): void => {
   aliasIncludeParser(options);
 };

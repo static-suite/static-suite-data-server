@@ -1,14 +1,20 @@
-import { IncludeParserOptions } from '@lib/store/includeParser/includeParser.types';
-
+import { GenericIncludeParserOptions } from '@lib/store/includeParser/includeParser.types';
+/**
+ *
+ * @param options - Object with options as defined in @see {@link IncludeParserOptions}
+ * @param type - Type of include (custom, query, etc)
+ */
 export const aliasWithoutTypeIncludeParser = (
-  {
-    fileContent,
-    includeData,
-    mountPointPath,
-    includeKey,
-  }: IncludeParserOptions,
+  options: GenericIncludeParserOptions,
   type: string,
 ): void => {
+  const {
+    host: fileContent,
+    target: includeData,
+    mountPath: mountPointPath,
+    includeKey,
+  } = options;
+
   const mountPoint = mountPointPath.reduce(
     (previous: any, current: any) => previous?.[current],
     fileContent,

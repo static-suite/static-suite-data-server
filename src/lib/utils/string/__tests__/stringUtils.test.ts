@@ -1,5 +1,5 @@
 import { logger } from '@lib/utils/logger';
-import { parseJsonString, getVariantKey } from '../stringUtils';
+import { parseJsonString, parseURLSearchParams } from '../stringUtils';
 
 describe('String utils test', () => {
   describe('parseJsonString', () => {
@@ -14,16 +14,17 @@ describe('String utils test', () => {
     });
   });
 
-  describe('getVariantKey', () => {
-    it('gets a variant key from a valid path', () => {
-      expect(getVariantKey('/absolute/path/to/example--variant.json')).toBe(
-        'variant',
-      );
+  describe('parseURLSearchParams', () => {
+    it('parses a query string with non repeated keys and returns an object', () => {
+      const parsedQuery = parseURLSearchParams('arg1=a&arg2=b');
+      const expectedValue = { arg1: 'a', arg2: 'b' };
+      expect(parsedQuery).toStrictEqual(expectedValue);
     });
-    it('gets null from a non-valid path', () => {
-      expect(
-        getVariantKey('/absolute/path/to/example__variant.json'),
-      ).toBeNull();
+
+    it('parses a query string with repeated keys and returns an object', () => {
+      const parsedQuery = parseURLSearchParams('arg1=a&arg2=b&arg1=c');
+      const expectedValue = { arg1: ['a', 'c'], arg2: 'b' };
+      expect(parsedQuery).toEqual(expectedValue);
     });
   });
 });

@@ -7,7 +7,7 @@ const staticFileContent = {
   data: {
     content: {
       id: '58724',
-      title: 'Título 1',
+      title: 'Title',
       author: {
         entity: {
           entityInclude: 'article2.json',
@@ -22,11 +22,13 @@ const staticFileContent = {
     },
   },
   metadata: {
-    includes: [
-      'data.content.author.entity.entityInclude',
-      'data.content.image.entity.entityInclude',
-      'data.content.queryInclude',
-    ],
+    includes: {
+      static: [
+        'data.content.author.entity.entityInclude',
+        'data.content.image.entity.entityInclude',
+      ],
+      dynamic: ['data.content.queryInclude'],
+    },
   },
 };
 store.data.set('article2.json', {
@@ -58,7 +60,9 @@ const dynamicFileContent = {
     },
   },
   metadata: {
-    includes: ['data.content.queryInclude'],
+    includes: {
+      dynamic: ['data.content.queryInclude'],
+    },
   },
 };
 config.queryDir = resolve('src/__tests__/fixtures/query');

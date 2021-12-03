@@ -1,4 +1,4 @@
-import { Json } from '../string/string.types';
+import { Json } from '@lib/utils/object/object.types';
 
 /**
  * An object that represents a file's contents.

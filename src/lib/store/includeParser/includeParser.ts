@@ -1,135 +1,46 @@
-import { queryRunner } from '@lib/query';
-import { isQueryErrorResponse } from '@lib/query/query.types';
-import { getObjectValue } from '@lib/utils/object';
-import { store } from '..';
-import { IncludeParser, JsonIncludeMetadata } from './includeParser.types';
-import { aliasWithoutTypeIncludeParser } from './parsers/types/aliasWithoutTypeIncludeParser';
+import { Json } from '@lib/utils/object/object.types';
+import { getObjValue } from '@lib/utils/object';
+import { IncludeParser } from './includeParser.types';
 import {
   configIncludeParser,
   customIncludeParser,
   entityIncludeParser,
   localeIncludeParser,
+  queryIncludeParser,
 } from './parsers';
+import { store } from '..';
 
-/**
- * Parses a raw query string into an object.
- *
- * @remarks
- * Turns a string like "arg1=a&arg2=b" into an object like
- * \{ arg1: 'a', arg2: 'b'\}
- *
- * @param queryString - A raw query string
- *
- * @returns An object where its keys are the query arguments.
- */
-const parseQueryParams = (queryString: string) => {
-  // Parse query string.
-  const params = new URLSearchParams(queryString);
-
-  const obj: Record<string, any> = {};
-  Array.from(params.keys()).forEach((key: string) => {
-    if (params.getAll(key).length > 1) {
-      obj[key] = params.getAll(key);
-    } else {
-      obj[key] = params.get(key);
-    }
-  });
-  return obj;
-};
-
-/**
- * Global parser that is able to parse static and dynamic includes.
- */
 export const includeParser: IncludeParser = {
-  static: (fileContent: JsonIncludeMetadata): void => {
-    if (!fileContent) {
-      return;
-    }
-
-    const jsonData = fileContent;
-    if (!jsonData.metadata?.includes) {
-      return;
-    }
-
-    jsonData.metadata?.includes.forEach((includePath: string) => {
-      const targetKey = getObjectValue(fileContent, includePath);
-      const includeData = store.data.get(targetKey);
-      const mountPointPath = includePath.split('.');
-      const includeKey = mountPointPath.pop();
-      if (!includeKey) {
-        return;
-      }
-
-      const normalizedIncludeKey = includeKey.toLowerCase();
-      if (normalizedIncludeKey.endsWith('configinclude')) {
-        configIncludeParser({
-          fileContent,
-          includeData,
-          mountPointPath,
-          includeKey,
-        });
-      }
-      if (normalizedIncludeKey.endsWith('entityinclude')) {
-        entityIncludeParser({
-          fileContent,
-          includeData,
-          mountPointPath,
-        });
-      }
-      if (normalizedIncludeKey.endsWith('custominclude')) {
-        customIncludeParser({
-          fileContent,
-          includeData,
-          mountPointPath,
-          includeKey,
-        });
-      }
-      if (normalizedIncludeKey.endsWith('localeinclude')) {
-        localeIncludeParser({
-          fileContent,
-          includeData,
-          mountPointPath,
-          includeKey,
-        });
+  static: (host: Json): void => {
+    host?.metadata?.includes?.static?.forEach((includePath: string) => {
+      const mountPath = includePath.split('.');
+      const normalizedIncludePath = includePath.toLowerCase();
+      const includeKey = mountPath.pop();
+      if (includeKey) {
+        // All static includes share the same strategy, where the
+        // includePath gives access to the final target to be included.
+        const targetKey = getObjValue(host, includePath);
+        const target = store.data.get(targetKey);
+        if (normalizedIncludePath.endsWith('configinclude')) {
+          configIncludeParser({ host, target, mountPath, includeKey });
+        }
+        if (normalizedIncludePath.endsWith('entityinclude')) {
+          entityIncludeParser({ host, target, mountPath, includeKey });
+        }
+        if (normalizedIncludePath.endsWith('custominclude')) {
+          customIncludeParser({ host, target, mountPath, includeKey });
+        }
+        if (normalizedIncludePath.endsWith('localeinclude')) {
+          localeIncludeParser({ host, target, mountPath, includeKey });
+        }
       }
     });
   },
-  dynamic: (fileContent: JsonIncludeMetadata): void => {
-    if (!fileContent) {
-      return;
-    }
 
-    const jsonData = fileContent;
-    if (!jsonData.metadata?.includes) {
-      return;
-    }
-
-    jsonData.metadata?.includes.forEach((includePath: string) => {
-      if (!includePath.toLowerCase().endsWith('queryinclude')) {
-        return;
-      }
-      const [queryId, rawQueryArgs] = getObjectValue(
-        fileContent,
-        includePath,
-      ).split('?');
-      const queryArgs = rawQueryArgs ? parseQueryParams(rawQueryArgs) : {};
-      const queryResponse = queryRunner.run(queryId, queryArgs);
-      const includeData = isQueryErrorResponse(queryResponse)
-        ? queryResponse.error
-        : queryResponse.data;
-      const mountPointPath = includePath.split('.');
-      const includeKey = mountPointPath.pop();
-      if (includeKey) {
-        aliasWithoutTypeIncludeParser(
-          {
-            fileContent,
-            includeData,
-            mountPointPath,
-            includeKey,
-          },
-          'query',
-        );
-      }
+  dynamic: (host: Json): void => {
+    host?.metadata?.includes?.dynamic?.forEach((includePath: string) => {
+      // No need to check if it is a query include.
+      queryIncludeParser({ host, includePath });
     });
   },
 };

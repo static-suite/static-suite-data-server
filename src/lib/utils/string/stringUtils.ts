@@ -1,5 +1,5 @@
-import path from 'path';
 import { logger } from '@lib/utils/logger';
+import { URLSearchParamsObject } from './string.types';
 
 /**
  * Separator for variant data files saved to storage.
@@ -35,16 +35,27 @@ export const parseJsonString = (jsonString: string): any => {
 };
 
 /**
- * Gets a data file's variant key
+ * Parses a raw URL search (aka "query string") into an object.
  *
- * @param filePath - Absolute path to the data file
+ * @remarks
+ * Turns a string like "arg1=a&arg2=b" into an object like
+ * \{ arg1: 'a', arg2: 'b'\}
  *
- * @returns The file's variant key, or null if not found
+ * @param queryString - A raw URL search string
+ *
+ * @returns An object where its keys are the query arguments.
  */
-export const getVariantKey = (filePath: string): string | null => {
-  const fileName = path.parse(filePath).name;
-  if (fileName.indexOf(VARIANT_SEPARATOR) !== -1) {
-    return fileName.split(VARIANT_SEPARATOR).pop() || null;
-  }
-  return null;
+export const parseURLSearchParams = (
+  queryString: string,
+): URLSearchParamsObject => {
+  const params = new URLSearchParams(queryString);
+  const obj: URLSearchParamsObject = {};
+  Array.from(params.keys()).forEach(key => {
+    if (params.getAll(key).length > 1) {
+      obj[key] = params.getAll(key);
+    } else {
+      obj[key] = params.get(key);
+    }
+  });
+  return obj;
 };

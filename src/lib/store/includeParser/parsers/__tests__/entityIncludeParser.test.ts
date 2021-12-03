@@ -2,7 +2,7 @@ import { entityIncludeParser } from '../entityIncludeParser';
 
 describe('entityIncludeParser', () => {
   it('mounts data on correct path', () => {
-    const fileContent = {
+    const host = {
       data: {
         content: {
           entity: {
@@ -12,16 +12,18 @@ describe('entityIncludeParser', () => {
       },
     };
     entityIncludeParser({
-      fileContent,
-      includeData: { data: { content: { includedData: 'yyy' } } },
-      mountPointPath: ['data', 'content', 'entity'],
+      host,
+      target: { data: { content: { includedData: 'yyy' } } },
+      mountPath: ['data', 'content', 'entity'],
+      includeKey: 'entityInclude',
     });
-    expect(fileContent.data.content.entity).toStrictEqual({
+    expect(host.data.content.entity).toStrictEqual({
       includedData: 'yyy',
     });
   });
+
   it('returns undefined when includeData has not data.content structure', () => {
-    const fileContent = {
+    const host = {
       data: {
         content: {
           entity: {
@@ -31,10 +33,11 @@ describe('entityIncludeParser', () => {
       },
     };
     entityIncludeParser({
-      fileContent,
-      includeData: { includedData: 'yyy' },
-      mountPointPath: ['data', 'content', 'entity'],
+      host,
+      target: { includedData: 'yyy' },
+      mountPath: ['data', 'content', 'entity'],
+      includeKey: 'entityInclude',
     });
-    expect(fileContent.data.content.entity).toBeUndefined();
+    expect(host.data.content.entity).toBeUndefined();
   });
 });
