@@ -67,8 +67,8 @@ const data = (req: Request, res: Response): void => {
       };
 
       hasContentInfo = true;
-      if (item.data?.content) {
-        const content = item.data?.content;
+      const content = item.data?.content;
+      if (content) {
         const { id, type, bundle, isPublished, title } = content;
         if (id || type || bundle || title) {
           info = {
@@ -78,7 +78,6 @@ const data = (req: Request, res: Response): void => {
             isPublished,
             title,
             filename,
-            size: JSON.stringify(item).length,
           };
           hasContentInfo = true;
         }
