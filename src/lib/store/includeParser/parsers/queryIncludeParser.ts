@@ -1,3 +1,5 @@
+import { config } from '@lib/config';
+import { RunMode } from '@lib/dataServer.types';
 import { queryRunner } from '@lib/query';
 import { isQueryErrorResponse } from '@lib/query/query.types';
 import { getObjValue } from '@lib/utils/object';
@@ -31,9 +33,12 @@ export const queryIncludeParser = ({
           ? parseURLSearchParams(rawQueryArgs)
           : {};
         const queryResponse = queryRunner.run(queryId, queryArgs);
-        return isQueryErrorResponse(queryResponse)
-          ? queryResponse.error
-          : queryResponse.data;
+        if (isQueryErrorResponse(queryResponse)) {
+          return config.runMode === RunMode.DEV
+            ? `${queryResponse.error} (message visible only in run mode DEV)`
+            : null;
+        }
+        return queryResponse.data;
       }
       return undefined;
     },
