@@ -42,6 +42,6 @@ exports.deepClone = deepClone;
  */
 const getObjValue = (object, path, separator) => {
     const pathArray = Array.isArray(path) ? path : path.split(separator || '.');
-    pathArray.reduce((previous, current) => previous?.[current], object);
+    return pathArray.reduce((previous, current) => previous?.[current], object);
 };
 exports.getObjValue = getObjValue;

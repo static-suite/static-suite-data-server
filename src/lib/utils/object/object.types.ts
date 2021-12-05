@@ -65,8 +65,8 @@ export type Json = {
      * ```
      */
     includes?: {
-      static?: Array<string>;
-      dynamic?: Array<string>;
+      static?: Record<string, string>;
+      dynamic?: Record<string, string>;
     };
   };
 };

@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
+const microtime_1 = __importDefault(require("microtime"));
 const string_1 = require("@lib/utils/string");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
@@ -14,7 +18,7 @@ exports.store = {
         custom: new Map(),
     },
     subset(options) {
-        const startDate = Date.now();
+        const startDate = microtime_1.default.now();
         // Merge provided options with default ones.
         const defaultOptions = {
             variant: '_main',
@@ -50,7 +54,7 @@ exports.store = {
         const cachedSubset = subsetCache.get(pattern);
         if (cachedSubset) {
             subset = cachedSubset;
-            logger_1.logger.debug(`Store subset obtained from cache in ${Date.now() - startDate}ms. ${subset.items.length} items.`);
+            logger_1.logger.debug(`Store subset obtained from cache in ${(microtime_1.default.now() - startDate) / 1000}ms. ${subset.items.length} items.`);
         }
         else {
             const regex = new RegExp(pattern);
@@ -62,7 +66,7 @@ exports.store = {
                 }
             });
             subsetCache.set(pattern, subset);
-            logger_1.logger.debug(`Store subset created in ${Date.now() - startDate}ms. ${subset.items.length} items.`);
+            logger_1.logger.debug(`Store subset created in ${(microtime_1.default.now() - startDate) / 1000} ms. ${subset.items.length} items.`);
         }
         return subset;
     },

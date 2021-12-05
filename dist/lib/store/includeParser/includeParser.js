@@ -1,19 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.includeParser = void 0;
-const object_1 = require("@lib/utils/object");
 const parsers_1 = require("./parsers");
 const __1 = require("..");
 exports.includeParser = {
     static: (host) => {
-        host?.metadata?.includes?.static?.forEach((includePath) => {
+        const staticIncludes = host?.metadata?.includes?.static;
+        if (!staticIncludes) {
+            return;
+        }
+        Object.keys(staticIncludes).forEach((includePath) => {
             const mountPath = includePath.split('.');
             const normalizedIncludePath = includePath.toLowerCase();
             const includeKey = mountPath.pop();
             if (includeKey) {
                 // All static includes share the same strategy, where the
                 // includePath gives access to the final target to be included.
-                const targetKey = (0, object_1.getObjValue)(host, includePath);
+                const targetKey = staticIncludes[includePath];
                 const target = __1.store.data.get(targetKey);
                 if (normalizedIncludePath.endsWith('configinclude')) {
                     (0, parsers_1.configIncludeParser)({ host, target, mountPath, includeKey });
@@ -31,7 +34,11 @@ exports.includeParser = {
         });
     },
     dynamic: (host) => {
-        host?.metadata?.includes?.dynamic?.forEach((includePath) => {
+        const dynamicIncludes = host?.metadata?.includes?.dynamic;
+        if (!dynamicIncludes) {
+            return;
+        }
+        Object.keys(dynamicIncludes).forEach((includePath) => {
             // No need to check if it is a query include.
             (0, parsers_1.queryIncludeParser)({ host, includePath });
         });

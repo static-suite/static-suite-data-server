@@ -23,11 +23,11 @@ const staticFileContent = {
   },
   metadata: {
     includes: {
-      static: [
-        'data.content.author.entity.entityInclude',
-        'data.content.image.entity.entityInclude',
-      ],
-      dynamic: ['data.content.queryInclude'],
+      static: {
+        'data.content.author.entity.entityInclude': 'article2.json',
+        'data.content.image.entity.entityInclude': 'article2.json',
+      },
+      dynamic: { 'data.content.queryInclude': 'lastPublishedContents' },
     },
   },
 };
@@ -61,7 +61,7 @@ const dynamicFileContent = {
   },
   metadata: {
     includes: {
-      dynamic: ['data.content.queryInclude'],
+      dynamic: { 'data.content.queryInclude': 'query2?y=10' },
     },
   },
 };

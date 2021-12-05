@@ -1,3 +1,4 @@
+import { getObjValue } from '@lib/utils/object';
 import { EntityIncludeParserOptions } from '../includeParser.types';
 
 export const entityIncludeParser = ({
@@ -8,10 +9,7 @@ export const entityIncludeParser = ({
   // Remove a level from mountPath, to mount entity a level up.
   const includeKey = mountPath.pop();
   if (includeKey) {
-    const mountPoint = mountPath.reduce(
-      (previous: any, current: any) => previous?.[current],
-      host,
-    );
+    const mountPoint = getObjValue(host, mountPath);
     mountPoint[includeKey] = target?.data?.content;
   }
 };

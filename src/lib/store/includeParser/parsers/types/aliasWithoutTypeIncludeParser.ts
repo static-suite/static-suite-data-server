@@ -1,4 +1,5 @@
 import { GenericIncludeParserOptions } from '@lib/store/includeParser/includeParser.types';
+import { getObjValue } from '@lib/utils/object';
 /**
  *
  * @param options - Object with options as defined in @see {@link IncludeParserOptions}
@@ -8,10 +9,7 @@ export const aliasWithoutTypeIncludeParser = (
   { host, target, mountPath, includeKey }: GenericIncludeParserOptions,
   type: string,
 ): void => {
-  const mountPoint = mountPath.reduce(
-    (previous: any, current: any) => previous?.[current],
-    host,
-  );
+  const mountPoint = getObjValue(host, mountPath);
   const mountPointKey =
     includeKey.replace('Include', '') === type
       ? type

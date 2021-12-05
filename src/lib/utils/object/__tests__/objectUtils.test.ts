@@ -32,12 +32,15 @@ describe('Object utils test', () => {
     });
   });
   describe('getObjectValue', () => {
-    const testObject = { x: { y: { z: 'xx' } } };
+    const testObject = { x: { y: { z: 'value' } } };
     it('gets object value with default separator', () => {
-      expect(getObjValue(testObject, 'x.y.z')).toBe('xx');
+      expect(getObjValue(testObject, 'x.y.z')).toBe('value');
     });
     it('gets object value with custom separator', () => {
-      expect(getObjValue(testObject, 'x/y/z', '/')).toBe('xx');
+      expect(getObjValue(testObject, 'x/y/z', '/')).toBe('value');
+    });
+    it('gets object value with array separator', () => {
+      expect(getObjValue(testObject, ['x', 'y', 'z'])).toBe('value');
     });
     it('gets undefined when path does not exist', () => {
       expect(getObjValue(testObject, 'x.z.z')).toBeUndefined();
