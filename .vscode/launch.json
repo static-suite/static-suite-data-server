@@ -14,10 +14,15 @@
       "args": [
         "http",
         "--data-dir",
-        "/home/oier/projects/bitween-group/demo-data",
+        "./src/__tests__/fixtures/data",
         "--query-dir",
-        "/home/oier/projects/bitween-group/static-suite-demo-next/nextjs/queries",
-        "-vvvv"
+        "./src/__tests__/fixtures/query",
+        "--hook-dir",
+        "./src/__tests__/fixtures/hook",
+        "--run-mode",
+        "dev",
+        "--log-level",
+        "debug"
       ],
       "cwd": "${workspaceFolder}"
     },
