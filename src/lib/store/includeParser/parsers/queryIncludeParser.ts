@@ -5,6 +5,14 @@ import { parseURLSearchParams } from '@lib/utils/string';
 import { QueryIncludeParserOptions } from '../includeParser.types';
 import { aliasWithoutTypeIncludeParser } from './types/aliasWithoutTypeIncludeParser';
 
+/**
+ * Parses query includes.
+ *
+ * @remarks
+ * Instead of executing a query and adding its result to a JSON file,
+ * create a Proxy so queries are only executed when they are consumed,
+ * in a Just-In-Time way.
+ */
 export const queryIncludeParser = ({
   host,
   includePath,
@@ -13,12 +21,25 @@ export const queryIncludeParser = ({
   if (!queryDefinition) {
     return;
   }
-  const [queryId, rawQueryArgs] = queryDefinition.split('?');
-  const queryArgs = rawQueryArgs ? parseURLSearchParams(rawQueryArgs) : {};
-  const queryResponse = queryRunner.run(queryId, queryArgs);
-  const target = isQueryErrorResponse(queryResponse)
-    ? queryResponse.error
-    : queryResponse.data;
+
+  // Execute the query when the "data" property is accessed.
+  const proxyHandler = {
+    get: (target: any, prop: string) => {
+      if (prop === 'data') {
+        const [queryId, rawQueryArgs] = queryDefinition.split('?');
+        const queryArgs = rawQueryArgs
+          ? parseURLSearchParams(rawQueryArgs)
+          : {};
+        const queryResponse = queryRunner.run(queryId, queryArgs);
+        return isQueryErrorResponse(queryResponse)
+          ? queryResponse.error
+          : queryResponse.data;
+      }
+      return undefined;
+    },
+  };
+  const target = new Proxy({ data: null }, proxyHandler);
+
   const mountPath = includePath.split('.');
   const includeKey = mountPath.pop();
   if (includeKey) {
