@@ -228,7 +228,7 @@ export type StoreManager = {
   /**
    * Parses all static includes (entity, config, locale and custom) from one file.
    *
-   * @param fileContent - THe contents of a file.
+   * @param fileContent - The contents of a file.
    *
    * @returns The store manager, to allow chaining.
    */
