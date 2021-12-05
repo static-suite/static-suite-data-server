@@ -1,3 +1,4 @@
+import microtime from 'microtime';
 import { VARIANT_SEPARATOR } from '@lib/utils/string';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
@@ -17,7 +18,7 @@ export const store: Store = {
   },
 
   subset(options: StoreSubsetOptions): StoreSubset {
-    const startDate = Date.now();
+    const startDate = microtime.now();
 
     // Merge provided options with default ones.
     const defaultOptions = {
@@ -58,9 +59,9 @@ export const store: Store = {
     if (cachedSubset) {
       subset = cachedSubset;
       logger.debug(
-        `Store subset obtained from cache in ${Date.now() - startDate}ms. ${
-          subset.items.length
-        } items.`,
+        `Store subset obtained from cache in ${
+          (microtime.now() - startDate) / 1000
+        }ms. ${subset.items.length} items.`,
       );
     } else {
       const regex = new RegExp(pattern);
@@ -73,7 +74,7 @@ export const store: Store = {
       });
       subsetCache.set(pattern, subset);
       logger.debug(
-        `Store subset created in ${Date.now() - startDate}ms. ${
+        `Store subset created in ${(microtime.now() - startDate) / 1000} ms. ${
           subset.items.length
         } items.`,
       );
