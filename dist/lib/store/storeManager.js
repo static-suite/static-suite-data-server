@@ -39,7 +39,19 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
             });
         }
     });
-    _1.store.data.set(relativeFilepath, fileContent.json || fileContent.raw);
+    const dataToStore = fileContent.json || fileContent.raw;
+    if (fileContent.json) {
+        const previousData = _1.store.data.get(relativeFilepath);
+        if (previousData && dataToStore && typeof dataToStore === 'object') {
+            Object.keys(previousData).forEach(key => {
+                delete previousData[key];
+            });
+            Object.keys(dataToStore).forEach(key => {
+                previousData[key] = dataToStore[key];
+            });
+        }
+    }
+    _1.store.data.set(relativeFilepath, dataToStore);
     return fileContent;
 };
 exports.storeManager = {

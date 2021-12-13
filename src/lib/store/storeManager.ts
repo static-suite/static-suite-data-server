@@ -44,8 +44,19 @@ const setFileIntoStore = (
       });
     }
   });
-
-  store.data.set(relativeFilepath, fileContent.json || fileContent.raw);
+  const dataToStore = fileContent.json || fileContent.raw;
+  if (fileContent.json) {
+    const previousData = store.data.get(relativeFilepath);
+    if (previousData && dataToStore && typeof dataToStore === 'object') {
+      Object.keys(previousData).forEach(key => {
+        delete previousData[key];
+      });
+      Object.keys(dataToStore).forEach(key => {
+        previousData[key] = dataToStore[key];
+      });
+    }
+  }
+  store.data.set(relativeFilepath, dataToStore);
 
   return fileContent;
 };

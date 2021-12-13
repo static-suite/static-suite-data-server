@@ -55,7 +55,6 @@ const getFileContent = (filePath) => {
     let json = null;
     if (isJson(filePath) && raw) {
         json = (0, string_1.parseJsonString)(raw);
-        // json = {};
         if (!json) {
             logger_1.logger.error(`Error getting JSON from file "${filePath}"`);
         }

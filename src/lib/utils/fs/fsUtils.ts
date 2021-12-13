@@ -51,7 +51,6 @@ export const getFileContent = (filePath: string): FileType => {
   let json = null;
   if (isJson(filePath) && raw) {
     json = parseJsonString(raw);
-    // json = {};
     if (!json) {
       logger.error(`Error getting JSON from file "${filePath}"`);
     }
