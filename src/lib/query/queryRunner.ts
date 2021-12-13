@@ -5,11 +5,11 @@ import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
 import { queryManager } from './queryManager';
 import {
+  QueryModuleResult,
   QueryRunner,
   CacheStatus,
-  QuerySuccessfulResponse,
   QueryErrorResponse,
-  QueryModuleResult,
+  QuerySuccessfulResponse,
 } from './query.types';
 
 let count = 0;
@@ -55,7 +55,7 @@ export const queryRunner: QueryRunner = {
       try {
         const queryModule = queryModuleInfo.getModule();
         const queryResponse = queryModule.default({
-          data: store.data,
+          store,
           args,
         });
         queryResult = {

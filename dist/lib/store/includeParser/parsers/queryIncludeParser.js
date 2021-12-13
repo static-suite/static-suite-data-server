@@ -32,7 +32,7 @@ const queryIncludeParser = ({ host, includePath, }) => {
                 const queryResponse = query_1.queryRunner.run(queryId, queryArgs);
                 if ((0, query_types_1.isQueryErrorResponse)(queryResponse)) {
                     return config_1.config.runMode === dataServer_types_1.RunMode.DEV
-                        ? `${queryResponse.error} (message visible only in run mode "dev")`
+                        ? `${queryResponse.error} (message visible only in run mode DEV)`
                         : null;
                 }
                 return queryResponse.data;

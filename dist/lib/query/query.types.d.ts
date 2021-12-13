@@ -73,7 +73,7 @@ export declare type QueryModule = {
         /**
          * Store data to be used in the query
          */
-        data: any;
+        store: any;
         args: QueryArgs;
     }): QueryModuleResult;
 };

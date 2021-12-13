@@ -50,7 +50,7 @@ exports.queryRunner = {
             try {
                 const queryModule = queryModuleInfo.getModule();
                 const queryResponse = queryModule.default({
-                    data: store_1.store.data,
+                    store: store_1.store,
                     args,
                 });
                 queryResult = {
