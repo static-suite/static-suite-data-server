@@ -1,3 +1,5 @@
+import { Store } from '@lib/store/store.types';
+
 /**
  * A service to handle the execution of queries.
  *
@@ -61,28 +63,6 @@ export type QueryRunner = {
  * @public
  */
 export type QueryArgs = Record<string, any>;
-
-/**
- * A module that defines a query.
- */
-export type QueryModule = {
-  /**
-   * The handler that executes a query.
-   *
-   * @remarks
-   * It receives the store data and a set of arguments, executes the query
-   * and returns its results.
-   *
-   * @param options - An object with options for the query: data and args
-   */
-  default(options: {
-    /**
-     * Store data to be used in the query
-     */
-    store: any;
-    args: QueryArgs;
-  }): QueryModuleResult;
-};
 
 /**
  * The result that a query returns after being executed.
@@ -162,6 +142,27 @@ export type QuerySuccessfulResponse = {
   };
 };
 
+/**
+ * A module that defines a query.
+ */
+export type QueryModule = {
+  /**
+   * The handler that executes a query.
+   *
+   * @remarks
+   * It receives the store data and a set of arguments, executes the query
+   * and returns its results.
+   *
+   * @param options - An object with options for the query: data and args
+   */
+  default(options: {
+    /**
+     * Store data to be used in the query
+     */
+    store: Store;
+    args: QueryArgs;
+  }): QueryModuleResult;
+};
 /**
  * An error response returned after executing a query.
  *

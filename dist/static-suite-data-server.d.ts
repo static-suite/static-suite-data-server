@@ -3,6 +3,7 @@ import { LogFile } from '@lib/utils/logger/logger.types';
 import { LogLevel } from '@lib/utils/logger/logger.types';
 import { QueryArgs } from '@lib/query/query.types';
 import { QueryErrorResponse } from '@lib/query/query.types';
+import { QueryModule } from '@lib/query/query.types';
 import { QueryRunner } from '@lib/query/query.types';
 import { QuerySuccessfulResponse } from '@lib/query/query.types';
 import { Store } from '@lib/store/store.types';
@@ -88,6 +89,8 @@ export { LogLevel }
 export { QueryArgs }
 
 export { QueryErrorResponse }
+
+export { QueryModule }
 
 export { QueryRunner }
 

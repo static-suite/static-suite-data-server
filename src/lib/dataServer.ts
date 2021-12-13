@@ -11,6 +11,7 @@ import {
   QuerySuccessfulResponse,
   QueryErrorResponse,
   QueryArgs,
+  QueryModule,
   CacheStatus,
 } from '@lib/query/query.types';
 import {
@@ -59,7 +60,6 @@ const dataServer = {
     };
   },
 };
-
 export {
   dataServer,
   DataServerInitOptions,
@@ -72,5 +72,6 @@ export {
   QuerySuccessfulResponse,
   QueryErrorResponse,
   QueryArgs,
+  QueryModule,
   CacheStatus,
 };
