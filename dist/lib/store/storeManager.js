@@ -41,11 +41,14 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
     });
     const dataToStore = fileContent.json || fileContent.raw;
     if (fileContent.json) {
+        // Check if the object already exists to make sure we don't break the reference
         const previousData = _1.store.data.get(relativeFilepath);
         if (previousData && dataToStore && typeof dataToStore === 'object') {
+            // Delete all referenced object properties
             Object.keys(previousData).forEach(key => {
                 delete previousData[key];
             });
+            // hydrate new object properties into referenced object
             Object.keys(dataToStore).forEach(key => {
                 previousData[key] = dataToStore[key];
             });
