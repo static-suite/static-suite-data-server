@@ -1,0 +1,17 @@
+extends includes/layout.pug
+
+block vars
+  - var title = "Clear cache bin | Static Suite Data Server"
+
+block breadcrumbs
+  li
+    a(href="/cache")="cache"
+
+block content
+  h1(class="title is-1")=`Clear cache bin "${cacheBinId}"`
+  table(class="table is-fullwidth is-hoverable")
+    tbody
+      if done
+        p(href=cacheBinId)=`Cache bin "${cacheBinId}" cleared`
+      else
+        p=`Cache bin "${cacheBinId}" not found`

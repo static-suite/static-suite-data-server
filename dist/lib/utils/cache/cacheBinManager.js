@@ -32,10 +32,18 @@ exports.cache = {
      * @returns The cache bin.
      */
     bin: (binId) => {
-        return data.has(binId)
+        return exports.cache.has(binId)
             ? data.get(binId)
             : initBin(binId);
     },
+    /**
+     * Returns a boolean indicating whether a cache bin
+     * with the specified key exists or not.
+     *
+     * @param binId - The id of the bin.
+     * @returns True if the cache bin exists, false otherwise.
+     */
+    has: (binId) => data.has(binId),
     /**
      * Gets an array of keys of all available cache bins.
      *

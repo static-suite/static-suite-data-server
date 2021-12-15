@@ -15,6 +15,14 @@ export declare const cache: {
      */
     bin: <Type>(binId: string) => CacheBin<Type>;
     /**
+     * Returns a boolean indicating whether a cache bin
+     * with the specified key exists or not.
+     *
+     * @param binId - The id of the bin.
+     * @returns True if the cache bin exists, false otherwise.
+     */
+    has: (binId: string) => boolean;
+    /**
      * Gets an array of keys of all available cache bins.
      *
      * @returns An array of cache bin keys.

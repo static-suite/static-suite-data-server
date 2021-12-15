@@ -1,0 +1,13 @@
+extends includes/layout.pug
+
+block vars
+  - var title = "Reset cache bin | Static Suite Data Server"
+
+block content
+  h1(class="title is-1")="Reset cache bin"
+  table(class="table is-fullwidth  is-hoverable")
+    tbody
+      if cacheBin
+        p(href=cacheBin)= `${cacheBin} reset`
+      else
+        p="Cache bin not found"

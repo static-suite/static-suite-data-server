@@ -33,10 +33,19 @@ export const cache = {
    * @returns The cache bin.
    */
   bin: <Type>(binId: string): CacheBin<Type> => {
-    return data.has(binId)
+    return cache.has(binId)
       ? (data.get(binId) as CacheBin<Type>)
       : initBin<Type>(binId);
   },
+
+  /**
+   * Returns a boolean indicating whether a cache bin
+   * with the specified key exists or not.
+   *
+   * @param binId - The id of the bin.
+   * @returns True if the cache bin exists, false otherwise.
+   */
+  has: (binId: string): boolean => data.has(binId),
 
   /**
    * Gets an array of keys of all available cache bins.
