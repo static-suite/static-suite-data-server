@@ -18,7 +18,7 @@ const data = (req: Request, res: Response): void => {
       dirKey = storeKey.endsWith('/') ? storeKey : `${storeKey}/`;
     }
     logger.debug(`Rendering directory "${dirKey}"`);
-    const storeDirSubset = store.subset({
+    const storeDirSubset = store.data.subset({
       dir: dirKey,
       variant: undefined,
       ext: undefined,

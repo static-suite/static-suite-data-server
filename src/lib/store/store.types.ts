@@ -8,6 +8,43 @@ export type StoreAddOptions = {
   readFileFromCache: boolean;
 };
 
+export interface StoreData<K, V> extends Map<K, V> {
+  /**
+   * Create a subset with all files in store that match the given arguments.
+   *
+   * @remarks
+   * All subsets are automatically cached, so passing the same arguments
+   * will return the same subset from the cache.
+   *
+   * This is the preferred way of getting a subset of the store files,
+   * since is a simple function that most of the times only requires
+   * the first argument.
+   *
+   * @example
+   * ```
+   * // Get a subset of all nodes with "json" extension.
+   * dataServer.store.data.subset({ dir: 'en/entity/node/', variant: null });
+   *
+   * // Get a subset of all articles in all languages with "json" extension.
+   * dataServer.store.data.subset({ dir: '.+/entity/node/article/' });
+   *
+   * // Get a subset of all articles regardless of their extension.
+   * dataServer.store.data.subset({ dir: 'en/entity/node/article/', ext: null });
+   *
+   * // Get a subset of all card variants for articles with "json" extension.
+   * dataServer.store.data.subset({ dir: 'en/entity/node/article/', variant: null });
+   *
+   * // Get a subset of english articles, with "yml" extension, non-recursively.
+   * dataServer.store.data.subset({ dir: 'en/entity/node/article/', ext: 'yml', recursive: false });
+   * ```
+   *
+   * @param options - Object with options for creating a store subset.
+   *
+   * @returns An object with "filenames" and "items".
+   */
+  subset(options: StoreSubsetOptions): StoreSubset;
+}
+
 /**
  * The store that holds all data.
  */
@@ -74,7 +111,7 @@ export type Store = {
    * const results = store.data.subset({ dir: 'en/entity/node/article/', recursive: true });
    * ```
    */
-  data: Map<string, any>;
+  data: StoreData<string, any>;
 
   /**
    * An object to hold accessory index data.
@@ -90,41 +127,6 @@ export type Store = {
      */
     custom: Map<string, any>;
   };
-
-  /**
-   * Create a subset with all files in store that match the given arguments.
-   *
-   * @remarks
-   * All subsets are automatically cached, so passing the same arguments
-   * will return the same subset from the cache.
-   *
-   * This is the preferred way of getting a subset of the store files,
-   * since is a simple function that most of the times only requires
-   * the first argument.
-   *
-   * @example
-   * ```
-   * // Get a subset of all nodes with "json" extension.
-   * dataServer.store.subset({ dir: 'en/entity/node/', variant: null });
-   *
-   * // Get a subset of all articles in all languages with "json" extension.
-   * dataServer.store.subset({ dir: '.+/entity/node/article/' });
-   *
-   * // Get a subset of all articles regardless of their extension.
-   * dataServer.store.subset({ dir: 'en/entity/node/article/', ext: null });
-   *
-   * // Get a subset of all card variants for articles with "json" extension.
-   * dataServer.store.subset({ dir: 'en/entity/node/article/', variant: null });
-   *
-   * // Get a subset of english articles, with "yml" extension, non-recursively.
-   * dataServer.store.subset({ dir: 'en/entity/node/article/', ext: 'yml', recursive: false });
-   * ```
-   *
-   * @param options - Object with options for creating a store subset.
-   *
-   * @returns An object with "filenames" and "items".
-   */
-  subset(options: StoreSubsetOptions): StoreSubset;
 };
 
 /**
