@@ -167,6 +167,7 @@ declare type Store_2 = {
      * // Find an specific article.
      * const article = store.data.get('en/entity/node/article/123.json');
      * const article = store.index.url.get('science/embvrosadas/sdaasd');
+     * const article = store.index.uuid.get('nl').get('ce736c8b-a6ea-43c4-9a6b-ad1fc498017c');
      * const article = store.index.custom.get('taxonomies').get('12234');
      *
      * // Create a subset of all english articles.
@@ -182,6 +183,10 @@ declare type Store_2 = {
          * An index that holds all data for all files, keyed by their URL.
          */
         url: Map<string, any>;
+        /**
+         * An index that holds all data for all files, keyed by their lang and uuid.
+         */
+        uuid: Map<string, any>;
         /**
          * An index to hold custom data defined in hooks or queries.
          */
