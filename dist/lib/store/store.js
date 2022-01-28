@@ -15,6 +15,7 @@ exports.store = {
     data: new Map(),
     index: {
         url: new Map(),
+        uuid: new Map(),
         custom: new Map(),
     },
 };

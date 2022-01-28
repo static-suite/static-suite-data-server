@@ -48,15 +48,29 @@ const setFileIntoStore = (
   if (fileContent.json) {
     // Check if the object already exists to make sure we don't break the reference
     const previousData = store.data.get(relativeFilepath);
-    if (previousData && dataToStore && typeof dataToStore === 'object') {
-      // Delete all referenced object properties
-      Object.keys(previousData).forEach(key => {
-        delete previousData[key];
-      });
-      // hydrate new object properties into referenced object
-      Object.keys(dataToStore).forEach(key => {
-        previousData[key] = dataToStore[key];
-      });
+    if (dataToStore && typeof dataToStore === 'object') {
+      if (previousData) {
+        // Delete all referenced object properties
+        Object.keys(previousData).forEach(key => {
+          delete previousData[key];
+        });
+        // hydrate new object properties into referenced object
+        Object.keys(dataToStore).forEach(key => {
+          previousData[key] = dataToStore[key];
+        });
+      }
+      const uuid = dataToStore.data?.content?.uuid;
+      const langcode = dataToStore.data?.content?.langcode?.value;
+      if (uuid && langcode) {
+        const langcodeMap =
+          store.index.uuid.get(langcode) ||
+          store.index.uuid.set(langcode, new Map<string, any>());
+        langcodeMap.set(uuid, dataToStore);
+      }
+      const url = dataToStore.data?.content?.url?.path;
+      if (url) {
+        store.index.url.set(url, dataToStore);
+      }
     }
   }
   store.data.set(relativeFilepath, dataToStore);
@@ -93,6 +107,11 @@ export const storeManager: StoreManager = {
     cache.bin<FileType>('file').delete(relativeFilepath);
 
     // Delete file contents from store.
+    const data = store.data.get(relativeFilepath);
+    const uuid = data.data?.content?.uuid;
+    const langcode = data.data?.content?.langcode?.value;
+    store.index.url.get(langcode).delete(uuid);
+
     store.data.delete(relativeFilepath);
 
     // Invoke "store remove" hook.

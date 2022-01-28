@@ -19,6 +19,7 @@ export const store: Store = {
 
   index: {
     url: new Map<string, any>(),
+    uuid: new Map<string, any>(),
     custom: new Map<string, any>(),
   },
 };
