@@ -2,22 +2,23 @@
 
 A flexible, fast and developer friendly Data Server for [Static Suite](https://www.drupal.org/project/static_suite).
 
-- flexible: it honors the structure of Static Suite's data directory, non imposing any opinionated structure. Every directory and its contents are loaded as simple arrays, so they can be queried using common [array functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) like `filter()`, `find()`, `forEach()`, etc.
+- flexible: it honors the structure of Static Suite's data directory, non imposing any opinionated structure. Every directory and its contents can be retrieved as simple arrays, so they can be queried using common [array functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) like `filter()`, `find()`, `forEach()`, etc.
 - fast: on a cold start, ~20k json files are usually loaded in ~2 seconds. Once the server is running, reloading those ~20k files usually takes ~100ms. Queries take ~1 ms, depending on their complexity. Once queries are cached, it executes ~150k queries per second.
-- developer friendly: when run on `dev` mode, any change made to data files, queries or post processors (more on this later) is automatically reloaded in milliseconds. Queries are easy to create (they are just a function) and debug using a HTTP endpoint.
+- developer friendly: when run on `dev` mode, any change made to data files, queries or hooks (more on this later) is automatically reloaded in milliseconds. Queries are easy to create (they are just a function) and debug using a HTTP endpoint.
 
-This Data Server supports standard JSON includes (`entityInclude`, `configInclude`, `localeInclude` and `customInclude`) and the dynamic `queryInclude`.
+This Data Server supports static JSON includes (`entityInclude`, `configInclude`, `localeInclude` and `customInclude`) and the dynamic `queryInclude`.
 
 ## Options
 
 - `dataDir` / `--data-dir`: path to the directory where data from Static Suite is stored. Required.
-- `workDir` / `--work-dir`: path to the directory where work data from Static Suite is stored. Required.
-- `queryDir` / `--query-dir`: path to the directory where queries are stored. Required for the HTTP endpoint, optional when using the Data Server directly through Node.js.
-- `postProcessor` / `--post-processor`: path to the post processor file. Optional.
-- `errorLogFile` / `--error-log-file`: path to the error log file. Optional.
-- `logLevelIncrement` / `-v` / `--verbose`: verbosity increment level for logs. It can be increased using several "v", i.e.- `-vvv`. Optional.
+- `workDir` / `--work-dir`: path to the directory where work data from Static Suite is stored. Optional.
+- `queryDir` / `--query-dir`: path to the directory where queries are stored. Optional.
+- `hookDir` / `--hook-dir`: path to the directory where hooks are stored. Optional.
+- `logLevel` / `--log-level`: log level verbosity: `error`, `warn`, `info` or `debug`. Optional. Defaults to `info`.
+- `logFile` / `--log-file`: path to the log file. Data server logs its errors to the stdOut, but they can also be saved into a log file. Optional.
+- `logFileLevel` / `--log-file-level`: log level verbosity for the log file: `error`, `warn`, `info` or `debug`. Optional. Defaults to the value of `logLevel` / `--log-level`
 - `runMode` / `--run-mode`: "dev" or "prod". Default is "prod". Optional.
-- `--port`: port number for the HTTP endpoint. Default is "57471". Optional.
+- `--port`: port number for the HTTP endpoint. Default is `57471`. Optional.
 
 ## Usage
 
@@ -29,24 +30,24 @@ There are three main use cases:
 
 ### SSG develop/build phase
 
-Require `lib/dataServer.js` inside the SSG, and call its `init()` function:
+Require `dist/lib/dataServer.js` inside the SSG, and call its `init()` function:
 
 ```javascript
-const { dataServer } = require('lib/dataServer');
+const { dataServer } = require('dist/lib/dataServer');
 
 // Init the Data Server.
-const { store, dataDirManager, queryRunner, logger } = dataServer.init({
+const { store, queryRunner } = dataServer.init({
   dataDir: '../data/prod',
   workDir: '../data/prod/.work',
   queryDir: './src/data-server/query',
-  postProcessor: './src/data-server/post-processor/main.js',
-  errorLogFile: '/var/log/static-suite-data-server/error.log',
-  logLevelIncrement: 0,
+  hookDir: './src/data-server/hook',
+  logFile: '/var/log/static-suite-data-server/error.log',
+  logLevel: 'debug',
   runMode: 'prod',
 });
 
 // Loop over all articles of a given language
-store.data[langcode].entity.node.article._json.forEach(article => {
+store.data.subset({ dir: 'en/entity/node/article/' }).forEach(article => {
   // do something
 });
 ```
@@ -56,14 +57,14 @@ store.data[langcode].entity.node.article._json.forEach(article => {
 Static Suite detects any use of the `queryInclude` tag and asks the Data Server to execute that query with its parameters. That communication is done using HTTP, sending an internal request from Drupal to an HTTP endpoint where the Data Server is listening. That HTTP endpoint is provided by Static Suite Data Server and must be started before any `queryInclude` can be resolved.
 
 ```shell
-yarn serve http --port 57471 --data-dir ../data/prod --work-dir ../data/prod/.work/ --query-dir=./src/data-server/query  --post-processor=./src/data-server/post-processor/main.js --error-log-file /var/log/static-suite-data-server/error.log --run-mode=prod
+yarn serve http --port 57471 --data-dir=../data/prod --work-dir=../data/prod/.work/ --query-dir=./src/data-server/query  --hook-dir=./src/data-server/hook --log-file=/var/log/static-suite-data-server/error.log --run-mode=prod
 ```
 
 The above command starts an HTTP server listening at http://localhost:57471
 
 Given a `queryInclude` defined as `"queryInclude": "queryId?arg1=value1&arg2=value2&argN=valueN"`, Drupal will send a request to http://localhost:57471/?query=queryId&arg1=value1&arg2=value2&argN=valueN and include its results in the original JSON data.
 
-The Data Server will load queries from the directory defined in `queryDir` / `--query-dir`, based on their id. Hence, it will try to find and load a file named "queryId.js". Please refer to "Queries" section for more information on queries.
+The Data Server will load queries from the directory defined in `queryDir` / `--query-dir`, based on their id. Hence, it will try to find and load a file named "queryId.query.js". Please refer to "Queries" section for more information on queries.
 
 ### Developing/debugging queries on a local environment
 
@@ -73,62 +74,89 @@ To be able to do so, you need to start the Data Server HTTP endpoint as stated i
 
 ## Data structure
 
-The Data Server honors the structure of Static Suite's data directory. Each file is stored in a tree-like object, where directories and filenames are transformed into object properties. For example, the filepath `/en/entity/node/article/40000/41234.json` is transformed into `store.data.en.entity.node.article['40000']['41234.json']`
+The Data Server honors the structure of Static Suite's data directory. Each file is stored in a Map, keyed by its filepath, and subsets of files can be easily retrieved.
 
-Every JSON file is also added to a special `_json` object inside every tree leaf, so the above file will be available in:
+### Getting a file
 
-- `store.data._json.main`
-- `store.data.en._json.main`
-- `store.data.en.entity._json.main`
-- `store.data.en.entity.node._json.main`
-- `store.data.en.entity.node.article._json.main`
-- `store.data.en.entity.node.article['40000']._json.main`
+Each file is stored inside a native JavaScript Map, keyed by its filepath, so they can be accessed by standard Map methods like `get()`, `has()`, etc
 
-Given a variant file named `/en/entity/node/article/40000/41234--teaser.json`, it would be added to the following `_json` object:
+```javascript
+// Get the contents of a file located at "en/entity/node/article/40000/41234.json"
+const fileContents = store.data.get('en/entity/node/article/40000/41234.json');
+```
 
-- `store.data._json.variants.teaser`
-- `store.data.en._json.variants.teaser`
-- `store.data.en.entity._json.variants.teaser`
-- `store.data.en.entity.node._json.variants.teaser`
-- `store.data.en.entity.node.article._json.variants.teaser`
-- `store.data.en.entity.node.article['40000']._json.variants.teaser`
+### Getting a subset of files
 
-As shown above, every directory path contains an special entry named `_json`, which is an
-object that contains `main` and `variants`:
+To get a subset of the files stored in the aforementioned Map, you should use the `subset()` helper function provided at `store.data`, which returns an array with all files in store that match the given arguments.
 
-- `main`: an array that contains, recursively, all files inside that directory that are not a variant.
-- `variants`: an object keyed with available variant keys, that contains, recursively, all variants inside that directory.
+#### Subset options
+
+`subset()` function accepts an object with the following options:
+
+- `dir`: optional base directory to filter files. It requires a trailing slash, but not a leading slash, e.g.- `en/entity/node/article/`
+- `variant`: Optional name of a variant file.
+  - Use `_main` to obtain the default variant.
+  - Use any other string, e.g.- `card`, to obtain the card variant.
+  - Use null to avoid searching for any variant.
+  - Defaults to `_main`.
+- `ext`: Optional file extension, without dots. Defaults to `json`.
+- `recursive`: Optional flag to search for files recursively. Defaults to `true`.
+
+All subsets are automatically cached, so passing the same arguments will return the same subset from the cache.
+
+This is the preferred way of getting a subset of the store files, since it is a simple function that most of the times only requires the first argument.
+
+```javascript
+// Get a subset of all nodes with "json" extension.
+dataServer.store.data.subset({ dir: 'en/entity/node/' });
+
+// Get a subset of all articles in all languages with "json" extension.
+dataServer.store.data.subset({ dir: '.+/entity/node/article/' });
+
+// Get a subset of all articles in English, regardless of their extension.
+dataServer.store.data.subset({ dir: 'en/entity/node/article/', ext: null });
+
+// Get a subset of all card variants for articles in English, with "json" extension.
+dataServer.store.data.subset({ dir: 'en/entity/node/article/', variant: null });
+
+// Get a subset of articles in English, with "yml" extension, non-recursively.
+dataServer.store.data.subset({
+  dir: 'en/entity/node/article/',
+  ext: 'yml',
+  recursive: false,
+});
+```
 
 This way, queries can be run on any set of data, limiting the amount of data to by analyzed.
 
 ```javascript
 // Find articles that contain "foo" inside their title.
-const results = store.data.en.entity.node.article._json.main.filter(
-  article => article.data.content.title.indexOf('foo') !== 1,
-);
+const results = store.data
+  .subset({ dir: '.+/entity/node/article/' })
+  .filter(article => article.data.content.title.indexOf('foo') !== 1);
 ```
 
 ```javascript
 // Find "teaser" article variants that contain "foo" inside their title.
-const results = store.data.en.entity.node.article._json.variant.teaser.filter(
-  article => article.data.content.title.indexOf('foo') !== 1,
-);
+const results = store.data
+  .subset({ dir: '.+/entity/node/article/', variant: 'teaser' })
+  .filter(article => article.data.content.title.indexOf('foo') !== 1);
 ```
 
 ## Queries
 
-When the Data Server is executed within Node.js, you have full access to all its data through the `store.data` object returned by the `dataServer.init()` function.
+When the Data Server is executed within Node.js, you have full access to all its data through the `store` object returned by the `dataServer.init()` function.
 
 However, when using a `queryInclude` or the preview system from Drupal, the Data Server needs each query to be stored in its own file, inside a directory defined by the `queryDir` / `--query-dir` option.
 
-Each query is a file named `${queryId}.js`, and it must export a default function which receives two arguments:
+Each query is a file named `${queryId}.query.js`, and it must export a default function which receives two arguments:
 
-- `storeData`: the object that holds all data. Being a shared object, any operation that could alter it must be executed on a local copy (i.e.- using `slice()` or similar functions)
+- `store`: the object that holds all data. Being a shared object, any operation that could alter it must be executed on a local copy (i.e.- using `slice()` or similar functions)
 - `args`: object with arguments used by that query
 
-It must return an object with two keys:
+It must return an object with the following keys:
 
-- `results`: array of results.
+- `results`: result returned .
 - `cacheable`: optional boolean flag telling whether this query can be cached or not. Defaults to true.
 
 Example: find all contents by title passed in "q" argument
