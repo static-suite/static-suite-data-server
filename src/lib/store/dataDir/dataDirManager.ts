@@ -37,12 +37,12 @@ export const dataDirManager: DataDirManager = {
     }
 
     // Add all files, one by one, taking cache option into account.
-    const updatedFilesIsEmpty = updatedFiles.length === 0;
+    const updatedFilesContainsData = updatedFiles.length > 0;
     const storeHydrationStartDate = Date.now();
     relativeFilePaths.forEach(relativeFilePath => {
       storeManager.add(relativeFilePath, {
         readFileFromCache:
-          !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
+          updatedFilesContainsData && !updatedFiles.includes(relativeFilePath),
       });
     });
 

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeManager = void 0;
+exports.storeManager = exports.isHookWatcherEnabled = void 0;
 // import path from 'path';
 const config_1 = require("@lib/config");
 const fs_1 = require("@lib/utils/fs");
@@ -8,7 +8,27 @@ const cache_1 = require("@lib/utils/cache");
 const hook_1 = require("./hook");
 const _1 = require(".");
 const includeParser_1 = require("./includeParser");
+const dataServer_types_1 = require("../dataServer.types");
 const fileCache = cache_1.cache.bin('file');
+/**
+ * Tells whether a watcher for hooks is enabled.
+ *
+ * @remarks
+ * Files from data dir are not read again once data dir is loaded
+ * during bootstrap, except when:
+ * 1) A file is updated: only that file is read form data dir.
+ * 2) A watcher detects a hook change: all files in data dir are read again.
+ *
+ * For the second case, we want to avoid having to actually read all
+ * files from cache if they have not changed. To do so, there is a
+ * file cache that caches the file raw contents. That cache uses a lot of
+ * memory, and should only be enabled when run mode is DEV (hence, a watcher
+ * is enabled) and a hook directory is defined.
+ *
+ * @returns True if hook watcher is enabled.
+ */
+const isHookWatcherEnabled = () => config_1.config.runMode === dataServer_types_1.RunMode.DEV && !!config_1.config.hookDir;
+exports.isHookWatcherEnabled = isHookWatcherEnabled;
 /**
  * Sets a file into the store, regardless of being already added or not.
  *
@@ -18,13 +38,16 @@ const fileCache = cache_1.cache.bin('file');
  * @returns Object with two properties, "raw" and "json".
  */
 const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false }) => {
-    let fileContent = options.readFileFromCache
+    const hookWatcherEnabled = (0, exports.isHookWatcherEnabled)();
+    let fileContent = hookWatcherEnabled && options.readFileFromCache
         ? fileCache.get(relativeFilepath)
         : undefined;
     if (!fileContent) {
         const absoluteFilePath = `${config_1.config.dataDir}/${relativeFilepath}`;
         fileContent = (0, fs_1.getFileContent)(absoluteFilePath);
-        fileCache.set(relativeFilepath, fileContent);
+        if (hookWatcherEnabled) {
+            fileCache.set(relativeFilepath, fileContent);
+        }
     }
     // Invoke "process file" hook.
     const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
@@ -89,8 +112,10 @@ exports.storeManager = {
         return exports.storeManager;
     },
     remove: (relativeFilepath) => {
-        // Delete file contents from cache.
-        cache_1.cache.bin('file').delete(relativeFilepath);
+        if ((0, exports.isHookWatcherEnabled)()) {
+            // Delete file contents from cache.
+            fileCache.delete(relativeFilepath);
+        }
         // Delete file contents from store.
         const data = _1.store.data.get(relativeFilepath);
         const uuid = data.data?.content?.uuid;

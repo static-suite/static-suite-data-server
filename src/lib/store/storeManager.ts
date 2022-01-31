@@ -7,8 +7,29 @@ import { StoreAddOptions, StoreManager } from './store.types';
 import { hookManager } from './hook';
 import { store } from '.';
 import { includeParser } from './includeParser';
+import { RunMode } from '../dataServer.types';
 
 const fileCache = cache.bin<FileType>('file');
+
+/**
+ * Tells whether a watcher for hooks is enabled.
+ *
+ * @remarks
+ * Files from data dir are not read again once data dir is loaded
+ * during bootstrap, except when:
+ * 1) A file is updated: only that file is read form data dir.
+ * 2) A watcher detects a hook change: all files in data dir are read again.
+ *
+ * For the second case, we want to avoid having to actually read all
+ * files from cache if they have not changed. To do so, there is a
+ * file cache that caches the file raw contents. That cache uses a lot of
+ * memory, and should only be enabled when run mode is DEV (hence, a watcher
+ * is enabled) and a hook directory is defined.
+ *
+ * @returns True if hook watcher is enabled.
+ */
+export const isHookWatcherEnabled = (): boolean =>
+  config.runMode === RunMode.DEV && !!config.hookDir;
 
 /**
  * Sets a file into the store, regardless of being already added or not.
@@ -22,13 +43,17 @@ const setFileIntoStore = (
   relativeFilepath: string,
   options: StoreAddOptions = { readFileFromCache: false },
 ): FileType => {
-  let fileContent = options.readFileFromCache
-    ? fileCache.get(relativeFilepath)
-    : undefined;
+  const hookWatcherEnabled = isHookWatcherEnabled();
+  let fileContent =
+    hookWatcherEnabled && options.readFileFromCache
+      ? fileCache.get(relativeFilepath)
+      : undefined;
   if (!fileContent) {
     const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
     fileContent = getFileContent(absoluteFilePath);
-    fileCache.set(relativeFilepath, fileContent);
+    if (hookWatcherEnabled) {
+      fileCache.set(relativeFilepath, fileContent);
+    }
   }
 
   // Invoke "process file" hook.
@@ -103,8 +128,10 @@ export const storeManager: StoreManager = {
   },
 
   remove: (relativeFilepath: string): StoreManager => {
-    // Delete file contents from cache.
-    cache.bin<FileType>('file').delete(relativeFilepath);
+    if (isHookWatcherEnabled()) {
+      // Delete file contents from cache.
+      fileCache.delete(relativeFilepath);
+    }
 
     // Delete file contents from store.
     const data = store.data.get(relativeFilepath);

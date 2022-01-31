@@ -36,11 +36,11 @@ exports.dataDirManager = {
             cache_1.cache.bin('file').clear();
         }
         // Add all files, one by one, taking cache option into account.
-        const updatedFilesIsEmpty = updatedFiles.length === 0;
+        const updatedFilesContainsData = updatedFiles.length > 0;
         const storeHydrationStartDate = Date.now();
         relativeFilePaths.forEach(relativeFilePath => {
             storeManager_1.storeManager.add(relativeFilePath, {
-                readFileFromCache: !updatedFilesIsEmpty && !updatedFiles.includes(relativeFilePath),
+                readFileFromCache: updatedFilesContainsData && !updatedFiles.includes(relativeFilePath),
             });
         });
         logger_1.logger.debug(`Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`);
