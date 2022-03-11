@@ -170,4 +170,12 @@ exports.storeManager = {
         includeParser_1.includeParser.static(fileContent);
         return exports.storeManager;
     },
+    get: (relativeFilepath) => {
+        let data = _1.store.data.get(relativeFilepath);
+        if (!data) {
+            const filecontent = (0, fs_1.getFileContent)(`${config_1.config.dataDir}/${relativeFilepath}`);
+            data = filecontent.json || filecontent.raw;
+        }
+        return data;
+    },
 };

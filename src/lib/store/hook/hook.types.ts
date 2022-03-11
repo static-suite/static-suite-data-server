@@ -9,7 +9,7 @@ import { FileType } from '@lib/utils/fs/fs.types';
  * or any other part of the Data Server. All data they need to function must be
  * passed as parameters.
  */
-export interface HookOptions  {
+export interface HookOptions {
   /**
    * Path to the data directory.
    */
@@ -19,7 +19,7 @@ export interface HookOptions  {
    * The data store.
    */
   store: Store;
-};
+}
 
 /**
  * Options passed to a file hook.
@@ -39,7 +39,7 @@ export interface FileHookOptions extends HookOptions {
    * Optional file contents, an object with "raw" and "json" members.
    */
   fileContent?: FileType;
-};
+}
 
 /**
  * A module that defines several hooks.

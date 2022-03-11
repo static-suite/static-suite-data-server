@@ -8,11 +8,25 @@ import { FileType } from '@lib/utils/fs/fs.types';
  * or any other part of the Data Server. All data they need to function must be
  * passed as parameters.
  */
-export declare type HookOptions = {
+export interface HookOptions {
     /**
      * Path to the data directory.
      */
     dataDir: string;
+    /**
+     * The data store.
+     */
+    store: Store;
+}
+/**
+ * Options passed to a file hook.
+ *
+ * @remarks
+ * Since hooks are user-land modules, they do not have access to configuration
+ * or any other part of the Data Server. All data they need to function must be
+ * passed as parameters.
+ */
+export interface FileHookOptions extends HookOptions {
     /**
      * Relative file path inside the data dir.
      */
@@ -21,11 +35,7 @@ export declare type HookOptions = {
      * Optional file contents, an object with "raw" and "json" members.
      */
     fileContent?: FileType;
-    /**
-     * The data store.
-     */
-    store: Store;
-};
+}
 /**
  * A module that defines several hooks.
  */
@@ -46,11 +56,11 @@ export declare type HookModule = {
      * @remarks
      * This hook is aimed at altering the contents of the file before it being added to the store.
      *
-     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
      *
      * @returns The file contents, and object with "raw" and "json" members.
      */
-    onProcessFile?(options: HookOptions): FileType;
+    onProcessFile?(options: FileHookOptions): FileType;
     /**
      * A hook executed after a file is added into the store.
      *
@@ -58,9 +68,9 @@ export declare type HookModule = {
      * This hook is aimed at adding some information to the store, e.g.- indexing all contents
      * by their taxonomy.
      *
-     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
      */
-    onStoreItemAdd?(options: HookOptions): void;
+    onStoreItemAdd?(options: FileHookOptions): void;
     /**
      * A hook executed when a file is updated in the store.
      *
@@ -88,9 +98,9 @@ export declare type HookModule = {
      * This hook is aimed at adding some information to the store, e.g.- indexing all contents
      * by their taxonomy.
      *
-     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
      */
-    onStoreItemUpdate?(options: HookOptions): void;
+    onStoreItemUpdate?(options: FileHookOptions): void;
     /**
      * A hook executed after a file is removed from the store.
      *
@@ -98,9 +108,9 @@ export declare type HookModule = {
      * This hook is aimed at reverting the actions taken in storeAdd hook, e.g.- removing a file
      * from a taxonomy index.
      *
-     * @param options - An object with options passed to the hook. @see {@link HookOptions}
+     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
      */
-    onStoreItemRemove?(options: HookOptions): void;
+    onStoreItemRemove?(options: FileHookOptions): void;
     /**
      * A hook executed after the store ends updating.
      *

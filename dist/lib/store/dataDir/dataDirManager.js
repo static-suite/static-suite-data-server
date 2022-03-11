@@ -8,6 +8,7 @@ const logger_1 = require("@lib/utils/logger");
 const workDir_1 = require("@lib/store/workDir");
 const cache_1 = require("@lib/utils/cache");
 const storeManager_1 = require("../storeManager");
+const hook_1 = require("../hook");
 exports.dataDirManager = {
     load: (options = { incremental: false }) => {
         logger_1.logger.info('Loading data dir...');
@@ -51,6 +52,17 @@ exports.dataDirManager = {
         // No need to clear the store subset cache, since no
         // file has been added/updated/deleted.
         cache_1.cache.bin('query').clear();
+        // Invoke "store load done" hook.
+        const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
+        hookModulesInfo.forEach(hookInfo => {
+            const hookModule = hookInfo.getModule();
+            if (hookModule.onStoreLoadDone) {
+                hookModule.onStoreLoadDone({
+                    dataDir: config_1.config.dataDir,
+                    store: store_1.store,
+                });
+            }
+        });
         logger_1.logger.info(`${relativeFilePaths.length} files loaded in ${Date.now() - startDate}ms.`);
     },
     update: () => {
