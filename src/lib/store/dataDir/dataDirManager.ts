@@ -6,6 +6,7 @@ import { workDirHelper } from '@lib/store/workDir';
 import { cache } from '@lib/utils/cache';
 import { DataDirManager } from './dataDir.types';
 import { storeManager } from '../storeManager';
+import { hookManager } from '../hook';
 
 export const dataDirManager: DataDirManager = {
   load: (options = { incremental: false }) => {
@@ -60,6 +61,18 @@ export const dataDirManager: DataDirManager = {
     // No need to clear the store subset cache, since no
     // file has been added/updated/deleted.
     cache.bin('query').clear();
+
+    // Invoke "store load done" hook.
+    const hookModulesInfo = hookManager.getModuleGroupInfo();
+    hookModulesInfo.forEach(hookInfo => {
+      const hookModule = hookInfo.getModule();
+      if (hookModule.onStoreLoadDone) {
+        hookModule.onStoreLoadDone({
+          dataDir: config.dataDir,
+          store,
+        });
+      }
+    });
 
     logger.info(
       `${relativeFilePaths.length} files loaded in ${
