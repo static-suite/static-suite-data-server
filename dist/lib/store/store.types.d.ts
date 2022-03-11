@@ -224,5 +224,13 @@ export declare type StoreManager = {
      * @returns The store manager, to allow chaining.
      */
     parseSingleFileIncludes(fileContent: any): StoreManager;
+    /**
+     * Gets data from store or from fileSystem if don't exist
+     *
+     * @param relativeFilepath - Relative file path, inside dataDir, to the file to be added.
+     *
+     * @returns The data.
+     */
+    get(relativeFilepath: string): any;
 };
 //# sourceMappingURL=store.types.d.ts.map
