@@ -197,15 +197,4 @@ export const storeManager: StoreManager = {
     includeParser.static(fileContent);
     return storeManager;
   },
-
-  get: (relativeFilepath: string) => {
-    let data = store.data.get(relativeFilepath);
-    if (!data) {
-      const filecontent = getFileContent(
-        `${config.dataDir}/${relativeFilepath}`,
-      );
-      data = filecontent.json || filecontent.raw;
-    }
-    return data;
-  },
 };

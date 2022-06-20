@@ -224,13 +224,5 @@ export declare type StoreManager = {
      * @returns The store manager, to allow chaining.
      */
     parseSingleFileIncludes(fileContent: any): StoreManager;
-    /**
-     * Gets data from store or from file system if not present in store
-     *
-     * @param relativeFilepath - Relative file path, inside dataDir, to the file to be retrieved.
-     *
-     * @returns The data.
-     */
-    get(relativeFilepath: string): any;
 };
 //# sourceMappingURL=store.types.d.ts.map
