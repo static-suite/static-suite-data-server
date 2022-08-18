@@ -1,6 +1,7 @@
 import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
 import { QueryRunner } from '@lib/query/query.types';
 import { Store } from './store/store.types';
+import { TaskRunner } from './store/task/task.types';
 
 /**
  * Init options for Data Server.
@@ -44,6 +45,11 @@ export type DataServerInitOptions = {
   hookDir?: string;
 
   /**
+   * Path to the directory where tasks are stored. Optional.
+   */
+  taskDir?: string;
+
+  /**
    * Run mode (dev or prod).
    */
   runMode: RunMode;
@@ -79,4 +85,9 @@ export type DataServerReturn = {
    * The query runner, to be able to run queries on demand.
    */
   queryRunner: QueryRunner;
+
+  /**
+   * The task runner, to be able to run tasks on demand.
+   */
+  taskRunner: TaskRunner;
 };

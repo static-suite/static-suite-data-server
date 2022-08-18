@@ -1,0 +1,17 @@
+extends includes/layout.pug
+
+block vars
+  - var title = "Available tasks | Static Suite Data Server"
+
+block content
+  h1(class="title is-1")="Available tasks"
+  table(class="table is-fullwidth  is-hoverable")
+    tbody
+      if taskIds
+        each taskId in taskIds
+          tr
+            td
+              a(href=taskId)= taskId
+      else
+        tr
+          td="No tasks available"

@@ -16,7 +16,7 @@ declare const config: ConfigOptions;
  *
  * @throws {@link MissingDirectory}
  * Exception thrown if any of the provided paths (dataDir, workDir,
- * queryDir or hookDir) is not found.
+ * queryDir, hookDir or taskDir) is not found.
  *
  * @throws {@link InvalidRunMode}
  * Exception thrown if runMode is not valid.

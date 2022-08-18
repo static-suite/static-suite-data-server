@@ -38,7 +38,7 @@
     "dev": "tsc-watch --onSuccess \"yarn lint\"",
     "build": "yarn copy-http-files-to-src && yarn lint && tsc && yarn api-extractor run --local --verbose && yarn post-build && yarn copy-http-files-to-dist",
     "post-build": "yarn rimraf dist/**/*__tests__",
-    "serve": "node ./dist/bin/serve.js http --port=57471 --data-dir=./src/__tests__/fixtures/data --work-dir=./src/__tests__/fixtures/work --query-dir=./src/__tests__/fixtures/query  --hook-dir=./src/__tests__/fixtures/hook --run-mode=dev --log-level=debug",
+    "serve": "node ./dist/bin/serve.js http --port=57471 --data-dir=./src/__tests__/fixtures/data --work-dir=./src/__tests__/fixtures/work --query-dir=./src/__tests__/fixtures/query  --hook-dir=./src/__tests__/fixtures/hook --task-dir=./src/__tests__/fixtures/task --run-mode=dev --log-level=debug",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",

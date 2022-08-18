@@ -27,7 +27,7 @@ const config: ConfigOptions = Object.create(null); // no inherited properties
  *
  * @throws {@link MissingDirectory}
  * Exception thrown if any of the provided paths (dataDir, workDir,
- * queryDir or hookDir) is not found.
+ * queryDir, hookDir or taskDir) is not found.
  *
  * @throws {@link InvalidRunMode}
  * Exception thrown if runMode is not valid.
@@ -75,6 +75,16 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
       !fs.lstatSync(localOptions.hookDir).isDirectory()
     ) {
       throw new MissingDirectory('hookDir', localOptions.hookDir);
+    }
+  }
+
+  if (localOptions.taskDir) {
+    localOptions.taskDir = resolve(localOptions.taskDir);
+    if (
+      !fs.existsSync(localOptions.taskDir) ||
+      !fs.lstatSync(localOptions.taskDir).isDirectory()
+    ) {
+      throw new MissingDirectory('taskDir', localOptions.taskDir);
     }
   }
 

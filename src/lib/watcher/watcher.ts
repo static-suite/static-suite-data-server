@@ -5,6 +5,7 @@ import { cache } from '@lib/utils/cache';
 import { watch } from '@lib/utils/fs';
 import { hookManager } from '@lib/store/hook';
 import { queryManager } from '@lib/query';
+import { taskManager } from '@lib/store/task';
 
 /**
  * Initializes a watcher on any file inside queryDir and hookDir.
@@ -30,6 +31,10 @@ export const initWatcher = (): void => {
     paths.push(config.hookDir);
   }
 
+  if (config.taskDir) {
+    paths.push(config.taskDir);
+  }
+
   const listener = (filePath: string) => {
     // Remove all modules inside the query directory.
     if (config.queryDir && filePath.startsWith(config.queryDir)) {
@@ -46,6 +51,11 @@ export const initWatcher = (): void => {
       hookManager.reset();
       dataDirManager.load({ incremental: true });
       logger.debug(`Re-building store done`);
+    }
+
+    // Remove all modules inside the task directory.
+    if (config.taskDir && filePath.startsWith(config.taskDir)) {
+      taskManager.reset();
     }
   };
 

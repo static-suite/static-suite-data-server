@@ -42,10 +42,14 @@ const argv = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
         describe: 'Path to the directory where hooks are stored',
         type: 'string',
     },
+    'task-dir': {
+        describe: 'Path to the directory where tasks are stored',
+        type: 'string',
+    },
     'run-mode': {
         demandOption: true,
         default: 'prod',
-        describe: 'Run mode (dev or prod). Dev mode watches for changes on user-land modules (queries and hooks)',
+        describe: 'Run mode (dev or prod). Dev mode watches for changes on user-land modules (queries, hooks and tasks)',
         choices: ['dev', 'prod'],
     },
     'log-level': {
@@ -87,6 +91,7 @@ dataServer_1.dataServer.init({
     workDir: argv['work-dir'],
     queryDir: argv['query-dir'],
     hookDir: argv['hook-dir'],
+    taskDir: argv['task-dir'],
     runMode: dataServer_types_1.RunMode[argv['run-mode'].toUpperCase()],
 });
 // Start server.
