@@ -10,9 +10,7 @@ export type TaskRunner = {
    * Runs a task and returns its results with metadata.
    *
    * @remarks
-   * It checks several validations before a task is run, and then it tries to get
-   * the task result from cache. If cache is empty, task is executed and saved
-   * into the cache.
+   * It checks several validations before a task is run, and then task is executed.
    *
    * It logs an error and throws an exception if any problem occurs during the
    * task execution.

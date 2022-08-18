@@ -8,7 +8,6 @@ const task1 = ({ args }) => {
 
   return {
     result,
-    cacheable: true,
   };
 };
 

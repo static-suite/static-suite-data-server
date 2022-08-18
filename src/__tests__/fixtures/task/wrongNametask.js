@@ -7,7 +7,6 @@ const task1 = () => {
 
   return {
     result,
-    cacheable: true,
   };
 };
 
