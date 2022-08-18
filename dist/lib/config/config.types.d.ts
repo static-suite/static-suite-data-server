@@ -20,6 +20,10 @@ export declare type ConfigOptions = {
      */
     hookDir?: string;
     /**
+     * Path to the directory where tasks are stored. Optional.
+     */
+    taskDir?: string;
+    /**
      * Run mode (dev or prod).
      */
     runMode: RunMode;
@@ -50,6 +54,10 @@ export declare type NonSanitizedConfigOptions = {
      * Path to the directory where hooks are stored. Optional.
      */
     hookDir?: string;
+    /**
+     * Path to the directory where tasks are stored. Optional.
+     */
+    taskDir?: string;
     /**
      * Run mode (dev or prod).
      */

@@ -34,7 +34,7 @@ import { ModuleGroupManager, ModuleInfo } from './module.types';
  */
 export const dirBasedModuleGroupManager = <ModuleType>(
   // Key needs to be explicitly defined to make TypeScript happy.
-  key: 'hook' | 'query',
+  key: 'hook' | 'query' | 'task',
 ): ModuleGroupManager<ModuleType> => {
   /**
    * Cache bin used by this module group

@@ -16,12 +16,14 @@ describe('Config test', () => {
         workDir: 'src/__tests__/fixtures/work/',
         queryDir: 'src/__tests__/fixtures/query',
         hookDir: 'src/__tests__/fixtures/hook',
+        taskDir: 'src/__tests__/fixtures/task',
       };
       const expectedConfig = {
         dataDir: resolve(testConfig.dataDir),
         workDir: resolve(<string>testConfig.workDir),
         queryDir: resolve(<string>testConfig.queryDir),
         hookDir: resolve(<string>testConfig.hookDir),
+        taskDir: resolve(<string>testConfig.taskDir),
         runMode: 'prod',
       };
       expect(setConfig(testConfig)).toEqual(expectedConfig);
@@ -107,6 +109,22 @@ describe('Config test', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(MissingDirectory);
         expect(error).toHaveProperty('directoryId', 'hookDir');
+      }
+    });
+
+    it('Wrong taskDir returns expected error', () => {
+      const config = {
+        dataDir: 'src/__tests__/fixtures/data/',
+        taskDir: 'non-existent-dir',
+        runMode: RunMode.DEV,
+      };
+      expect.assertions(2);
+
+      try {
+        setConfig(config);
+      } catch (error) {
+        expect(error).toBeInstanceOf(MissingDirectory);
+        expect(error).toHaveProperty('directoryId', 'taskDir');
       }
     });
   });

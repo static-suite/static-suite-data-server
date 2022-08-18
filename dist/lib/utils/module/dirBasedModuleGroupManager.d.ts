@@ -26,5 +26,5 @@ import { ModuleGroupManager } from './module.types';
  * @returns A module group manager with a set of common functionalities
  * for those kind of directories.
  */
-export declare const dirBasedModuleGroupManager: <ModuleType>(key: 'hook' | 'query') => ModuleGroupManager<ModuleType>;
+export declare const dirBasedModuleGroupManager: <ModuleType>(key: 'hook' | 'query' | 'task') => ModuleGroupManager<ModuleType>;
 //# sourceMappingURL=dirBasedModuleGroupManager.d.ts.map

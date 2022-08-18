@@ -61,6 +61,10 @@ export declare type DataServerInitOptions = {
      */
     hookDir?: string;
     /**
+     * Path to the directory where tasks are stored. Optional.
+     */
+    taskDir?: string;
+    /**
      * Run mode (dev or prod).
      */
     runMode: RunMode;
@@ -80,6 +84,10 @@ export declare type DataServerReturn = {
      * The query runner, to be able to run queries on demand.
      */
     queryRunner: QueryRunner;
+    /**
+     * The task runner, to be able to run tasks on demand.
+     */
+    taskRunner: TaskRunner;
 };
 
 export { LogFile }
@@ -274,6 +282,105 @@ declare type StoreSubsetOptions = {
      * Optional flag to search for files recursively. True by default.
      */
     recursive?: boolean;
+};
+
+/**
+ * An object with task arguments.
+ *
+ * @public
+ */
+declare type TaskArgs = Record<string, any>;
+
+/**
+ * An error response returned after executing a task.
+ *
+ * @remarks
+ * It takes an string from TaskModule#taskHandler, and wraps them into an
+ * structure with metadata. @see {@link TaskModule#default}
+ *
+ * @public
+ */
+declare type TaskErrorResponse = {
+    /**
+     * Error message from the task, usually coming from a failed validation.
+     */
+    error: string;
+};
+
+/**
+ * A service to handle the execution of tasks.
+ *
+ * @public
+ */
+declare type TaskRunner = {
+    /**
+     * Runs a task and returns its results with metadata.
+     *
+     * @remarks
+     * It checks several validations before a task is run, and then it tries to get
+     * the task result from cache. If cache is empty, task is executed and saved
+     * into the cache.
+     *
+     * It logs an error and throws an exception if any problem occurs during the
+     * task execution.
+     *
+     * @param taskId - Task ID (filename without extension and suffix) of the task
+     * to be executed. @see {@link ModuleInfo#id | Definition of a module ID}
+     * @param args - Optional object with task arguments.
+     *
+     * @returns The result of the task as a JSON object with data and metadata keys,
+     * or an error response if some validation is not met.
+     *
+     * @example
+     * Here's a result example:
+     * ```
+     * {
+     * data: ['title 1', 'title 2'],
+     *  metadata: {
+     *    contentType: 'application/json',
+     *    execTime: 2,
+     *  }
+     * }
+     * ```
+
+     * @throws
+     * Exception thrown if any problem occurs during the task execution.
+     */
+    run(taskId: string, args: TaskArgs): TaskSuccessfulResponse | TaskErrorResponse;
+};
+
+/**
+ * A successful response returned after executing a task.
+ *
+ * @remarks
+ * It takes the results from a TaskModule#taskHandler, and wraps them into an
+ * structure with metadata. @see {@link TaskModule#default}
+ *
+ * @public
+ */
+declare type TaskSuccessfulResponse = {
+    /**
+     * Data returned by the task. @see {@link TaskModule#default}
+     */
+    data: any;
+    /**
+     * Task metadata
+     */
+    metadata: {
+        /**
+         * Content type for the data available in "data"
+         *
+         * @remarks
+         * Even thought this structure is a JSON object, data coming from the
+         * task can be anything (XML, a string, etc). It must be specified so any
+         * consumer of this data knows what is being returned.
+         */
+        contentType: string;
+        /**
+         * Execution time taken by the task, in milliseconds.
+         */
+        execTimeMs: number;
+    };
 };
 
 export { }

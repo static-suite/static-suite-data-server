@@ -27,7 +27,7 @@ exports.config = config;
  *
  * @throws {@link MissingDirectory}
  * Exception thrown if any of the provided paths (dataDir, workDir,
- * queryDir or hookDir) is not found.
+ * queryDir, hookDir or taskDir) is not found.
  *
  * @throws {@link InvalidRunMode}
  * Exception thrown if runMode is not valid.
@@ -64,6 +64,13 @@ const setConfig = (options) => {
         if (!fs_1.default.existsSync(localOptions.hookDir) ||
             !fs_1.default.lstatSync(localOptions.hookDir).isDirectory()) {
             throw new error_1.MissingDirectory('hookDir', localOptions.hookDir);
+        }
+    }
+    if (localOptions.taskDir) {
+        localOptions.taskDir = (0, path_1.resolve)(localOptions.taskDir);
+        if (!fs_1.default.existsSync(localOptions.taskDir) ||
+            !fs_1.default.lstatSync(localOptions.taskDir).isDirectory()) {
+            throw new error_1.MissingDirectory('taskDir', localOptions.taskDir);
         }
     }
     if (!localOptions.runMode) {

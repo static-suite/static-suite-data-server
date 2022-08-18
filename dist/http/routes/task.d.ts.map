@@ -1,0 +1,1 @@
+{"version":3,"file":"task.d.ts","sourceRoot":"","sources":["../../../src/http/routes/task.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAQ5C,QAAA,MAAM,SAAS,QAAS,OAAO,OAAO,QAAQ,KAAG,IAKhD,CAAC;AAEF,QAAA,MAAM,OAAO,QAAS,OAAO,OAAO,QAAQ,KAAG,IAW9C,CAAC;AAEF,OAAO,EAAE,SAAS,EAAE,OAAO,EAAE,CAAC"}
