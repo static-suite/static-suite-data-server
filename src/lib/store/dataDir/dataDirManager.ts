@@ -41,10 +41,17 @@ export const dataDirManager: DataDirManager = {
     const updatedFilesContainsData = updatedFiles.length > 0;
     const storeHydrationStartDate = Date.now();
     relativeFilePaths.forEach(relativeFilePath => {
-      storeManager.add(relativeFilePath, {
-        readFileFromCache:
-          updatedFilesContainsData && !updatedFiles.includes(relativeFilePath),
-      });
+      let readFileFromCache = false;
+      if (options.incremental) {
+        readFileFromCache = true;
+        if (
+          updatedFilesContainsData &&
+          updatedFiles.includes(relativeFilePath)
+        ) {
+          readFileFromCache = false;
+        }
+      }
+      storeManager.add(relativeFilePath, { readFileFromCache });
     });
 
     logger.debug(
@@ -97,9 +104,11 @@ export const dataDirManager: DataDirManager = {
         changedFiles.updated.forEach(file => {
           storeManager.update(file);
           const fileContent = store.data.get(file);
-          storeManager.parseSingleFileIncludes(fileContent);
+          storeManager.parseSingleFileIncludes(file, fileContent);
         });
-        changedFiles.deleted.forEach(file => storeManager.remove(file));
+        changedFiles.deleted.forEach(file => {
+          storeManager.remove(file);
+        });
         // Clear all store subsets and queries, since they are stale.
         // In fact, the subset cache should be cleared only when files
         // are added or deleted, but not when they are simply updated.

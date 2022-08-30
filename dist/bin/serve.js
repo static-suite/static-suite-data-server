@@ -46,6 +46,10 @@ const argv = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
         describe: 'Path to the directory where tasks are stored',
         type: 'string',
     },
+    'dump-dir': {
+        describe: 'Path to the directory where dumps are stored',
+        type: 'string',
+    },
     'run-mode': {
         demandOption: true,
         default: 'prod',
@@ -92,6 +96,7 @@ dataServer_1.dataServer.init({
     queryDir: argv['query-dir'],
     hookDir: argv['hook-dir'],
     taskDir: argv['task-dir'],
+    dumpDir: argv['dump-dir'],
     runMode: dataServer_types_1.RunMode[argv['run-mode'].toUpperCase()],
 });
 // Start server.

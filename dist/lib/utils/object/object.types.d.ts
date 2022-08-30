@@ -1,3 +1,4 @@
+export declare type ObjectType = Record<string, unknown>;
 /**
  * Structure where a content's data and metadata os hold.
  *

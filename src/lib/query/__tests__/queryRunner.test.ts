@@ -1,14 +1,17 @@
+import fs from 'fs';
+import path from 'path';
 import { config } from '@lib/config';
 import { RunMode } from '@lib/dataServer.types';
 import { cache } from '@lib/utils/cache';
 import { logger } from '@lib/utils/logger';
-import { resolve } from 'path';
 import { isQueryErrorResponse } from '../query.types';
 import { queryRunner } from '../queryRunner';
 import { queryManager } from '../queryManager';
 
 beforeEach(() => {
-  config.queryDir = resolve('src/__tests__/fixtures/query');
+  config.queryDir = fs.realpathSync(
+    path.resolve('src/__tests__/fixtures/query'),
+  );
   config.runMode = RunMode.PROD;
 });
 

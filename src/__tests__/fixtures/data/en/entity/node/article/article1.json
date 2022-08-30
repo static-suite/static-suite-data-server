@@ -14,11 +14,11 @@
         }
       },
       "queryInclude": "query1?y=33",
-      "article2CustomInclude": "en/entity/node/article/article2.json",
-      "customInclude": "en/entity/node/article/article2.json",
-      "localeInclude": "en/entity/node/article/article2.json",
-      "configInclude": "en/entity/node/article/article2.json",
-      "thisConfigInclude": "en/entity/node/article/article2.json"
+      "article2CustomInclude": "en/entity/node/article/article3.json",
+      "customInclude": "en/entity/node/article/article3.json",
+      "localeInclude": "en/entity/node/article/article3.json",
+      "configInclude": "en/entity/node/article/article3.json",
+      "thisConfigInclude": "en/entity/node/article/article3.json"
     }
   },
   "metadata": {
@@ -26,11 +26,11 @@
       "static": {
         "data.content.author.entity.entityInclude": "en/entity/node/article/article2.json",
         "data.content.image.entity.entityInclude": "en/entity/node/article/article2.json",
-        "data.content.article2CustomInclude": "en/entity/node/article/article2.json",
-        "data.content.customInclude": "en/entity/node/article/article2.json",
-        "data.content.localeInclude": "en/entity/node/article/article2.json",
-        "data.content.configInclude": "en/entity/node/article/article2.json",
-        "data.content.thisConfigInclude": "en/entity/node/article/article2.json"
+        "data.content.article2CustomInclude": "en/entity/node/article/article3.json",
+        "data.content.customInclude": "en/entity/node/article/article3.json",
+        "data.content.localeInclude": "en/entity/node/article/article3.json",
+        "data.content.configInclude": "en/entity/node/article/article3.json",
+        "data.content.thisConfigInclude": "en/entity/node/article/article3.json"
       },
       "dynamic": {
         "data.content.queryInclude": "query1?y=33"

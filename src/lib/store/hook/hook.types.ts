@@ -1,5 +1,6 @@
 import { Store } from '@lib/store/store.types';
 import { FileType } from '@lib/utils/fs/fs.types';
+import { Dump } from '../dump/dumpManager.types';
 
 /**
  * Options passed to a hook.
@@ -9,7 +10,7 @@ import { FileType } from '@lib/utils/fs/fs.types';
  * or any other part of the Data Server. All data they need to function must be
  * passed as parameters.
  */
-export interface HookOptions {
+export interface BaseHookOptions {
   /**
    * Path to the data directory.
    */
@@ -29,7 +30,7 @@ export interface HookOptions {
  * or any other part of the Data Server. All data they need to function must be
  * passed as parameters.
  */
-export interface FileHookOptions extends HookOptions {
+export interface FileHookOptions {
   /**
    * Relative file path inside the data dir.
    */
@@ -39,6 +40,38 @@ export interface FileHookOptions extends HookOptions {
    * Optional file contents, an object with "raw" and "json" members.
    */
   fileContent?: FileType;
+}
+
+/**
+ * Options passed to a hook.
+ *
+ * @remarks
+ * Since hooks are user-land modules, they do not have access to configuration
+ * or any other part of the Data Server. All data they need to function must be
+ * passed as parameters.
+ */
+export interface FullHookOptions extends BaseHookOptions, FileHookOptions {}
+
+export interface OnDumpHookOptions {
+  /**
+   * Path to the data directory.
+   */
+  dataDir: string;
+
+  /**
+   * Path to the dump directory.
+   */
+  dumpDir: string;
+
+  /**
+   * The data store.
+   */
+  store: Store;
+
+  /**
+   * The dump to be processed.
+   */
+  dump: Dump;
 }
 
 /**
@@ -54,7 +87,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link HookOptions}
    */
-  onStoreLoadStart?(options: HookOptions): void;
+  onStoreLoadStart?(options: BaseHookOptions): void;
 
   /**
    * A hook executed after a file is read from disk, before adding it to the store.
@@ -66,7 +99,7 @@ export type HookModule = {
    *
    * @returns The file contents, and object with "raw" and "json" members.
    */
-  onProcessFile?(options: FileHookOptions): FileType;
+  onProcessFile?(options: FullHookOptions): FileType;
 
   /**
    * A hook executed after a file is added into the store.
@@ -77,7 +110,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
    */
-  onStoreItemAdd?(options: FileHookOptions): void;
+  onStoreItemAdd?(options: FullHookOptions): void;
 
   /**
    * A hook executed when a file is updated in the store.
@@ -88,7 +121,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link HookOptions}
    */
-  onStoreLoadDone?(options: HookOptions): void;
+  onStoreLoadDone?(options: BaseHookOptions): void;
 
   /**
    * A hook executed before the store starts updating.
@@ -99,7 +132,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link HookOptions}
    */
-  onStoreUpdateStart?(options: HookOptions): void;
+  onStoreUpdateStart?(options: BaseHookOptions): void;
 
   /**
    * A hook executed when a file is updated in the store.
@@ -110,7 +143,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
    */
-  onStoreItemUpdate?(options: FileHookOptions): void;
+  onStoreItemUpdate?(options: FullHookOptions): void;
 
   /**
    * A hook executed after a file is removed from the store.
@@ -121,7 +154,7 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
    */
-  onStoreItemRemove?(options: FileHookOptions): void;
+  onStoreItemRemove?(options: FullHookOptions): void;
 
   /**
    * A hook executed after the store ends updating.
@@ -131,5 +164,15 @@ export type HookModule = {
    *
    * @param options - An object with options passed to the hook. @see {@link HookOptions}
    */
-  onStoreUpdateDone?(options: HookOptions): void;
+  onStoreUpdateDone?(options: BaseHookOptions): void;
+
+  /**
+   * A hook executed before a dump is saved into disk.
+   *
+   * @remarks
+   * This hook can alter the contents of the dump being saved, and add/remove items.
+   *
+   * @param options - An object with options passed to the hook. @see {@link OnDumpHookOptions}
+   */
+  onDump?(options: OnDumpHookOptions): Dump;
 };

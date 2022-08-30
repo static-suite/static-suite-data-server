@@ -20,6 +20,10 @@ export const store: Store = {
   index: {
     url: new Map<string, any>(),
     uuid: new Map<string, any>(),
+    include: {
+      static: new Map<string, Set<string>>(),
+      dynamic: new Map<string, Set<string>>(),
+    },
     custom: new Map<string, any>(),
   },
 };

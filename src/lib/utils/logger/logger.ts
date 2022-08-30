@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path, { resolve } from 'path';
+import path from 'path';
 import winston from 'winston';
 import { LogLevel, LogFile } from './logger.types';
 
@@ -65,7 +65,7 @@ export const configureLogger = (
     logger.level = level;
   }
   if (logFile && logFile.path) {
-    const logFileAbsolute = resolve(logFile.path);
+    const logFileAbsolute = fs.realpathSync(path.resolve(logFile.path));
     // Check if file dirname is writable.
     try {
       fs.accessSync(path.dirname(logFileAbsolute), fs.constants.W_OK);

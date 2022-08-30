@@ -17,7 +17,7 @@ const internalModuleCache: Record<string, any> = {};
  * Internal resolve cache.
  *
  * @remarks
- * It does not use the shared cache util since this cache must to be
+ * It does not use the shared cache util since this cache must be
  * managed only by this module, and should not be accessible nor
  * managed from the outside.
  */

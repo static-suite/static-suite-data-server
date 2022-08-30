@@ -9,7 +9,7 @@ import { StoreManager } from './store.types';
  * 2) A watcher detects a hook change: all files in data dir are read again.
  *
  * For the second case, we want to avoid having to actually read all
- * files from cache if they have not changed. To do so, there is a
+ * files from disk if they have not changed. To do so, there is a
  * file cache that caches the file raw contents. That cache uses a lot of
  * memory, and should only be enabled when run mode is DEV (hence, a watcher
  * is enabled) and a hook directory is defined.

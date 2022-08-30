@@ -1,7 +1,7 @@
 import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
 import { QueryRunner } from '@lib/query/query.types';
 import { Store } from './store/store.types';
-import { TaskRunner } from './store/task/task.types';
+import { TaskRunner } from './task/task.types';
 /**
  * Init options for Data Server.
  *
@@ -40,6 +40,10 @@ export declare type DataServerInitOptions = {
      * Path to the directory where tasks are stored. Optional.
      */
     taskDir?: string;
+    /**
+     * Path to the directory where dumps are stored. Optional.
+     */
+    dumpDir?: string;
     /**
      * Run mode (dev or prod).
      */

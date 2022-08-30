@@ -5,13 +5,13 @@ import { cache } from '@lib/utils/cache';
 import { watch } from '@lib/utils/fs';
 import { hookManager } from '@lib/store/hook';
 import { queryManager } from '@lib/query';
-import { taskManager } from '@lib/store/task';
+import { taskManager } from '@lib/task';
 
 /**
- * Initializes a watcher on any file inside queryDir and hookDir.
+ * Initializes a watcher on any file inside queryDir, hookDir and taskDir.
  *
  * @remarks
- * If runMode is DEV and queryDir and/or hookDir are defined by current
+ * If runMode is DEV and queryDir, hookDir and/or taskDir are defined by current
  * configuration, a watcher is initialized on them.
  *
  * When something changes inside query directory:
@@ -30,7 +30,6 @@ export const initWatcher = (): void => {
   if (config.hookDir) {
     paths.push(config.hookDir);
   }
-
   if (config.taskDir) {
     paths.push(config.taskDir);
   }
@@ -50,7 +49,7 @@ export const initWatcher = (): void => {
     if (config.hookDir && filePath.startsWith(config.hookDir)) {
       hookManager.reset();
       dataDirManager.load({ incremental: true });
-      logger.debug(`Re-building store done`);
+      logger.debug('Re-building store done');
     }
 
     // Remove all modules inside the task directory.

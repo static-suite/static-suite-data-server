@@ -1,5 +1,6 @@
 import { RunMode } from '@lib/dataServer.types';
-import { resolve } from 'path';
+import fs from 'fs';
+import path from 'path';
 import { setConfig } from '../config';
 import { ConfigOptions, NonSanitizedConfigOptions } from '../config.types';
 import {
@@ -19,11 +20,11 @@ describe('Config test', () => {
         taskDir: 'src/__tests__/fixtures/task',
       };
       const expectedConfig = {
-        dataDir: resolve(testConfig.dataDir),
-        workDir: resolve(<string>testConfig.workDir),
-        queryDir: resolve(<string>testConfig.queryDir),
-        hookDir: resolve(<string>testConfig.hookDir),
-        taskDir: resolve(<string>testConfig.taskDir),
+        dataDir: fs.realpathSync(path.resolve(testConfig.dataDir)),
+        workDir: fs.realpathSync(path.resolve(<string>testConfig.workDir)),
+        queryDir: fs.realpathSync(path.resolve(<string>testConfig.queryDir)),
+        hookDir: fs.realpathSync(path.resolve(<string>testConfig.hookDir)),
+        taskDir: fs.realpathSync(path.resolve(<string>testConfig.taskDir)),
         runMode: 'prod',
       };
       expect(setConfig(testConfig)).toEqual(expectedConfig);

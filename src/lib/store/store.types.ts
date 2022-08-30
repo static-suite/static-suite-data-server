@@ -53,7 +53,7 @@ export type Store = {
    * Date to tell when was the store last synced.
    *
    * Every time the store is updated, syncDate is set with the last modification
-   * date of the data directory, not the date when the store haa finished updating.
+   * date of the data directory, not the date when the store has finished updating.
    *
    * Given this scenario:
    * - Data directory modified at 12:30:00
@@ -127,6 +127,23 @@ export type Store = {
      * An index that holds all data for all files, keyed by their lang and uuid.
      */
     uuid: Map<string, any>;
+
+    /**
+     * An index that holds relationships between includes.
+     *
+     * @remarks
+     * It is a Map with two keys ("static" and "dynamic").
+     *
+     * static: a Map where its key is an include, and its value a
+     * list of files where that include is being used.
+     *
+     * dynamic: a Map where its key is a queryId plus its arguments,
+     * and its value a list of files where that query is being used.
+     */
+    include: {
+      static: Map<string, Set<string>>;
+      dynamic: Map<string, Set<string>>;
+    };
 
     /**
      * An index to hold custom data defined in hooks or queries.
@@ -227,18 +244,24 @@ export type StoreManager = {
   update(file: string): StoreManager;
 
   /**
-   * Parses all static includes (entity, config, locale and custom) from data stored in "store.data".
+   * Parses all static and dynamic includes (entity, config, locale, custom and query)
+   * from data stored in "store.data".
    *
    * @returns The store manager, to allow chaining.
    */
   parseIncludes(): StoreManager;
 
   /**
-   * Parses all static includes (entity, config, locale and custom) from one file.
+   * Parses all static and dynamic includes (entity, config, locale, custom and query)
+   * from one file.
    *
+   * @param relativeFilepath - Relative file path, inside dataDir, to the file to be parsed.
    * @param fileContent - The contents of a file.
    *
    * @returns The store manager, to allow chaining.
    */
-  parseSingleFileIncludes(fileContent: any): StoreManager;
+  parseSingleFileIncludes(
+    relativeFilepath: string,
+    fileContent: any,
+  ): StoreManager;
 };

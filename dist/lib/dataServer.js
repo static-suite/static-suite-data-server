@@ -9,7 +9,7 @@ const config_1 = require("@lib/config");
 const dataDir_1 = require("@lib/store/dataDir");
 const store_1 = require("@lib/store");
 const query_1 = require("@lib/query");
-const taskRunner_1 = require("@lib/store/task/taskRunner");
+const taskRunner_1 = require("@lib/task/taskRunner");
 const query_types_1 = require("@lib/query/query.types");
 Object.defineProperty(exports, "CacheStatus", { enumerable: true, get: function () { return query_types_1.CacheStatus; } });
 const dataServer_types_1 = require("./dataServer.types");
@@ -37,6 +37,7 @@ const dataServer = {
             queryDir: options.queryDir,
             hookDir: options.hookDir,
             taskDir: options.taskDir,
+            dumpDir: options.dumpDir,
             runMode: options.runMode,
         });
         // Start watcher.

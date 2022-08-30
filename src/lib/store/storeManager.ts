@@ -6,8 +6,9 @@ import { cache } from '@lib/utils/cache';
 import { StoreAddOptions, StoreManager } from './store.types';
 import { hookManager } from './hook';
 import { store } from '.';
-import { includeParser } from './includeParser';
+import { includeParser, includeIndex } from './include';
 import { RunMode } from '../dataServer.types';
+import { includeDiffManager } from './include/includeDiffManager';
 
 const fileCache = cache.bin<FileType>('file');
 
@@ -21,7 +22,7 @@ const fileCache = cache.bin<FileType>('file');
  * 2) A watcher detects a hook change: all files in data dir are read again.
  *
  * For the second case, we want to avoid having to actually read all
- * files from cache if they have not changed. To do so, there is a
+ * files from disk if they have not changed. To do so, there is a
  * file cache that caches the file raw contents. That cache uses a lot of
  * memory, and should only be enabled when run mode is DEV (hence, a watcher
  * is enabled) and a hook directory is defined.
@@ -69,12 +70,15 @@ const setFileIntoStore = (
       });
     }
   });
+
   const dataToStore = fileContent.json || fileContent.raw;
   if (fileContent.json) {
     // Check if the object already exists to make sure we don't break the reference
     const previousData = store.data.get(relativeFilepath);
     if (dataToStore && typeof dataToStore === 'object') {
       if (previousData) {
+        // Remove previous include data from includeIndex.
+        includeIndex.remove(relativeFilepath, previousData);
         // Delete all referenced object properties
         Object.keys(previousData).forEach(key => {
           delete previousData[key];
@@ -89,13 +93,16 @@ const setFileIntoStore = (
       if (uuid && langcode) {
         const langcodeMap =
           store.index.uuid.get(langcode) ||
-          store.index.uuid.set(langcode, new Map<string, any>());
+          store.index.uuid.set(langcode, new Map<string, any>()).get(langcode);
         langcodeMap.set(uuid, dataToStore);
       }
       const url = dataToStore.data?.content?.url?.path;
       if (url) {
         store.index.url.set(url, dataToStore);
       }
+
+      // Set include data in includeIndex.
+      includeIndex.set(relativeFilepath, fileContent.json);
     }
   }
   store.data.set(relativeFilepath, dataToStore);
@@ -108,6 +115,12 @@ export const storeManager: StoreManager = {
     relativeFilepath: string,
     options = { readFileFromCache: false },
   ): StoreManager => {
+    if (options.readFileFromCache) {
+      // Only track down changed file when reading from cache,
+      // which means file is being added again from an incremental DataDirManager::load().
+      includeDiffManager.trackChangedFile(relativeFilepath);
+    }
+
     const fileContent = setFileIntoStore(relativeFilepath, options);
 
     // Invoke "store add" hook.
@@ -124,10 +137,19 @@ export const storeManager: StoreManager = {
       }
     });
 
+    if (options.readFileFromCache) {
+      // Only track down changed file when reading from cache,
+      // which means file is being added again from an incremental DataDirManager::load().
+      includeDiffManager.trackChangedFile(relativeFilepath);
+    }
+
     return storeManager;
   },
 
   remove: (relativeFilepath: string): StoreManager => {
+    // Track down changed file.
+    includeDiffManager.trackChangedFile(relativeFilepath);
+
     if (isHookWatcherEnabled()) {
       // Delete file contents from cache.
       fileCache.delete(relativeFilepath);
@@ -154,10 +176,16 @@ export const storeManager: StoreManager = {
       }
     });
 
+    // Track down changed file.
+    includeDiffManager.trackChangedFile(relativeFilepath);
+
     return storeManager;
   },
 
   update: (relativeFilepath: string): StoreManager => {
+    // Track down changed file.
+    includeDiffManager.trackChangedFile(relativeFilepath);
+
     const fileContent = setFileIntoStore(relativeFilepath, {
       readFileFromCache: false,
     });
@@ -176,13 +204,16 @@ export const storeManager: StoreManager = {
       }
     });
 
+    // Track down changed file.
+    includeDiffManager.trackChangedFile(relativeFilepath);
+
     return storeManager;
   },
 
   parseIncludes: (): StoreManager => {
     // Parses static includes.
-    store.data.forEach(fileContent => {
-      storeManager.parseSingleFileIncludes(fileContent);
+    store.data.forEach((fileContent, relativeFilepath) => {
+      includeParser.static(relativeFilepath, fileContent);
     });
 
     // Parses dynamic includes.
@@ -193,8 +224,9 @@ export const storeManager: StoreManager = {
     return storeManager;
   },
 
-  parseSingleFileIncludes: (fileContent): StoreManager => {
-    includeParser.static(fileContent);
+  parseSingleFileIncludes: (relativeFilepath, fileContent): StoreManager => {
+    includeParser.static(relativeFilepath, fileContent);
+    includeParser.dynamic(fileContent);
     return storeManager;
   },
 };

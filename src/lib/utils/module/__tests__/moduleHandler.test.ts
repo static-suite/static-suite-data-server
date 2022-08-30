@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
-import path, { resolve } from 'path';
+import fs from 'fs';
+import path from 'path';
 import { logger } from '@lib/utils/logger';
 import { moduleManager } from '../moduleManager';
 
 // This works in conjunction with "__mocks__/clear-module.js"
 jest.mock('clear-module');
 
-const dummyModulePath = resolve(
-  path.join(__dirname, '../__mocks__/dummyModule.query.js'),
+const dummyModulePath = fs.realpathSync(
+  path.resolve(path.join(__dirname, '../__mocks__/dummyModule.query.js')),
 );
 
 beforeEach(() => {

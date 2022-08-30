@@ -30,6 +30,11 @@ export type ConfigOptions = {
   taskDir?: string;
 
   /**
+   * Path to the directory where dumps are stored. Optional.
+   */
+  dumpDir?: string;
+
+  /**
    * Run mode (dev or prod).
    */
   runMode: RunMode;
@@ -69,6 +74,11 @@ export type NonSanitizedConfigOptions = {
    * Path to the directory where tasks are stored. Optional.
    */
   taskDir?: string;
+
+  /**
+   * Path to the directory where dumps are stored. Optional.
+   */
+  dumpDir?: string;
 
   /**
    * Run mode (dev or prod).

@@ -1,7 +1,40 @@
 {
   "data": {
     "content": {
-      "name": "article2"
+      "id": "58725",
+      "title": "Title 2",
+      "author": {
+        "entity": {
+          "entityInclude": "en/entity/node/article/article3.json"
+        }
+      },
+      "image": {
+        "entity": {
+          "entityInclude": "en/entity/node/article/article3.json"
+        }
+      },
+      "queryInclude": "query1?y=33",
+      "article2CustomInclude": "en/entity/node/article/article3.json",
+      "customInclude": "en/entity/node/article/article3.json",
+      "localeInclude": "en/entity/node/article/article3.json",
+      "configInclude": "en/entity/node/article/article3.json",
+      "thisConfigInclude": "en/entity/node/article/article3.json"
+    }
+  },
+  "metadata": {
+    "includes": {
+      "static": {
+        "data.content.author.entity.entityInclude": "en/entity/node/article/article3.json",
+        "data.content.image.entity.entityInclude": "en/entity/node/article/article3.json",
+        "data.content.article2CustomInclude": "en/entity/node/article/article3.json",
+        "data.content.customInclude": "en/entity/node/article/article3.json",
+        "data.content.localeInclude": "en/entity/node/article/article3.json",
+        "data.content.configInclude": "en/entity/node/article/article3.json",
+        "data.content.thisConfigInclude": "en/entity/node/article/article3.json"
+      },
+      "dynamic": {
+        "data.content.queryInclude": "query2"
+      }
     }
   }
 }

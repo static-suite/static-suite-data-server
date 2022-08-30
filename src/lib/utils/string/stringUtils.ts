@@ -49,6 +49,19 @@ export const parseJsonString = (jsonString: string): any => {
 export const parseURLSearchParams = (
   queryString: string,
 ): URLSearchParamsObject => {
+  const obj: URLSearchParamsObject = {};
+  const pairs = queryString.split('&');
+  for (let i = 0; i < pairs.length; i += 1) {
+    const pair = pairs[i].split('=');
+    obj[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+  }
+
+  return obj;
+};
+
+export const parseURLSearchParamsBAK = (
+  queryString: string,
+): URLSearchParamsObject => {
   const params = new URLSearchParams(queryString);
   const obj: URLSearchParamsObject = {};
   Array.from(params.keys()).forEach(key => {

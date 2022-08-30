@@ -7,8 +7,9 @@ const fs_1 = require("@lib/utils/fs");
 const cache_1 = require("@lib/utils/cache");
 const hook_1 = require("./hook");
 const _1 = require(".");
-const includeParser_1 = require("./includeParser");
+const include_1 = require("./include");
 const dataServer_types_1 = require("../dataServer.types");
+const includeDiffManager_1 = require("./include/includeDiffManager");
 const fileCache = cache_1.cache.bin('file');
 /**
  * Tells whether a watcher for hooks is enabled.
@@ -20,7 +21,7 @@ const fileCache = cache_1.cache.bin('file');
  * 2) A watcher detects a hook change: all files in data dir are read again.
  *
  * For the second case, we want to avoid having to actually read all
- * files from cache if they have not changed. To do so, there is a
+ * files from disk if they have not changed. To do so, there is a
  * file cache that caches the file raw contents. That cache uses a lot of
  * memory, and should only be enabled when run mode is DEV (hence, a watcher
  * is enabled) and a hook directory is defined.
@@ -68,6 +69,8 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
         const previousData = _1.store.data.get(relativeFilepath);
         if (dataToStore && typeof dataToStore === 'object') {
             if (previousData) {
+                // Remove previous include data from includeIndex.
+                include_1.includeIndex.remove(relativeFilepath, previousData);
                 // Delete all referenced object properties
                 Object.keys(previousData).forEach(key => {
                     delete previousData[key];
@@ -81,13 +84,15 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
             const langcode = dataToStore.data?.content?.langcode?.value;
             if (uuid && langcode) {
                 const langcodeMap = _1.store.index.uuid.get(langcode) ||
-                    _1.store.index.uuid.set(langcode, new Map());
+                    _1.store.index.uuid.set(langcode, new Map()).get(langcode);
                 langcodeMap.set(uuid, dataToStore);
             }
             const url = dataToStore.data?.content?.url?.path;
             if (url) {
                 _1.store.index.url.set(url, dataToStore);
             }
+            // Set include data in includeIndex.
+            include_1.includeIndex.set(relativeFilepath, fileContent.json);
         }
     }
     _1.store.data.set(relativeFilepath, dataToStore);
@@ -95,6 +100,11 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
 };
 exports.storeManager = {
     add: (relativeFilepath, options = { readFileFromCache: false }) => {
+        if (options.readFileFromCache) {
+            // Only track down changed file when reading from cache,
+            // which means file is being added again from an incremental DataDirManager::load().
+            includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
+        }
         const fileContent = setFileIntoStore(relativeFilepath, options);
         // Invoke "store add" hook.
         const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
@@ -109,9 +119,16 @@ exports.storeManager = {
                 });
             }
         });
+        if (options.readFileFromCache) {
+            // Only track down changed file when reading from cache,
+            // which means file is being added again from an incremental DataDirManager::load().
+            includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
+        }
         return exports.storeManager;
     },
     remove: (relativeFilepath) => {
+        // Track down changed file.
+        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
         if ((0, exports.isHookWatcherEnabled)()) {
             // Delete file contents from cache.
             fileCache.delete(relativeFilepath);
@@ -134,9 +151,13 @@ exports.storeManager = {
                 });
             }
         });
+        // Track down changed file.
+        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
         return exports.storeManager;
     },
     update: (relativeFilepath) => {
+        // Track down changed file.
+        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
         const fileContent = setFileIntoStore(relativeFilepath, {
             readFileFromCache: false,
         });
@@ -153,21 +174,24 @@ exports.storeManager = {
                 });
             }
         });
+        // Track down changed file.
+        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
         return exports.storeManager;
     },
     parseIncludes: () => {
         // Parses static includes.
-        _1.store.data.forEach(fileContent => {
-            exports.storeManager.parseSingleFileIncludes(fileContent);
+        _1.store.data.forEach((fileContent, relativeFilepath) => {
+            include_1.includeParser.static(relativeFilepath, fileContent);
         });
         // Parses dynamic includes.
         _1.store.data.forEach(fileContent => {
-            includeParser_1.includeParser.dynamic(fileContent);
+            include_1.includeParser.dynamic(fileContent);
         });
         return exports.storeManager;
     },
-    parseSingleFileIncludes: (fileContent) => {
-        includeParser_1.includeParser.static(fileContent);
+    parseSingleFileIncludes: (relativeFilepath, fileContent) => {
+        include_1.includeParser.static(relativeFilepath, fileContent);
+        include_1.includeParser.dynamic(fileContent);
         return exports.storeManager;
     },
 };

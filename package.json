@@ -39,6 +39,7 @@
     "build": "yarn copy-http-files-to-src && yarn lint && tsc && yarn api-extractor run --local --verbose && yarn post-build && yarn copy-http-files-to-dist",
     "post-build": "yarn rimraf dist/**/*__tests__",
     "serve": "node ./dist/bin/serve.js http --port=57471 --data-dir=./src/__tests__/fixtures/data --work-dir=./src/__tests__/fixtures/work --query-dir=./src/__tests__/fixtures/query  --hook-dir=./src/__tests__/fixtures/hook --task-dir=./src/__tests__/fixtures/task --run-mode=dev --log-level=debug",
+    "serve-ng": "node ./dist/bin/serve.js http --port=57472 --data-dir=/var/www/natgeo/natgeo-global-sites/static/current/uk/data/prod --work-dir=/var/www/natgeo/natgeo-global-sites/static/current/uk/data/prod/.work --dump-dir=/var/www/natgeo/natgeo-global-sites/static/current/uk/data/dump --query-dir=/var/www/natgeo/natgeo-global-sites/natgeo-global-sites-gatsby/src/data-server/query  --hook-dir=/var/www/natgeo/natgeo-global-sites/natgeo-global-sites-gatsby/src/data-server/hooks --run-mode=dev --log-level=debug",
     "lint": "eslint . --ext .ts",
     "docs": "yarn typedoc --out docs src/lib/",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
