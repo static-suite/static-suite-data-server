@@ -44,7 +44,6 @@ export const queryRunner: QueryRunner = {
     count += 1;
     const startDate = microtime.now();
     const argsString = JSON.stringify(args);
-    logger.debug(`#${count} Query started: "${queryId}", args "${argsString}"`);
 
     // Implement a query cache.
     const cacheId = `${queryId}--${argsString}`;
@@ -84,7 +83,9 @@ export const queryRunner: QueryRunner = {
       },
     };
 
-    logger.debug(`#${count} Query "${queryId}" took ${execTimeMs} ms.`);
+    logger.debug(
+      `#${count} Query "${queryId}" args "${argsString}" took ${execTimeMs} ms.`,
+    );
 
     return response;
   },

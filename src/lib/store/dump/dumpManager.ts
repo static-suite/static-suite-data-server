@@ -2,10 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
+import { jsonify } from '@lib/utils/object';
 import { config } from '@lib/config';
 import { store } from '@lib/store';
-import { includeDiffManager } from '../include/includeDiffManager';
-import { Diff } from '../include/includeDiffManager.types ';
+import { diffManager } from '../diff/diffManager';
+import { Diff } from '../diff/diffManager.types';
 import { Dump, DumpManager } from './dumpManager.types';
 import { hookManager } from '../hook';
 
@@ -82,13 +83,13 @@ const storeDiffMetadata = (
   } catch (e) {
     currentDiffMetadata = [];
   }
-  currentDiffMetadata.push(diff);
+  currentDiffMetadata.push(jsonify(diff));
   try {
     const currentDiffMetadataString = JSON.stringify(currentDiffMetadata);
     fs.writeFileSync(metadataFilepath, currentDiffMetadataString);
     // Resetting the diff must happen when its metadata is successfully
     // stored into disk.
-    includeDiffManager.resetDiff(diffResetDate);
+    diffManager.resetDiff(diffResetDate);
   } catch (e) {
     logger.error(
       `Dump: error saving diff metadata to "${metadataFilepath}": ${e}`,
@@ -120,7 +121,7 @@ export const dumpManager: DumpManager = {
 
       // Create a dump object from a diff.
       const diffResetDate = new Date();
-      const diff = includeDiffManager.getDiff();
+      const diff = diffManager.getDiff();
       let dump = createDumpFromDiff(diff);
 
       // Invoke "onDump" hook.

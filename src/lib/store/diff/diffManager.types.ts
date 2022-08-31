@@ -1,23 +1,7 @@
 /**
  * Service that handles the incremental differences in data (includes and queries).
  */
-export type IncludeDiffer = {
-  /**
-   * Gets a set of changed files from a file and adds them to a temporary stack.
-   *
-   * @remarks
-   * Between two builds, stored data can be mutated when dataDirManager::update() runs. That
-   * creates a problem when an include or file is removed, since once store is updated we cannot
-   * go back in time to track past changes. To avoid this, track changes files whenever store
-   * is updated.
-   *
-   * This function only tracks changed files affected by includes. There is no need to track
-   * intermediate changes in query results, since they are evaluated in getDiff().
-   *
-   * @param file - Relative file path, inside dataDir, to the file to be processed.
-   */
-  trackChangedFile(file: string): void;
-
+export type DiffManager = {
   /**
    * Clears intermediate changes tracked by trackChangedFile().
    *
@@ -41,7 +25,7 @@ export type IncludeDiffer = {
    * 2) queries: there is no easy way to know if a changed file will alter a query,
    *   so we run all of them and check if something has changed.
    *
-   * Note that status changes (publishing of unpublishing a file) is meaningless for
+   * Note that status changes (publishing or unpublishing a file) is meaningless for
    * Data Server. If an unpublished file must be used in an specific way, or even
    * deleted, that is something outside of the scope of Data Server.
    *

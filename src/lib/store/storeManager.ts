@@ -1,4 +1,3 @@
-// import path from 'path';
 import { config } from '@lib/config';
 import { getFileContent } from '@lib/utils/fs';
 import { FileType } from '@lib/utils/fs/fs.types';
@@ -8,9 +7,9 @@ import { hookManager } from './hook';
 import { store } from '.';
 import { includeParser, includeIndex } from './include';
 import { RunMode } from '../dataServer.types';
-import { includeDiffManager } from './include/includeDiffManager';
+import { tracker } from './diff/tracker';
 
-const fileCache = cache.bin<FileType>('file');
+const fileCache = cache.bin<string>('file');
 
 /**
  * Tells whether a watcher for hooks is enabled.
@@ -45,17 +44,11 @@ const setFileIntoStore = (
   options: StoreAddOptions = { readFileFromCache: false },
 ): FileType => {
   const hookWatcherEnabled = isHookWatcherEnabled();
-  let fileContent =
-    hookWatcherEnabled && options.readFileFromCache
-      ? fileCache.get(relativeFilepath)
-      : undefined;
-  if (!fileContent) {
-    const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
-    fileContent = getFileContent(absoluteFilePath);
-    if (hookWatcherEnabled) {
-      fileCache.set(relativeFilepath, fileContent);
-    }
-  }
+  const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
+  let fileContent = getFileContent(absoluteFilePath, {
+    readFileFromCache: options.readFileFromCache,
+    isFileCacheEnabled: hookWatcherEnabled,
+  });
 
   // Invoke "process file" hook.
   const hookModulesInfo = hookManager.getModuleGroupInfo();
@@ -102,7 +95,7 @@ const setFileIntoStore = (
       }
 
       // Set include data in includeIndex.
-      includeIndex.set(relativeFilepath, fileContent.json);
+      includeIndex.set(relativeFilepath, dataToStore);
     }
   }
   store.data.set(relativeFilepath, dataToStore);
@@ -115,12 +108,6 @@ export const storeManager: StoreManager = {
     relativeFilepath: string,
     options = { readFileFromCache: false },
   ): StoreManager => {
-    if (options.readFileFromCache) {
-      // Only track down changed file when reading from cache,
-      // which means file is being added again from an incremental DataDirManager::load().
-      includeDiffManager.trackChangedFile(relativeFilepath);
-    }
-
     const fileContent = setFileIntoStore(relativeFilepath, options);
 
     // Invoke "store add" hook.
@@ -137,22 +124,16 @@ export const storeManager: StoreManager = {
       }
     });
 
-    if (options.readFileFromCache) {
-      // Only track down changed file when reading from cache,
-      // which means file is being added again from an incremental DataDirManager::load().
-      includeDiffManager.trackChangedFile(relativeFilepath);
-    }
-
     return storeManager;
   },
 
   remove: (relativeFilepath: string): StoreManager => {
-    // Track down changed file.
-    includeDiffManager.trackChangedFile(relativeFilepath);
+    // Track down file before it changes.
+    tracker.trackChangedFile(relativeFilepath);
 
     if (isHookWatcherEnabled()) {
       // Delete file contents from cache.
-      fileCache.delete(relativeFilepath);
+      fileCache.delete(`${config.dataDir}/${relativeFilepath}`);
     }
 
     // Delete file contents from store.
@@ -176,15 +157,15 @@ export const storeManager: StoreManager = {
       }
     });
 
-    // Track down changed file.
-    includeDiffManager.trackChangedFile(relativeFilepath);
+    // Track down file after it changes.
+    // tracker.trackChangedFile(relativeFilepath);
 
     return storeManager;
   },
 
   update: (relativeFilepath: string): StoreManager => {
-    // Track down changed file.
-    includeDiffManager.trackChangedFile(relativeFilepath);
+    // Track down file before it changes.
+    tracker.trackChangedFile(relativeFilepath);
 
     const fileContent = setFileIntoStore(relativeFilepath, {
       readFileFromCache: false,
@@ -204,8 +185,8 @@ export const storeManager: StoreManager = {
       }
     });
 
-    // Track down changed file.
-    includeDiffManager.trackChangedFile(relativeFilepath);
+    // Track down file after it changes.
+    tracker.trackChangedFile(relativeFilepath);
 
     return storeManager;
   },

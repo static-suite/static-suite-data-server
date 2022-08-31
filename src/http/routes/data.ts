@@ -3,8 +3,10 @@ import { Request, Response } from 'express';
 import mime from 'mime-types';
 import { store } from '@lib/store';
 import { logger } from '@lib/utils/logger';
+import { dataDirManager } from '@lib/store/dataDir';
 
 const data = (req: Request, res: Response): void => {
+  dataDirManager.update();
   const storeKey = req.params[0];
   const storeKeyParts =
     !storeKey || storeKey === '' ? null : storeKey.split('/');

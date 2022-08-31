@@ -1,21 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import os from 'os';
 import fs from 'fs';
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
-import { Json } from '@lib/utils/object/object.types';
-import { jsonify } from '@lib/utils/object';
 import { store } from '../store';
 import { config } from '../../config';
 import { workDirHelper } from '../workDir';
-import { IncludeDiffer, Diff } from './includeDiffManager.types ';
-import { includeIndex } from './includeIndex';
+import { DiffManager, Diff } from './diffManager.types';
+import { dataDirManager } from '../dataDir/dataDirManager';
+import { tracker } from './tracker';
 
 let lastDiffDateFilepath: string | null = null;
 
 let lastDiffDate: Date | null = null;
-
-const trackedChangedFiles = new Set<string>();
 
 // Ensure several concurrent Data Servers use different files.
 const getLastDiffDateFilepath = () => {
@@ -64,7 +60,7 @@ const setLastDiffDate = (date: Date): void => {
   }
   lastDiffDate = date;
 };
-
+/*
 const getUpdatedFilesByQueries = (): string[] => {
   // todo
   const updatedFilesByQueries: string[] = [];
@@ -74,25 +70,19 @@ const getUpdatedFilesByQueries = (): string[] => {
     }
   });
   return updatedFilesByQueries;
-};
+}; */
 
-export const includeDiffManager: IncludeDiffer = {
-  trackChangedFile(file: string): void {
-    // Add parents.
-    includeIndex.getParents(file).forEach((parent: string) => {
-      trackedChangedFiles.add(parent);
-    });
-    // Add the passed file.
-    trackedChangedFiles.add(file);
-  },
-
+export const diffManager: DiffManager = {
   resetDiff(date: Date): void {
     setLastDiffDate(date);
-    trackedChangedFiles.clear();
+    tracker.reset();
   },
 
   getDiff(): Diff {
     const startDate = microtime.now();
+
+    // Before getting any diff data, update any pending changes from data dir.
+    dataDirManager.update();
 
     let updated = new Set<string>();
     let deleted = new Set<string>();
@@ -104,17 +94,17 @@ export const includeDiffManager: IncludeDiffer = {
       if (changedFiles.updated.length || changedFiles.deleted.length) {
         // Update tracked files so no affected parent is missed.
         changedFiles.updated.forEach(file => {
-          includeDiffManager.trackChangedFile(file);
+          tracker.trackChangedFile(file);
         });
         changedFiles.deleted.forEach(file => {
-          includeDiffManager.trackChangedFile(file);
+          tracker.trackChangedFile(file);
         });
       }
 
       // Create the resulting set of updated and deleted files.
       // "updated" includes all affected parents tracked down
-      // by trackChangedIncludes(), without any deleted file.
-      updated = new Set<string>(trackedChangedFiles);
+      // by tracker, without any deleted file.
+      updated = new Set<string>(tracker.getChangedFiles());
       changedFiles.deleted.forEach(updated.delete);
 
       // "deleted" includes only deleted files, and is based only
@@ -146,7 +136,7 @@ export const includeDiffManager: IncludeDiffer = {
 
     // Log diff if not empty
     // if (diff.updated.length || diff.deleted.length) {
-    logger.debug(`Diff: "${JSON.stringify(jsonify(diff))}"`);
+    // logger.debug(`Diff: "${JSON.stringify(jsonify(diff))}"`);
     // }
 
     return diff;

@@ -17,4 +17,17 @@ export declare type FileType = {
      */
     json: Json | null;
 };
+/**
+ * Options for the getFileContents() function
+ */
+export declare type GetFileContentOptions = {
+    /**
+     * Flag to obtain file data from cache instead of the file system.
+     */
+    readFileFromCache: boolean;
+    /**
+     * Flag to tell whether file cache is enabled.
+     */
+    isFileCacheEnabled: boolean;
+};
 //# sourceMappingURL=fs.types.d.ts.map

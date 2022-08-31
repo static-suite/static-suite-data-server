@@ -6,7 +6,7 @@ import { config } from '@lib/config';
 import { cache } from '@lib/utils/cache';
 import { store } from '@lib/store';
 import { jsonify } from '@lib/utils/object';
-import { includeDiffManager } from '@lib/store/include/includeDiffManager';
+import { diffManager } from '@lib/store/diff/diffManager';
 import { ObjectType } from '@lib/utils/object/object.types';
 // import { Json } from '@lib/utils/object/object.types';
 
@@ -43,7 +43,7 @@ const statusBasic = (req: Request, res: Response): void => {
       numberOfExecutions: queryRunner.getCount(),
       numberOfCachedQueries: cache.bin('query').size,
     },
-    diff: includeDiffManager.getDiff(),
+    diff: jsonify(diffManager.getDiff()),
   };
   // includeDiffManager.resetDiff(new Date());
   res.status(200);

@@ -8,7 +8,9 @@ const path_1 = __importDefault(require("path"));
 const mime_types_1 = __importDefault(require("mime-types"));
 const store_1 = require("@lib/store");
 const logger_1 = require("@lib/utils/logger");
+const dataDir_1 = require("@lib/store/dataDir");
 const data = (req, res) => {
+    dataDir_1.dataDirManager.update();
     const storeKey = req.params[0];
     const storeKeyParts = !storeKey || storeKey === '' ? null : storeKey.split('/');
     const storeFile = store_1.store.data.get(storeKey);

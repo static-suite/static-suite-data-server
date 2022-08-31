@@ -8,9 +8,10 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const microtime_1 = __importDefault(require("microtime"));
 const logger_1 = require("@lib/utils/logger");
+const object_1 = require("@lib/utils/object");
 const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
-const includeDiffManager_1 = require("../include/includeDiffManager");
+const diffManager_1 = require("../diff/diffManager");
 const hook_1 = require("../hook");
 const removeEmptyDirsUpwards = (dir) => {
     const isEmpty = fs_1.default.readdirSync(dir).length === 0;
@@ -67,13 +68,13 @@ const storeDiffMetadata = (metadataFilepath, diff, diffResetDate) => {
     catch (e) {
         currentDiffMetadata = [];
     }
-    currentDiffMetadata.push(diff);
+    currentDiffMetadata.push((0, object_1.jsonify)(diff));
     try {
         const currentDiffMetadataString = JSON.stringify(currentDiffMetadata);
         fs_1.default.writeFileSync(metadataFilepath, currentDiffMetadataString);
         // Resetting the diff must happen when its metadata is successfully
         // stored into disk.
-        includeDiffManager_1.includeDiffManager.resetDiff(diffResetDate);
+        diffManager_1.diffManager.resetDiff(diffResetDate);
     }
     catch (e) {
         logger_1.logger.error(`Dump: error saving diff metadata to "${metadataFilepath}": ${e}`);
@@ -100,7 +101,7 @@ exports.dumpManager = {
             const metadataFilepath = `${config_1.config.dumpDir}/diff-metadata.json`;
             // Create a dump object from a diff.
             const diffResetDate = new Date();
-            const diff = includeDiffManager_1.includeDiffManager.getDiff();
+            const diff = diffManager_1.diffManager.getDiff();
             let dump = createDumpFromDiff(diff);
             // Invoke "onDump" hook.
             const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();

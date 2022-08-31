@@ -7,7 +7,7 @@ const config_1 = require("@lib/config");
 const cache_1 = require("@lib/utils/cache");
 const store_1 = require("@lib/store");
 const object_1 = require("@lib/utils/object");
-const includeDiffManager_1 = require("@lib/store/include/includeDiffManager");
+const diffManager_1 = require("@lib/store/diff/diffManager");
 // import { Json } from '@lib/utils/object/object.types';
 const statusIndex = (req, res) => {
     res.render('statusIndex', {
@@ -41,7 +41,7 @@ const statusBasic = (req, res) => {
             numberOfExecutions: query_1.queryRunner.getCount(),
             numberOfCachedQueries: cache_1.cache.bin('query').size,
         },
-        diff: includeDiffManager_1.includeDiffManager.getDiff(),
+        diff: (0, object_1.jsonify)(diffManager_1.diffManager.getDiff()),
     };
     // includeDiffManager.resetDiff(new Date());
     res.status(200);

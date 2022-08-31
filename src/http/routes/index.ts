@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { home } from './home';
 import { queryIndex, runQuery } from './query';
 import { cacheIndex, cacheClear } from './cache';
-import { reset } from './reset';
 import {
   statusBasic,
   statusIndex,
@@ -26,7 +25,6 @@ routes.get('/status/index/uuid', statusIndexUuid);
 routes.get('/status/index/include', statusIndexInclude);
 routes.get('/status/index/custom', statusIndexCustom);
 routes.get('/status', statusIndex);
-routes.get('/reset', reset);
 routes.get('/query', queryIndex);
 routes.get('/query/*', runQuery);
 routes.get('/task', taskIndex);

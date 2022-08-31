@@ -9,6 +9,7 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const chokidar_1 = __importDefault(require("chokidar"));
 const logger_1 = require("@lib/utils/logger");
 const string_1 = require("@lib/utils/string");
+const cache_1 = require("../cache");
 /**
  * Tells whether a path is JSON or not.
  *
@@ -30,7 +31,6 @@ const readFile = (filePath) => {
     let contents = null;
     try {
         contents = fs_1.default.readFileSync(filePath, 'utf8');
-        // contents = '{}';
     }
     catch (error) {
         // When an error is thrown, contents is undefined, so ensure
@@ -44,19 +44,32 @@ exports.readFile = readFile;
 /**
  * Gets raw and JSON parsed content from a file.
  *
- * @param filePath - A path to a file.
+ * @param filepath - A path to a file.
  *
  * @returns Object with two properties, "raw" and "json", which contain
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-const getFileContent = (filePath) => {
-    const raw = (0, exports.readFile)(filePath);
+const getFileContent = (filepath, options = {
+    readFileFromCache: false,
+    isFileCacheEnabled: false,
+}) => {
+    let raw;
+    if (options.isFileCacheEnabled && options.readFileFromCache) {
+        raw = cache_1.cache.bin('file').get(filepath);
+        logger_1.logger.debug(`File ${filepath} read from file cache`);
+    }
+    if (!raw) {
+        raw = (0, exports.readFile)(filepath);
+        if (options.isFileCacheEnabled) {
+            cache_1.cache.bin('file').set(filepath, raw);
+        }
+    }
     let json = null;
-    if (isJson(filePath) && raw) {
+    if (isJson(filepath) && raw) {
         json = (0, string_1.parseJsonString)(raw);
         if (!json) {
-            logger_1.logger.error(`Error getting JSON from file "${filePath}"`);
+            logger_1.logger.error(`Error getting JSON from file "${filepath}"`);
         }
     }
     return { raw, json };

@@ -31,7 +31,9 @@ const getRecursiveParents = (
 export const includeIndex: IncludeIndex = {
   set: (relativeFilepath: string, fileContents: Json): void => {
     const staticIncludes = fileContents?.metadata?.includes?.static;
+    // console.log('includeIndex.set() staticIncludes', staticIncludes);
     if (staticIncludes) {
+      // console.log('includeIndex.set() INNNNNNN', relativeFilepath);
       Object.values(staticIncludes).forEach(
         (includeRelativeFilepath: string) => {
           const includeMap =
@@ -62,6 +64,7 @@ export const includeIndex: IncludeIndex = {
               .get(includeRelativeFilepath);
           if (includeMap) {
             includeMap.delete(relativeFilepath);
+            // console.log('includeIndex.remove()', relativeFilepath);
             if (includeMap.size === 0) {
               store.index.include.static.delete(includeRelativeFilepath);
             }

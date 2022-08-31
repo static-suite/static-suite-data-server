@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.storeManager = exports.isHookWatcherEnabled = void 0;
-// import path from 'path';
 const config_1 = require("@lib/config");
 const fs_1 = require("@lib/utils/fs");
 const cache_1 = require("@lib/utils/cache");
@@ -9,7 +8,7 @@ const hook_1 = require("./hook");
 const _1 = require(".");
 const include_1 = require("./include");
 const dataServer_types_1 = require("../dataServer.types");
-const includeDiffManager_1 = require("./include/includeDiffManager");
+const tracker_1 = require("./diff/tracker");
 const fileCache = cache_1.cache.bin('file');
 /**
  * Tells whether a watcher for hooks is enabled.
@@ -40,16 +39,11 @@ exports.isHookWatcherEnabled = isHookWatcherEnabled;
  */
 const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false }) => {
     const hookWatcherEnabled = (0, exports.isHookWatcherEnabled)();
-    let fileContent = hookWatcherEnabled && options.readFileFromCache
-        ? fileCache.get(relativeFilepath)
-        : undefined;
-    if (!fileContent) {
-        const absoluteFilePath = `${config_1.config.dataDir}/${relativeFilepath}`;
-        fileContent = (0, fs_1.getFileContent)(absoluteFilePath);
-        if (hookWatcherEnabled) {
-            fileCache.set(relativeFilepath, fileContent);
-        }
-    }
+    const absoluteFilePath = `${config_1.config.dataDir}/${relativeFilepath}`;
+    let fileContent = (0, fs_1.getFileContent)(absoluteFilePath, {
+        readFileFromCache: options.readFileFromCache,
+        isFileCacheEnabled: hookWatcherEnabled,
+    });
     // Invoke "process file" hook.
     const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
@@ -92,7 +86,7 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
                 _1.store.index.url.set(url, dataToStore);
             }
             // Set include data in includeIndex.
-            include_1.includeIndex.set(relativeFilepath, fileContent.json);
+            include_1.includeIndex.set(relativeFilepath, dataToStore);
         }
     }
     _1.store.data.set(relativeFilepath, dataToStore);
@@ -100,11 +94,6 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
 };
 exports.storeManager = {
     add: (relativeFilepath, options = { readFileFromCache: false }) => {
-        if (options.readFileFromCache) {
-            // Only track down changed file when reading from cache,
-            // which means file is being added again from an incremental DataDirManager::load().
-            includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
-        }
         const fileContent = setFileIntoStore(relativeFilepath, options);
         // Invoke "store add" hook.
         const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
@@ -119,19 +108,14 @@ exports.storeManager = {
                 });
             }
         });
-        if (options.readFileFromCache) {
-            // Only track down changed file when reading from cache,
-            // which means file is being added again from an incremental DataDirManager::load().
-            includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
-        }
         return exports.storeManager;
     },
     remove: (relativeFilepath) => {
-        // Track down changed file.
-        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
+        // Track down file before it changes.
+        tracker_1.tracker.trackChangedFile(relativeFilepath);
         if ((0, exports.isHookWatcherEnabled)()) {
             // Delete file contents from cache.
-            fileCache.delete(relativeFilepath);
+            fileCache.delete(`${config_1.config.dataDir}/${relativeFilepath}`);
         }
         // Delete file contents from store.
         const data = _1.store.data.get(relativeFilepath);
@@ -151,13 +135,13 @@ exports.storeManager = {
                 });
             }
         });
-        // Track down changed file.
-        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
+        // Track down file after it changes.
+        // tracker.trackChangedFile(relativeFilepath);
         return exports.storeManager;
     },
     update: (relativeFilepath) => {
-        // Track down changed file.
-        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
+        // Track down file before it changes.
+        tracker_1.tracker.trackChangedFile(relativeFilepath);
         const fileContent = setFileIntoStore(relativeFilepath, {
             readFileFromCache: false,
         });
@@ -174,8 +158,8 @@ exports.storeManager = {
                 });
             }
         });
-        // Track down changed file.
-        includeDiffManager_1.includeDiffManager.trackChangedFile(relativeFilepath);
+        // Track down file after it changes.
+        tracker_1.tracker.trackChangedFile(relativeFilepath);
         return exports.storeManager;
     },
     parseIncludes: () => {

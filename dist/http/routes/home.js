@@ -10,7 +10,6 @@ const home = (req, res) => {
             '/cache': 'List of available cache bins',
             '/diff': 'List of changed files',
             '/status': 'All things nerd',
-            '/reset': 'Reset the Data Server and load all contents from scratch',
             '/docs': 'Documentation',
         },
     });

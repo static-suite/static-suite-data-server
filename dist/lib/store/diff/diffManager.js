@@ -3,8 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.includeDiffManager = void 0;
-/* eslint-disable @typescript-eslint/no-unused-vars */
+exports.diffManager = void 0;
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
 const microtime_1 = __importDefault(require("microtime"));
@@ -12,11 +11,10 @@ const logger_1 = require("@lib/utils/logger");
 const store_1 = require("../store");
 const config_1 = require("../../config");
 const workDir_1 = require("../workDir");
-const includeIndex_1 = require("./includeIndex");
 const dataDirManager_1 = require("../dataDir/dataDirManager");
+const tracker_1 = require("./tracker");
 let lastDiffDateFilepath = null;
 let lastDiffDate = null;
-const trackedChangedFiles = new Set();
 // Ensure several concurrent Data Servers use different files.
 const getLastDiffDateFilepath = () => {
     if (!lastDiffDateFilepath) {
@@ -59,31 +57,25 @@ const setLastDiffDate = (date) => {
     }
     lastDiffDate = date;
 };
-const getUpdatedFilesByQueries = () => {
-    // todo
-    const updatedFilesByQueries = [];
-    store_1.store.data.forEach((json, relativeFilepath) => {
-        if (json.metadata?.includes?.dynamic) {
-            updatedFilesByQueries.push(relativeFilepath);
-        }
-    });
-    return updatedFilesByQueries;
-};
-exports.includeDiffManager = {
-    trackChangedFile(file) {
-        // Add parents.
-        includeIndex_1.includeIndex.getParents(file).forEach((parent) => {
-            trackedChangedFiles.add(parent);
-        });
-        // Add the passed file.
-        trackedChangedFiles.add(file);
-    },
+/*
+const getUpdatedFilesByQueries = (): string[] => {
+  // todo
+  const updatedFilesByQueries: string[] = [];
+  store.data.forEach((json: Json, relativeFilepath: string) => {
+    if (json.metadata?.includes?.dynamic) {
+      updatedFilesByQueries.push(relativeFilepath);
+    }
+  });
+  return updatedFilesByQueries;
+}; */
+exports.diffManager = {
     resetDiff(date) {
         setLastDiffDate(date);
-        trackedChangedFiles.clear();
+        tracker_1.tracker.reset();
     },
     getDiff() {
         const startDate = microtime_1.default.now();
+        // Before getting any diff data, update any pending changes from data dir.
         dataDirManager_1.dataDirManager.update();
         let updated = new Set();
         let deleted = new Set();
@@ -95,16 +87,16 @@ exports.includeDiffManager = {
             if (changedFiles.updated.length || changedFiles.deleted.length) {
                 // Update tracked files so no affected parent is missed.
                 changedFiles.updated.forEach(file => {
-                    exports.includeDiffManager.trackChangedFile(file);
+                    tracker_1.tracker.trackChangedFile(file);
                 });
                 changedFiles.deleted.forEach(file => {
-                    exports.includeDiffManager.trackChangedFile(file);
+                    tracker_1.tracker.trackChangedFile(file);
                 });
             }
             // Create the resulting set of updated and deleted files.
             // "updated" includes all affected parents tracked down
-            // by trackChangedIncludes(), without any deleted file.
-            updated = new Set(trackedChangedFiles);
+            // by tracker, without any deleted file.
+            updated = new Set(tracker_1.tracker.getChangedFiles());
             changedFiles.deleted.forEach(updated.delete);
             // "deleted" includes only deleted files, and is based only
             // on data coming from changedFiles, because all deleted files

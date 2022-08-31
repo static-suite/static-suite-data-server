@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.includeDiffManager = void 0;
+exports.diffManager = void 0;
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
@@ -12,7 +12,7 @@ const logger_1 = require("@lib/utils/logger");
 const store_1 = require("../store");
 const config_1 = require("../../config");
 const workDir_1 = require("../workDir");
-const includeIndex_1 = require("./includeIndex");
+const includeIndex_1 = require("../include/includeIndex");
 const dataDirManager_1 = require("../dataDir/dataDirManager");
 let lastDiffDateFilepath = null;
 let lastDiffDate = null;
@@ -69,7 +69,7 @@ const getUpdatedFilesByQueries = () => {
     });
     return updatedFilesByQueries;
 };
-exports.includeDiffManager = {
+exports.diffManager = {
     trackChangedFile(file) {
         // Add parents.
         includeIndex_1.includeIndex.getParents(file).forEach((parent) => {
@@ -95,10 +95,10 @@ exports.includeDiffManager = {
             if (changedFiles.updated.length || changedFiles.deleted.length) {
                 // Update tracked files so no affected parent is missed.
                 changedFiles.updated.forEach(file => {
-                    exports.includeDiffManager.trackChangedFile(file);
+                    exports.diffManager.trackChangedFile(file);
                 });
                 changedFiles.deleted.forEach(file => {
-                    exports.includeDiffManager.trackChangedFile(file);
+                    exports.diffManager.trackChangedFile(file);
                 });
             }
             // Create the resulting set of updated and deleted files.
