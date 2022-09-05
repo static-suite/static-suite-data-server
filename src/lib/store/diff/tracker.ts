@@ -1,21 +1,26 @@
 import { includeIndex } from '../include/includeIndex';
 import { Tracker } from './tracker.types';
 
-const trackedChangedFiles = new Set<string>();
+/**
+ * A list of changed files with includes that have changed since last reset.
+ */
+const changedFiles = new Set<string>();
 
 export const tracker: Tracker = {
-  trackChangedFile(file: string): void {
+  trackChangedFile(relativeFilepath) {
     // Add parents.
-    includeIndex.getParents(file).forEach((parent: string) => {
-      trackedChangedFiles.add(parent);
-    });
+    includeIndex
+      .getParents(relativeFilepath)
+      .forEach((parentRelativeFilepath: string) => {
+        changedFiles.add(parentRelativeFilepath);
+      });
     // Add the passed file.
-    trackedChangedFiles.add(file);
+    changedFiles.add(relativeFilepath);
   },
 
-  getChangedFiles: (): string[] => Array.from(trackedChangedFiles),
+  getChangedFiles: () => Array.from(changedFiles),
 
-  reset: (): void => {
-    trackedChangedFiles.clear();
+  reset: () => {
+    changedFiles.clear();
   },
 };

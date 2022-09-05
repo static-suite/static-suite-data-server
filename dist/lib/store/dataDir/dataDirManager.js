@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataDirManager = void 0;
+const microtime_1 = __importDefault(require("microtime"));
 const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
 const fs_1 = require("@lib/utils/fs");
@@ -79,6 +83,7 @@ exports.dataDirManager = {
                 // processes updating the data directory at the same time.
                 const storeLastSyncDate = store_1.store.syncDate;
                 store_1.store.syncDate = dataDirModificationDate;
+                const startDate = microtime_1.default.now();
                 logger_1.logger.debug(`Data dir outdated. Current data loaded at ${storeLastSyncDate.toISOString()} but last updated at ${dataDirModificationDate.toISOString()}`);
                 const changedFiles = workDir_1.workDirHelper.getChangedFilesSince(storeLastSyncDate);
                 changedFiles.updated.forEach(file => {
@@ -97,6 +102,8 @@ exports.dataDirManager = {
                 // cache in all situations.
                 cache_1.cache.bin('store-subset').clear();
                 cache_1.cache.bin('query').clear();
+                const execTimeMs = (microtime_1.default.now() - startDate) / 1000;
+                logger_1.logger.debug(`Data dir updated in ${execTimeMs}ms.`);
             }
             else {
                 logger_1.logger.debug(`Data dir up to date. Current data loaded at ${store_1.store.syncDate.toISOString()} and last updated at ${dataDirModificationDate.toISOString()}`);

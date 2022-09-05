@@ -1,7 +1,9 @@
 import os from 'os';
 import fs from 'fs';
+import path from 'path';
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
+import { Json } from '@lib/utils/object/object.types';
 import { store } from '../store';
 import { config } from '../../config';
 import { workDirHelper } from '../workDir';
@@ -21,7 +23,7 @@ const getLastDiffDateFilepath = () => {
       .replace(/([^a-zA-Z0-9-])/g, '')
       .replace(/^-/g, '')
       .replace(/-$/g, '');
-    lastDiffDateFilepath = `${os.tmpdir()}/static-suite-data-server--last-diff-date.${dataDirHash}.dat`;
+    lastDiffDateFilepath = `${os.homedir()}/.static-suite/data-server/${dataDirHash}/last-diff-date.dat`;
   }
   return lastDiffDateFilepath;
 };
@@ -52,6 +54,9 @@ const getLastDiffDate = (): Date | null => {
 const setLastDiffDate = (date: Date): void => {
   const lastDiffDatePath = getLastDiffDateFilepath();
   try {
+    if (!fs.existsSync(lastDiffDatePath)) {
+      fs.mkdirSync(path.dirname(lastDiffDatePath), { recursive: true });
+    }
     fs.writeFileSync(lastDiffDatePath, date.getTime().toString());
   } catch (e) {
     logger.error(
@@ -60,7 +65,7 @@ const setLastDiffDate = (date: Date): void => {
   }
   lastDiffDate = date;
 };
-/*
+
 const getUpdatedFilesByQueries = (): string[] => {
   // todo
   const updatedFilesByQueries: string[] = [];
@@ -70,7 +75,7 @@ const getUpdatedFilesByQueries = (): string[] => {
     }
   });
   return updatedFilesByQueries;
-}; */
+};
 
 export const diffManager: DiffManager = {
   resetDiff(date: Date): void {
@@ -78,7 +83,7 @@ export const diffManager: DiffManager = {
     tracker.reset();
   },
 
-  getDiff(): Diff {
+  getDiff(options = { incremental: true }): Diff {
     const startDate = microtime.now();
 
     // Before getting any diff data, update any pending changes from data dir.
@@ -88,7 +93,7 @@ export const diffManager: DiffManager = {
     let deleted = new Set<string>();
     const sinceDate = getLastDiffDate();
     logger.debug(`Getting diff using date "${sinceDate}"`);
-    if (sinceDate) {
+    if (options.incremental && sinceDate) {
       // Only process changedFiles if not empty.
       const changedFiles = workDirHelper.getChangedFilesSince(sinceDate);
       if (changedFiles.updated.length || changedFiles.deleted.length) {
@@ -105,7 +110,7 @@ export const diffManager: DiffManager = {
       // "updated" includes all affected parents tracked down
       // by tracker, without any deleted file.
       updated = new Set<string>(tracker.getChangedFiles());
-      changedFiles.deleted.forEach(updated.delete);
+      changedFiles.deleted.forEach(file => updated.delete(file));
 
       // "deleted" includes only deleted files, and is based only
       // on data coming from changedFiles, because all deleted files
@@ -115,7 +120,7 @@ export const diffManager: DiffManager = {
       // Add updated files affected by queries only if "updated" or "deleted"
       // contain any changes.
       if (updated.size > 0 || deleted.size > 0) {
-        // getUpdatedFilesByQueries().forEach(updated.add);
+        getUpdatedFilesByQueries().forEach(file => updated.add(file));
       }
     } else {
       // If no sinceDate is passed, return all files

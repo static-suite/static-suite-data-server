@@ -76,7 +76,9 @@ exports.queryRunner = {
                 cache: isCacheMiss ? query_types_1.CacheStatus.MISS : query_types_1.CacheStatus.HIT,
             },
         };
-        logger_1.logger.debug(`#${count} Query "${queryId}" args "${argsString}" took ${execTimeMs} ms.`);
+        /*     logger.debug(
+          `#${count} Query "${queryId}" args "${argsString}" took ${execTimeMs} ms.`,
+        ); */
         return response;
     },
     getCount: () => count,

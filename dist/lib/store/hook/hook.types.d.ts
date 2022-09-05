@@ -1,5 +1,6 @@
 import { Store } from '@lib/store/store.types';
 import { FileType } from '@lib/utils/fs/fs.types';
+import { Tracker } from '../diff/tracker.types';
 import { Dump } from '../dump/dumpManager.types';
 /**
  * Options passed to a hook.
@@ -60,6 +61,10 @@ export interface OnDumpHookOptions {
      * The data store.
      */
     store: Store;
+    /**
+     * The diff tracker.
+     */
+    tracker: Tracker;
     /**
      * The dump to be processed.
      */
@@ -150,13 +155,13 @@ export declare type HookModule = {
      */
     onStoreUpdateDone?(options: BaseHookOptions): void;
     /**
-     * A hook executed before a dump is saved into disk.
+     * A hook executed after a dump object is created.
      *
      * @remarks
      * This hook can alter the contents of the dump being saved, and add/remove items.
      *
      * @param options - An object with options passed to the hook. @see {@link OnDumpHookOptions}
      */
-    onDump?(options: OnDumpHookOptions): Dump;
+    onDumpCreate?(options: OnDumpHookOptions): Dump;
 };
 //# sourceMappingURL=hook.types.d.ts.map

@@ -24,13 +24,10 @@ export type DiffManager = {
    * 1) includes: every time a file changes, all its parents are affected.
    * 2) queries: there is no easy way to know if a changed file will alter a query,
    *   so we run all of them and check if something has changed.
-   *
-   * Note that status changes (publishing or unpublishing a file) is meaningless for
-   * Data Server. If an unpublished file must be used in an specific way, or even
-   * deleted, that is something outside of the scope of Data Server.
-   *
+
+   * @param options - Configuration options
    */
-  getDiff(): Diff;
+  getDiff(options?: { incremental: boolean }): Diff;
 };
 
 /**

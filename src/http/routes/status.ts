@@ -8,44 +8,31 @@ import { store } from '@lib/store';
 import { jsonify } from '@lib/utils/object';
 import { diffManager } from '@lib/store/diff/diffManager';
 import { ObjectType } from '@lib/utils/object/object.types';
-// import { Json } from '@lib/utils/object/object.types';
+import { tracker } from '@lib/store/diff/tracker';
 
 const statusIndex = (req: Request, res: Response): void => {
   res.render('statusIndex', {
     links: {
-      'status/basic': 'Basic status info',
-      'status/index/url': 'List of indexed URLs',
-      'status/index/uuid': 'List of indexed UUIDs by language',
-      'status/index/include': 'List of indexed includes',
-      'status/index/custom': 'List of custom indexes',
+      '/status/basic': 'Basic status info',
+      '/status/index/url': 'List of indexed URLs',
+      '/status/index/uuid': 'List of indexed UUIDs by language',
+      '/status/index/include': 'List of indexed includes',
+      '/status/index/custom': 'List of custom indexes',
+      '/status/diff': 'Diff info',
+      '/status/diff/tracker': 'Diff tracker info',
     },
   });
 };
 
 const statusBasic = (req: Request, res: Response): void => {
-  /*   cache.bin('query').clear();
-  const startDate = microtime.now();
-  const dynamicIncludes: string[] = [];
-  store.data.forEach((file: Json) => {
-    if (file.metadata?.includes?.dynamic && file.data?.content?.isPublished) {
-      dynamicIncludes.push(JSON.stringify(file));
-    }
-  }); */
-
   const response = {
-    /*     dyn: {
-      ms: (microtime.now() - startDate) / 1000,
-      num: dynamicIncludes.length,
-    }, */
     config,
     dataDirLastUpdate: dataDirManager.getModificationDate(),
     query: {
       numberOfExecutions: queryRunner.getCount(),
       numberOfCachedQueries: cache.bin('query').size,
     },
-    diff: jsonify(diffManager.getDiff()),
   };
-  // includeDiffManager.resetDiff(new Date());
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });
   res.send(response);
@@ -83,6 +70,22 @@ const statusIndexCustom = (req: Request, res: Response): void => {
   res.send(response);
 };
 
+const statusDiff = (req: Request, res: Response): void => {
+  const response = jsonify(diffManager.getDiff());
+  res.status(200);
+  res.set({ 'Content-Type': 'application/json' });
+  res.send(response);
+};
+
+const statusDiffTracker = (req: Request, res: Response): void => {
+  const response = {
+    changedFiles: jsonify(tracker.getChangedFiles()),
+  };
+  res.status(200);
+  res.set({ 'Content-Type': 'application/json' });
+  res.send(response);
+};
+
 export {
   statusIndex,
   statusBasic,
@@ -90,4 +93,6 @@ export {
   statusIndexUuid,
   statusIndexInclude,
   statusIndexCustom,
+  statusDiff,
+  statusDiffTracker,
 };

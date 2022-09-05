@@ -1,15 +1,48 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.diffIndex = void 0;
+exports.dumpMetadata = exports.dumpExecuteFull = exports.dumpExecuteIncremental = exports.dumpIndex = void 0;
+const fs_1 = __importDefault(require("fs"));
 const dump_1 = require("@lib/store/dump");
-const diffIndex = (req, res) => {
-    dump_1.dumpManager.dump();
-    const response = {
-        result: 'Dump executed',
-    };
+const object_1 = require("@lib/utils/object");
+const config_1 = require("@lib/config");
+const dumpIndex = (req, res) => {
+    res.render('statusIndex', {
+        links: {
+            '/dump/execute/incremental': 'Execute an incremental dump',
+            '/dump/execute/full': 'Execute a full dump',
+            '/dump/metadata': 'Dump metadata info',
+        },
+    });
+};
+exports.dumpIndex = dumpIndex;
+const dumpExecuteIncremental = (req, res) => {
+    const dump = dump_1.dumpManager.dump({ incremental: true });
     res.status(200);
     res.set({ 'Content-Type': 'application/json' });
-    res.send(response);
+    res.send((0, object_1.jsonify)(dump));
 };
-exports.diffIndex = diffIndex;
-module.exports = { diffIndex: exports.diffIndex };
+exports.dumpExecuteIncremental = dumpExecuteIncremental;
+const dumpExecuteFull = (req, res) => {
+    const dump = dump_1.dumpManager.dump({ incremental: false });
+    res.status(200);
+    res.set({ 'Content-Type': 'application/json' });
+    res.send((0, object_1.jsonify)(dump));
+};
+exports.dumpExecuteFull = dumpExecuteFull;
+const dumpMetadata = (req, res) => {
+    const metadataFilepath = `${config_1.config.dumpDir}/metadata.json`;
+    if (fs_1.default.existsSync(metadataFilepath)) {
+        const metadata = fs_1.default.readFileSync(metadataFilepath).toString();
+        res.status(200);
+        res.set({ 'Content-Type': 'application/json' });
+        res.send(metadata);
+    }
+    else {
+        res.status(404);
+        res.send('Metadata file not found');
+    }
+};
+exports.dumpMetadata = dumpMetadata;

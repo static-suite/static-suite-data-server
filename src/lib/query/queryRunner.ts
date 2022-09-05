@@ -83,9 +83,9 @@ export const queryRunner: QueryRunner = {
       },
     };
 
-    logger.debug(
+    /*     logger.debug(
       `#${count} Query "${queryId}" args "${argsString}" took ${execTimeMs} ms.`,
-    );
+    ); */
 
     return response;
   },

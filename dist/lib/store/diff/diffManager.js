@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.diffManager = void 0;
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const microtime_1 = __importDefault(require("microtime"));
 const logger_1 = require("@lib/utils/logger");
 const store_1 = require("../store");
@@ -23,7 +24,7 @@ const getLastDiffDateFilepath = () => {
             .replace(/([^a-zA-Z0-9-])/g, '')
             .replace(/^-/g, '')
             .replace(/-$/g, '');
-        lastDiffDateFilepath = `${os_1.default.tmpdir()}/static-suite-data-server--last-diff-date.${dataDirHash}.dat`;
+        lastDiffDateFilepath = `${os_1.default.homedir()}/.static-suite/data-server/${dataDirHash}/last-diff-date.dat`;
     }
     return lastDiffDateFilepath;
 };
@@ -50,6 +51,9 @@ const getLastDiffDate = () => {
 const setLastDiffDate = (date) => {
     const lastDiffDatePath = getLastDiffDateFilepath();
     try {
+        if (!fs_1.default.existsSync(lastDiffDatePath)) {
+            fs_1.default.mkdirSync(path_1.default.dirname(lastDiffDatePath), { recursive: true });
+        }
         fs_1.default.writeFileSync(lastDiffDatePath, date.getTime().toString());
     }
     catch (e) {
@@ -57,23 +61,22 @@ const setLastDiffDate = (date) => {
     }
     lastDiffDate = date;
 };
-/*
-const getUpdatedFilesByQueries = (): string[] => {
-  // todo
-  const updatedFilesByQueries: string[] = [];
-  store.data.forEach((json: Json, relativeFilepath: string) => {
-    if (json.metadata?.includes?.dynamic) {
-      updatedFilesByQueries.push(relativeFilepath);
-    }
-  });
-  return updatedFilesByQueries;
-}; */
+const getUpdatedFilesByQueries = () => {
+    // todo
+    const updatedFilesByQueries = [];
+    store_1.store.data.forEach((json, relativeFilepath) => {
+        if (json.metadata?.includes?.dynamic) {
+            updatedFilesByQueries.push(relativeFilepath);
+        }
+    });
+    return updatedFilesByQueries;
+};
 exports.diffManager = {
     resetDiff(date) {
         setLastDiffDate(date);
         tracker_1.tracker.reset();
     },
-    getDiff() {
+    getDiff(options = { incremental: true }) {
         const startDate = microtime_1.default.now();
         // Before getting any diff data, update any pending changes from data dir.
         dataDirManager_1.dataDirManager.update();
@@ -81,7 +84,7 @@ exports.diffManager = {
         let deleted = new Set();
         const sinceDate = getLastDiffDate();
         logger_1.logger.debug(`Getting diff using date "${sinceDate}"`);
-        if (sinceDate) {
+        if (options.incremental && sinceDate) {
             // Only process changedFiles if not empty.
             const changedFiles = workDir_1.workDirHelper.getChangedFilesSince(sinceDate);
             if (changedFiles.updated.length || changedFiles.deleted.length) {
@@ -97,7 +100,7 @@ exports.diffManager = {
             // "updated" includes all affected parents tracked down
             // by tracker, without any deleted file.
             updated = new Set(tracker_1.tracker.getChangedFiles());
-            changedFiles.deleted.forEach(updated.delete);
+            changedFiles.deleted.forEach(file => updated.delete(file));
             // "deleted" includes only deleted files, and is based only
             // on data coming from changedFiles, because all deleted files
             // are stored on Static Suite Data Server log
@@ -105,7 +108,7 @@ exports.diffManager = {
             // Add updated files affected by queries only if "updated" or "deleted"
             // contain any changes.
             if (updated.size > 0 || deleted.size > 0) {
-                // getUpdatedFilesByQueries().forEach(updated.add);
+                getUpdatedFilesByQueries().forEach(file => updated.add(file));
             }
         }
         else {

@@ -63,6 +63,17 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
         const previousData = _1.store.data.get(relativeFilepath);
         if (dataToStore && typeof dataToStore === 'object') {
             if (previousData) {
+                // Remove previous data from URL index.
+                const url = previousData.data?.content?.url?.path;
+                if (url) {
+                    _1.store.index.url.delete(url);
+                }
+                // Remove previous data from UUID index.
+                const uuid = previousData.data?.content?.uuid;
+                const langcode = previousData.data?.content?.langcode?.value;
+                if (uuid && langcode) {
+                    _1.store.index.uuid.get(langcode)?.delete(uuid);
+                }
                 // Remove previous include data from includeIndex.
                 include_1.includeIndex.remove(relativeFilepath, previousData);
                 // Delete all referenced object properties
@@ -74,6 +85,7 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
                     previousData[key] = dataToStore[key];
                 });
             }
+            // Add data to UUID index.
             const uuid = dataToStore.data?.content?.uuid;
             const langcode = dataToStore.data?.content?.langcode?.value;
             if (uuid && langcode) {
@@ -81,11 +93,12 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
                     _1.store.index.uuid.set(langcode, new Map()).get(langcode);
                 langcodeMap.set(uuid, dataToStore);
             }
+            // Add data to URL index.
             const url = dataToStore.data?.content?.url?.path;
             if (url) {
                 _1.store.index.url.set(url, dataToStore);
             }
-            // Set include data in includeIndex.
+            // Add data to include index.
             include_1.includeIndex.set(relativeFilepath, dataToStore);
         }
     }

@@ -70,8 +70,22 @@ const setFileIntoStore = (
     const previousData = store.data.get(relativeFilepath);
     if (dataToStore && typeof dataToStore === 'object') {
       if (previousData) {
+        // Remove previous data from URL index.
+        const url = previousData.data?.content?.url?.path;
+        if (url) {
+          store.index.url.delete(url);
+        }
+
+        // Remove previous data from UUID index.
+        const uuid = previousData.data?.content?.uuid;
+        const langcode = previousData.data?.content?.langcode?.value;
+        if (uuid && langcode) {
+          store.index.uuid.get(langcode)?.delete(uuid);
+        }
+
         // Remove previous include data from includeIndex.
         includeIndex.remove(relativeFilepath, previousData);
+
         // Delete all referenced object properties
         Object.keys(previousData).forEach(key => {
           delete previousData[key];
@@ -81,6 +95,8 @@ const setFileIntoStore = (
           previousData[key] = dataToStore[key];
         });
       }
+
+      // Add data to UUID index.
       const uuid = dataToStore.data?.content?.uuid;
       const langcode = dataToStore.data?.content?.langcode?.value;
       if (uuid && langcode) {
@@ -89,12 +105,14 @@ const setFileIntoStore = (
           store.index.uuid.set(langcode, new Map<string, any>()).get(langcode);
         langcodeMap.set(uuid, dataToStore);
       }
+
+      // Add data to URL index.
       const url = dataToStore.data?.content?.url?.path;
       if (url) {
         store.index.url.set(url, dataToStore);
       }
 
-      // Set include data in includeIndex.
+      // Add data to include index.
       includeIndex.set(relativeFilepath, dataToStore);
     }
   }

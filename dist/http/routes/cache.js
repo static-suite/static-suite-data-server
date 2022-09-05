@@ -1,12 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cacheClear = exports.cacheIndex = void 0;
-/* import { dataDirManager } from '@lib/store/dataDir';
-import { queryRunner } from '@lib/query';
-import {
-  QueryErrorResponse,
-  QuerySuccessfulResponse,
-} from '@lib/query/query.types'; */
 const cache_1 = require("@lib/utils/cache");
 const cacheIndex = (req, res) => {
     const cacheBins = Array.from(cache_1.cache.keys());

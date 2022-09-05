@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.watch = exports.getModificationDate = exports.findFilesInDir = exports.getFileContent = exports.readFile = void 0;
+exports.watch = exports.getModificationDate = exports.findFilesInDir = exports.getFileContent = exports.readFile = exports.isJsonFile = void 0;
 const fs_1 = __importDefault(require("fs"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const chokidar_1 = __importDefault(require("chokidar"));
@@ -19,7 +19,8 @@ const cache_1 = require("../cache");
  *
  * @internal
  */
-const isJson = (filepath) => filepath.substr(-5) === '.json';
+const isJsonFile = (filepath) => filepath.slice(-5) === '.json';
+exports.isJsonFile = isJsonFile;
 /**
  * Reads a file and logs an error on failure.
  *
@@ -30,7 +31,7 @@ const isJson = (filepath) => filepath.substr(-5) === '.json';
 const readFile = (filePath) => {
     let contents = null;
     try {
-        contents = fs_1.default.readFileSync(filePath, 'utf8');
+        contents = fs_1.default.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
     }
     catch (error) {
         // When an error is thrown, contents is undefined, so ensure
@@ -57,7 +58,6 @@ const getFileContent = (filepath, options = {
     let raw;
     if (options.isFileCacheEnabled && options.readFileFromCache) {
         raw = cache_1.cache.bin('file').get(filepath);
-        logger_1.logger.debug(`File ${filepath} read from file cache`);
     }
     if (!raw) {
         raw = (0, exports.readFile)(filepath);
@@ -66,7 +66,7 @@ const getFileContent = (filepath, options = {
         }
     }
     let json = null;
-    if (isJson(filepath) && raw) {
+    if (raw && (0, exports.isJsonFile)(filepath)) {
         json = (0, string_1.parseJsonString)(raw);
         if (!json) {
             logger_1.logger.error(`Error getting JSON from file "${filepath}"`);

@@ -11,8 +11,8 @@ export type Tracker = {
    * go back in time to track past changes. To avoid this, track changes files whenever store
    * is updated.
    *
-   * This function only tracks changed files affected by includes. There is no need to track
-   * intermediate changes in query results, since they are evaluated in getDiff().
+   * This function only tracks changed files affected by static includes. There is no need to track
+   * intermediate changes in query results, since they are evaluated on demand.
    *
    * @param file - Relative file path, inside dataDir, to the file to be processed.
    */

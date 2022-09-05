@@ -27,7 +27,7 @@ const internalResolveCache: Record<string, any> = {};
  * Resolves a path to a module
  *
  * @param modulePath - A path to a module
- * @returns The resolved path, or the passed unresolved path if module cannot be found
+ * @returns The resolved path, or the given unresolved path if module cannot be found
  */
 const resolve = (modulePath: string): string => {
   let resolvedModulePath = internalResolveCache[modulePath];
@@ -72,7 +72,7 @@ export const moduleManager = {
    */
   load: <Type>(modulePath: string): Type => {
     const resolvedModulePath = resolve(modulePath);
-    moduleManager.remove(resolvedModulePath);
+    moduleManager.remove(resolvedModulePath, { useLogger: false });
     try {
       internalModuleCache[resolvedModulePath] = require(resolvedModulePath);
     } catch (e) {
@@ -87,12 +87,18 @@ export const moduleManager = {
    * Removes a single module from Node.js cache
    *
    * @param modulePath - Path to the module to be removed
+   * @param options - Object of options:
+   * useLogger: Flag to use logger or not. Useful to avoid
+   * "remove" log lines when this function is called from
+   * other functions.
    */
-  remove: (modulePath: string): void => {
+  remove: (modulePath: string, options = { useLogger: true }): void => {
     const resolvedModulePath = resolve(modulePath);
     clearModule(resolvedModulePath);
     delete internalModuleCache[resolvedModulePath];
-    logger.debug(`Module ${resolvedModulePath} successfully removed.`);
+    if (options.useLogger) {
+      logger.debug(`Module ${resolvedModulePath} successfully removed.`);
+    }
   },
 
   /**

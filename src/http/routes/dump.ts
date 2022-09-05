@@ -1,14 +1,44 @@
+import fs from 'fs';
 import { Request, Response } from 'express';
 import { dumpManager } from '@lib/store/dump';
+import { jsonify } from '@lib/utils/object';
+import { config } from '@lib/config';
 
-export const diffIndex = (req: Request, res: Response): void => {
-  dumpManager.dump();
-  const response = {
-    result: 'Dump executed',
-  };
-  res.status(200);
-  res.set({ 'Content-Type': 'application/json' });
-  res.send(response);
+const dumpIndex = (req: Request, res: Response): void => {
+  res.render('statusIndex', {
+    links: {
+      '/dump/execute/incremental': 'Execute an incremental dump',
+      '/dump/execute/full': 'Execute a full dump',
+      '/dump/metadata': 'Dump metadata info',
+    },
+  });
 };
 
-module.exports = { diffIndex };
+const dumpExecuteIncremental = (req: Request, res: Response): void => {
+  const dump = dumpManager.dump({ incremental: true });
+  res.status(200);
+  res.set({ 'Content-Type': 'application/json' });
+  res.send(jsonify(dump));
+};
+
+const dumpExecuteFull = (req: Request, res: Response): void => {
+  const dump = dumpManager.dump({ incremental: false });
+  res.status(200);
+  res.set({ 'Content-Type': 'application/json' });
+  res.send(jsonify(dump));
+};
+
+const dumpMetadata = (req: Request, res: Response): void => {
+  const metadataFilepath = `${config.dumpDir}/metadata.json`;
+  if (fs.existsSync(metadataFilepath)) {
+    const metadata = fs.readFileSync(metadataFilepath).toString();
+    res.status(200);
+    res.set({ 'Content-Type': 'application/json' });
+    res.send(metadata);
+  } else {
+    res.status(404);
+    res.send('Metadata file not found');
+  }
+};
+
+export { dumpIndex, dumpExecuteIncremental, dumpExecuteFull, dumpMetadata };

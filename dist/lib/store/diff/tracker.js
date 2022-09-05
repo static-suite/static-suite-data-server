@@ -2,18 +2,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tracker = void 0;
 const includeIndex_1 = require("../include/includeIndex");
-const trackedChangedFiles = new Set();
+/**
+ * A list of changed files with includes that have changed since last reset.
+ */
+const changedFiles = new Set();
 exports.tracker = {
-    trackChangedFile(file) {
+    trackChangedFile(relativeFilepath) {
         // Add parents.
-        includeIndex_1.includeIndex.getParents(file).forEach((parent) => {
-            trackedChangedFiles.add(parent);
+        includeIndex_1.includeIndex
+            .getParents(relativeFilepath)
+            .forEach((parentRelativeFilepath) => {
+            changedFiles.add(parentRelativeFilepath);
         });
         // Add the passed file.
-        trackedChangedFiles.add(file);
+        changedFiles.add(relativeFilepath);
     },
-    getChangedFiles: () => Array.from(trackedChangedFiles),
+    getChangedFiles: () => Array.from(changedFiles),
     reset: () => {
-        trackedChangedFiles.clear();
+        changedFiles.clear();
     },
 };

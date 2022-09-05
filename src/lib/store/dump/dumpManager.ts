@@ -3,12 +3,12 @@ import path from 'path';
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
 import { jsonify } from '@lib/utils/object';
+import { getFileContent, isJsonFile, readFile } from '@lib/utils/fs';
 import { config } from '@lib/config';
 import { store } from '@lib/store';
 import { diffManager } from '../diff/diffManager';
 import { Diff } from '../diff/diffManager.types';
 import { Dump, DumpManager } from './dumpManager.types';
-import { hookManager } from '../hook';
 
 const removeEmptyDirsUpwards = (dir: string): void => {
   const isEmpty = fs.readdirSync(dir).length === 0;
@@ -23,141 +23,172 @@ const removeEmptyDirsUpwards = (dir: string): void => {
   }
 };
 
-const storeUpdatedFiles = (
-  updated: Map<string, string>,
-  dumpDir: string,
-): void => {
-  updated.forEach(
-    (targetRelativeFilepath: string, sourceRelativeFilepath: string) => {
-      const fileContent = store.data.get(sourceRelativeFilepath);
-      if (fileContent) {
-        const absoluteFilepath = `${dumpDir}/${targetRelativeFilepath}`;
-        try {
-          const dir = path.dirname(absoluteFilepath);
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-          }
-          fs.writeFileSync(absoluteFilepath, JSON.stringify(fileContent));
-        } catch (e) {
-          logger.error(
-            `Dump: error writing file "${sourceRelativeFilepath}" to "${absoluteFilepath}": ${e}`,
-          );
+const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
+  diff.updated.forEach(relativeFilepath => {
+    const storeFileContentData = store.data.get(relativeFilepath);
+    if (storeFileContentData) {
+      const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
+      try {
+        // Create parent directories if they are missing.
+        const dir = path.dirname(absoluteFilepath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
         }
-      } else {
-        logger.error(
-          `Dump: data for file "${targetRelativeFilepath}" not found.`,
-        );
-      }
-    },
-  );
-};
 
-const removeDeletedFiles = (
-  deletedFiles: Set<string>,
-  dumpDir: string,
-): void => {
-  deletedFiles.forEach((relativeFilepath: string) => {
-    const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
-    try {
-      if (fs.existsSync(absoluteFilepath)) {
-        fs.unlinkSync(absoluteFilepath);
+        // If store data is an object, stringify it to execute its
+        // queries and resolve its includes.
+        const isJson = isJsonFile(relativeFilepath);
+        const storeFileContentString = isJson
+          ? JSON.stringify(storeFileContentData)
+          : storeFileContentData;
+
+        // Before overwriting a file, check it has changed.
+        let needsSave = true;
+        if (fs.existsSync(absoluteFilepath)) {
+          const dumpFileContentString = readFile(absoluteFilepath);
+          if (storeFileContentString === dumpFileContentString) {
+            // No need to save it, file has not changed.
+            needsSave = false;
+          } else if (isJson && dumpFileContentString) {
+            // Track outdated public URLs.
+            // Note that status changes (publishing or unpublishing a file) is meaningless for
+            // Data Server. If an unpublished file must be used in an specific way, or even
+            // deleted, that is something outside of the scope of Data Server.
+            const storeFilePublicUrl: string | null =
+              storeFileContentData.data?.content?.url?.path;
+            const dumpFilePublicUrl: string | null = JSON.parse(
+              dumpFileContentString,
+            )?.data?.content?.url?.path;
+            if (dumpFilePublicUrl && dumpFilePublicUrl !== storeFilePublicUrl) {
+              dump.outdatedPublicUrls.add(dumpFilePublicUrl);
+            }
+          }
+        }
+        if (needsSave) {
+          // Save it.
+          fs.writeFileSync(absoluteFilepath, storeFileContentString);
+
+          // Mark it as updated.
+          dump.updated.add(relativeFilepath);
+        }
+      } catch (e) {
+        logger.error(`Dump: error writing file "${absoluteFilepath}": ${e}`);
       }
-    } catch (e) {
-      logger.error(
-        `Dump: error deleting file "${relativeFilepath}" from "${absoluteFilepath}": ${e}`,
-      );
+    } else {
+      logger.error(`Dump: data for file "${relativeFilepath}" not found.`);
     }
   });
 };
 
-const storeDiffMetadata = (
+const removeDeletedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
+  diff.deleted.forEach(relativeFilepath => {
+    const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
+    try {
+      if (fs.existsSync(absoluteFilepath)) {
+        // Track outdated public URLs.
+        const dumpContent = getFileContent(absoluteFilepath);
+        const dumpFilePublicUrl: string | null =
+          dumpContent.json?.data?.content?.url?.path;
+        if (dumpFilePublicUrl) {
+          dump.outdatedPublicUrls.add(dumpFilePublicUrl);
+        }
+
+        // Delete it.
+        fs.unlinkSync(absoluteFilepath);
+
+        // Mark it as deleted.
+        dump.deleted.add(relativeFilepath);
+      }
+    } catch (e) {
+      logger.error(`Dump: error deleting file "${absoluteFilepath}": ${e}`);
+    }
+  });
+};
+
+const storeDumpMetadata = (
   metadataFilepath: string,
-  diff: Diff,
+  dump: Dump,
   diffResetDate: Date,
 ) => {
-  let currentDiffMetadata: Diff[] = [];
+  let currentDumpMetadata: Dump[] = [];
   try {
-    currentDiffMetadata = JSON.parse(
+    currentDumpMetadata = JSON.parse(
       fs.readFileSync(metadataFilepath).toString(),
     );
   } catch (e) {
-    currentDiffMetadata = [];
+    currentDumpMetadata = [];
   }
-  currentDiffMetadata.push(jsonify(diff));
+  currentDumpMetadata.push(jsonify(dump));
   try {
-    const currentDiffMetadataString = JSON.stringify(currentDiffMetadata);
-    fs.writeFileSync(metadataFilepath, currentDiffMetadataString);
-    // Resetting the diff must happen when its metadata is successfully
+    const currentDumpMetadataString = JSON.stringify(currentDumpMetadata);
+    fs.writeFileSync(metadataFilepath, currentDumpMetadataString);
+    // Resetting the diff must happen when dump metadata is successfully
     // stored into disk.
     diffManager.resetDiff(diffResetDate);
   } catch (e) {
     logger.error(
-      `Dump: error saving diff metadata to "${metadataFilepath}": ${e}`,
+      `Dump: error saving dump metadata to "${metadataFilepath}": ${e}`,
     );
   }
 };
 
-const createDumpFromDiff = (diff: Diff): Dump => {
-  const dump: Dump = {
-    since: diff.since,
-    updated: new Map(),
-    deleted: new Set(diff.deleted),
-  };
-  // By default, all files are dumped to the same filepath
-  // where their original raw data is stored.
-  diff.updated.forEach((relativeFilepath: string) => {
-    dump.updated.set(relativeFilepath, relativeFilepath);
-  });
-
-  return dump;
-};
-
 export const dumpManager: DumpManager = {
-  dump(): void {
+  dump(options = { incremental: true }): Dump {
+    const startDate = microtime.now();
+
+    // Create a diff reset date just before consuming a diff.
+    const diffResetDate = new Date();
+    const diff = diffManager.getDiff({ incremental: options.incremental });
+
+    // Diff data is processed and stored in a dump object.
+    const dump: Dump = {
+      since: diff.since,
+      updated: new Set(),
+      deleted: new Set(),
+      outdatedPublicUrls: new Set(),
+    };
+
     if (config.dumpDir) {
-      const startDate = microtime.now();
       const dumpDir = `${config.dumpDir}/files`;
-      const metadataFilepath = `${config.dumpDir}/diff-metadata.json`;
+      const metadataFilepath = `${config.dumpDir}/metadata.json`;
 
-      // Create a dump object from a diff.
-      const diffResetDate = new Date();
-      const diff = diffManager.getDiff();
-      let dump = createDumpFromDiff(diff);
-
-      // Invoke "onDump" hook.
-      const hookModulesInfo = hookManager.getModuleGroupInfo();
-      hookModulesInfo.forEach(hookInfo => {
-        const hookModule = hookInfo.getModule();
-        if (hookModule.onDump && config.dumpDir) {
-          dump = hookModule.onDump({
-            dataDir: config.dataDir,
-            dumpDir: config.dumpDir,
-            store,
-            dump,
-          });
-        }
-      });
-
-      if (dump.updated.size || dump.deleted.size) {
+      if (diff.updated.size || diff.deleted.size) {
         // Store updated files.
-        storeUpdatedFiles(dump.updated, dumpDir);
+        storeUpdatedFiles(diff, dump, dumpDir);
 
         // Remove deleted files.
-        removeDeletedFiles(dump.deleted, dumpDir);
+        removeDeletedFiles(diff, dump, dumpDir);
 
-        // Merge and store diff metadata.
-        storeDiffMetadata(metadataFilepath, diff, diffResetDate);
+        // Merge and store dump metadata if any.
+        if (
+          dump.updated.size ||
+          dump.deleted.size ||
+          dump.outdatedPublicUrls.size
+        ) {
+          storeDumpMetadata(metadataFilepath, dump, diffResetDate);
 
-        logger.info(
-          `Dump created in ${
-            (microtime.now() - startDate) / 1000
-          } ms. Updated: ${diff.updated.size} / Deleted: ${diff.deleted.size}`,
-        );
+          logger.info(
+            `Dump created in ${
+              (microtime.now() - startDate) / 1000
+            } ms. Updated: ${dump.updated.size} / Deleted: ${
+              dump.deleted.size
+            } / Outdated public URLs: ${dump.outdatedPublicUrls.size}`,
+          );
+
+          // Log dump if not empty
+          if (dump.updated.size || dump.deleted.size) {
+            logger.debug(`Dump: "${JSON.stringify(jsonify(dump))}"`);
+          }
+        } else {
+          logger.info('Dump done without changes stored into disk.');
+        }
       } else {
-        logger.info('Dump not created since it is empty.');
+        logger.info('Dump not stored into disk due to an empty diff.');
       }
     } else {
-      logger.error('dumpDir option not provided. Dump cannot be executed.');
+      logger.error('"dumpDir" option not provided. Dump cannot be executed.');
     }
+
+    return dump;
   },
 };

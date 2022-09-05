@@ -1,10 +1,4 @@
 import { Request, Response } from 'express';
-/* import { dataDirManager } from '@lib/store/dataDir';
-import { queryRunner } from '@lib/query';
-import {
-  QueryErrorResponse,
-  QuerySuccessfulResponse,
-} from '@lib/query/query.types'; */
 import { cache } from '@lib/utils/cache';
 
 export const cacheIndex = (req: Request, res: Response): void => {

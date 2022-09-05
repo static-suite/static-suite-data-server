@@ -15,7 +15,8 @@ import { cache } from '../cache';
  *
  * @internal
  */
-const isJson = (filepath: string): boolean => filepath.substr(-5) === '.json';
+export const isJsonFile = (filepath: string): boolean =>
+  filepath.slice(-5) === '.json';
 
 /**
  * Reads a file and logs an error on failure.
@@ -27,7 +28,7 @@ const isJson = (filepath: string): boolean => filepath.substr(-5) === '.json';
 export const readFile = (filePath: string): string | null => {
   let contents = null;
   try {
-    contents = fs.readFileSync(filePath, 'utf8');
+    contents = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
   } catch (error) {
     // When an error is thrown, contents is undefined, so ensure
     // it is converted to null.
@@ -56,7 +57,6 @@ export const getFileContent = (
   let raw: string | null | undefined;
   if (options.isFileCacheEnabled && options.readFileFromCache) {
     raw = cache.bin<string>('file').get(filepath);
-    logger.debug(`File ${filepath} read from file cache`);
   }
   if (!raw) {
     raw = readFile(filepath);
@@ -65,7 +65,7 @@ export const getFileContent = (
     }
   }
   let json = null;
-  if (isJson(filepath) && raw) {
+  if (raw && isJsonFile(filepath)) {
     json = parseJsonString(raw);
     if (!json) {
       logger.error(`Error getting JSON from file "${filepath}"`);

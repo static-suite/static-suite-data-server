@@ -108,12 +108,9 @@ export declare type TaskModule = {
      * It receives the store data and a set of arguments, executes the task
      * and returns its results.
      *
-     * @param options - An object with options for the task: data and args
+     * @param options - An object with options for the task: store and args
      */
     default(options: {
-        /**
-         * Store data to be used in the task
-         */
         store: Store;
         args: TaskArgs;
     }): TaskModuleResult;

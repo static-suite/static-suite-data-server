@@ -12,10 +12,11 @@ export declare type DumpManager = {
      * (a list of changed/ deleted files), so a later process can store
      * those changes in another service like AWS S3.
      *
-     * Metadata is merged with previous existent metadata, so if a later sync
-     * process crashes, next sync can take over that failed one.
+     * @param options - Configuration options
      */
-    dump(): void;
+    dump(options?: {
+        incremental: boolean;
+    }): Dump;
 };
 /**
  * A group of files to by dumped to dump directory.
@@ -26,14 +27,21 @@ export declare type Dump = {
      */
     since: number;
     /**
-     * A list of updated files keyed by its path inside Data Server.
-     *
-     * Its value is the path inside the dump directory.
+     * A list of updated files.
      */
-    updated: Map<string, string>;
+    updated: Set<string>;
     /**
      * A list of deleted files.
      */
     deleted: Set<string>;
+    /**
+     * A list of outdated public URLs.
+     *
+     * Files usually specify the public URL that should be created from that source file.
+     * That information is located at data.content.url.path. When that URL changes between
+     * dumps, outdated URLs must be deleted. This set keeps a list of all outdated URLs that
+     * must be deleted.
+     */
+    outdatedPublicUrls: Set<string>;
 };
 //# sourceMappingURL=dumpManager.types.d.ts.map
