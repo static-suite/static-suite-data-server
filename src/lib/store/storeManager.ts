@@ -175,9 +175,6 @@ export const storeManager: StoreManager = {
       }
     });
 
-    // Track down file after it changes.
-    // tracker.trackChangedFile(relativeFilepath);
-
     return storeManager;
   },
 

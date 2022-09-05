@@ -18,8 +18,8 @@ const statusIndex = (req: Request, res: Response): void => {
       '/status/index/uuid': 'List of indexed UUIDs by language',
       '/status/index/include': 'List of indexed includes',
       '/status/index/custom': 'List of custom indexes',
-      '/status/diff': 'Diff info',
-      '/status/diff/tracker': 'Diff tracker info',
+      '/status/diff': 'Executes a diff operation',
+      '/status/diff/tracker': 'Shows diff tracker info',
     },
   });
 };

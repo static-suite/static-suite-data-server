@@ -43,7 +43,7 @@ const getLastDiffDate = (): Date | null => {
       }
     } catch (e) {
       logger.error(
-        `Error reading diff metadata file located at ${`lastDiffDateFilepath`}: ${e}`,
+        `Error reading diff metadata file located at "${lastDiffDateFilepath}": ${e}`,
       );
     }
   }

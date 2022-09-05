@@ -148,8 +148,6 @@ exports.storeManager = {
                 });
             }
         });
-        // Track down file after it changes.
-        // tracker.trackChangedFile(relativeFilepath);
         return exports.storeManager;
     },
     update: (relativeFilepath) => {
