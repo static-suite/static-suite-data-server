@@ -7,21 +7,21 @@ import { config } from '@lib/config';
 const dumpIndex = (req: Request, res: Response): void => {
   res.render('statusIndex', {
     links: {
-      '/dump/execute/incremental': 'Execute an incremental dump',
-      '/dump/execute/full': 'Execute a full dump',
+      '/dump/incremental': 'Execute an incremental dump',
+      '/dump/full': 'Execute a full dump',
       '/dump/metadata': 'Dump metadata info',
     },
   });
 };
 
-const dumpExecuteIncremental = (req: Request, res: Response): void => {
+const dumpIncremental = (req: Request, res: Response): void => {
   const dump = dumpManager.dump({ incremental: true });
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });
   res.send(jsonify(dump));
 };
 
-const dumpExecuteFull = (req: Request, res: Response): void => {
+const dumpFull = (req: Request, res: Response): void => {
   const dump = dumpManager.dump({ incremental: false });
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });
@@ -41,4 +41,4 @@ const dumpMetadata = (req: Request, res: Response): void => {
   }
 };
 
-export { dumpIndex, dumpExecuteIncremental, dumpExecuteFull, dumpMetadata };
+export { dumpIndex, dumpIncremental, dumpFull, dumpMetadata };
