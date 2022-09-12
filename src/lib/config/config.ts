@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { resolve } from 'path';
+import path from 'path';
 import { RunMode } from '@lib/dataServer.types';
 import { hasKey } from '@lib/utils/object';
 import { ConfigOptions, NonSanitizedConfigOptions } from './config.types';
@@ -40,52 +40,74 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
   if (!localOptions.dataDir) {
     throw new MissingRequiredOption('dataDir');
   }
-  localOptions.dataDir = resolve(localOptions.dataDir);
+  localOptions.dataDir = path.resolve(localOptions.dataDir);
   if (
     !fs.existsSync(localOptions.dataDir) ||
     !fs.lstatSync(localOptions.dataDir).isDirectory()
   ) {
     throw new MissingDirectory('dataDir', localOptions.dataDir);
   }
+  // fs.realpathSync() throws and error if path does not exist.
+  localOptions.dataDir = fs.realpathSync(localOptions.dataDir);
 
   if (localOptions.workDir) {
-    localOptions.workDir = resolve(localOptions.workDir);
+    localOptions.workDir = path.resolve(localOptions.workDir);
     if (
       !fs.existsSync(localOptions.workDir) ||
       !fs.lstatSync(localOptions.workDir).isDirectory()
     ) {
       throw new MissingDirectory('workDir', localOptions.workDir);
     }
+    // fs.realpathSync() throws and error if path does not exist.
+    localOptions.workDir = fs.realpathSync(localOptions.workDir);
   }
 
   if (localOptions.queryDir) {
-    localOptions.queryDir = resolve(localOptions.queryDir);
+    localOptions.queryDir = path.resolve(localOptions.queryDir);
     if (
       !fs.existsSync(localOptions.queryDir) ||
       !fs.lstatSync(localOptions.queryDir).isDirectory()
     ) {
       throw new MissingDirectory('queryDir', localOptions.queryDir);
     }
+    // fs.realpathSync() throws and error if path does not exist.
+    localOptions.queryDir = fs.realpathSync(localOptions.queryDir);
   }
 
   if (localOptions.hookDir) {
-    localOptions.hookDir = resolve(localOptions.hookDir);
+    localOptions.hookDir = path.resolve(localOptions.hookDir);
     if (
       !fs.existsSync(localOptions.hookDir) ||
       !fs.lstatSync(localOptions.hookDir).isDirectory()
     ) {
       throw new MissingDirectory('hookDir', localOptions.hookDir);
     }
+    // fs.realpathSync() throws and error if path does not exist.
+    localOptions.hookDir = fs.realpathSync(localOptions.hookDir);
   }
 
   if (localOptions.taskDir) {
-    localOptions.taskDir = resolve(localOptions.taskDir);
+    localOptions.taskDir = path.resolve(localOptions.taskDir);
     if (
       !fs.existsSync(localOptions.taskDir) ||
       !fs.lstatSync(localOptions.taskDir).isDirectory()
     ) {
       throw new MissingDirectory('taskDir', localOptions.taskDir);
     }
+    // fs.realpathSync() throws and error if path does not exist.
+    localOptions.taskDir = fs.realpathSync(localOptions.taskDir);
+  }
+
+  if (localOptions.dumpDir) {
+    localOptions.dumpDir = path.resolve(localOptions.dumpDir);
+    if (
+      !fs.existsSync(localOptions.dumpDir) ||
+      !fs.lstatSync(localOptions.dumpDir).isDirectory()
+    ) {
+      throw new MissingDirectory('dumpDir', localOptions.dumpDir);
+    }
+    // fs.realpathSync() throws and error if path does not exist.
+    localOptions.dumpDir = fs.realpathSync(localOptions.dumpDir);
   }
 
   if (!localOptions.runMode) {

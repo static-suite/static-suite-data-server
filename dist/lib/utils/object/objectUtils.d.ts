@@ -1,4 +1,4 @@
-export declare type ObjectType = Record<string, unknown>;
+import { ObjectType } from './object.types';
 /**
  * Checks if an object is empty (i.e.- contains zero keys)
  *
@@ -34,4 +34,12 @@ export declare const deepClone: (object: ObjectType) => ObjectType;
  * @returns Value of the path or undefined
  */
 export declare const getObjValue: (object: ObjectType, path: string | string[], separator?: string | undefined) => any | undefined;
+/**
+ * Converts a JavaScript value containing Set and Map, to a JSON object.
+ *
+ * @param value - A JavaScript value to be converted.
+ *
+ * @returns A JSON object
+ */
+export declare const jsonify: <T>(value: T) => T;
 //# sourceMappingURL=objectUtils.d.ts.map

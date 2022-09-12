@@ -1,4 +1,4 @@
-export type ObjectType = Record<string, unknown>;
+import { ObjectType } from './object.types';
 
 /**
  * Checks if an object is empty (i.e.- contains zero keys)
@@ -50,5 +50,22 @@ export const getObjValue = (
   return pathArray.reduce(
     (previous: any, current: any) => previous?.[current],
     object,
+  );
+};
+
+/**
+ * Converts a JavaScript value containing Set and Map, to a JSON object.
+ *
+ * @param value - A JavaScript value to be converted.
+ *
+ * @returns A JSON object
+ */
+export const jsonify = <T>(value: T): T => {
+  return JSON.parse(
+    JSON.stringify(value, (k, v) => {
+      if (v instanceof Set) return [...v];
+      if (v instanceof Map) return Object.fromEntries(v);
+      return v;
+    }),
   );
 };

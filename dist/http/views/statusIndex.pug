@@ -1,0 +1,14 @@
+extends includes/layout.pug
+
+block vars
+  - var title = "Status | Static Suite Data Server"
+
+block content
+  h1(class="title is-1")="Status"
+  table(class="table is-fullwidth is-hoverable")
+    tbody
+      each description, link in links
+        tr
+          td
+            a(href=link)= link
+          td=description

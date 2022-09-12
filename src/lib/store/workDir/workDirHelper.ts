@@ -7,8 +7,6 @@ import {
   getDataFromLogLine,
 } from './storage';
 
-const changedFileCache: Record<number, ChangedFiles> = {};
-
 export const workDirHelper = {
   /**
    * Gets date of last modification of work directory.
@@ -30,34 +28,32 @@ export const workDirHelper = {
    * - deleted: array of deleted files.
    */
   getChangedFilesSince: (sinceDate: Date): ChangedFiles => {
-    const sinceDateTimestamp = sinceDate.getTime();
-    if (!changedFileCache[sinceDateTimestamp]) {
-      const changedLines = getChangedLinesSince(sinceDate);
-      const linesData: LogLineData[] = [];
-      changedLines.forEach(line => {
-        const dataFromLogLine = getDataFromLogLine(line);
-        if (dataFromLogLine) {
-          linesData.push(dataFromLogLine);
-        }
-      });
+    const changedLines = getChangedLinesSince(sinceDate);
+    const lineData: Record<string, LogLineData> = {};
+    changedLines.forEach(line => {
+      const dataFromLogLine = getDataFromLogLine(line);
+      if (dataFromLogLine) {
+        // Save lines keyed by its relativePath so only the last
+        // operation on the same file is processed.
+        lineData[dataFromLogLine.file.relativePath] = dataFromLogLine;
+      }
+    });
+    const lineDataArray: LogLineData[] = Object.values(lineData);
 
-      const updated = linesData
-        .filter(data => data.operation === 'write')
-        .map(data => data.file.relativePath);
-      updated.forEach(file => {
-        logger.debug(`Found updated file "${file}"`);
-      });
+    const updated = lineDataArray
+      .filter(data => data.operation === 'write')
+      .map(data => data.file.relativePath);
+    updated.forEach(file => {
+      logger.debug(`Found updated file "${file}"`);
+    });
 
-      const deleted = linesData
-        .filter(data => data.operation === 'delete')
-        .map(data => data.file.relativePath);
-      deleted.forEach(file => {
-        logger.debug(`Found deleted file "${file}"`);
-      });
+    const deleted = lineDataArray
+      .filter(data => data.operation === 'delete')
+      .map(data => data.file.relativePath);
+    deleted.forEach(file => {
+      logger.debug(`Found deleted file "${file}"`);
+    });
 
-      changedFileCache[sinceDateTimestamp] = { updated, deleted };
-    }
-
-    return changedFileCache[sinceDateTimestamp];
+    return { updated, deleted };
   },
 };

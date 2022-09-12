@@ -1,4 +1,3 @@
-// import path from 'path';
 import { config } from '@lib/config';
 import { getFileContent } from '@lib/utils/fs';
 import { FileType } from '@lib/utils/fs/fs.types';
@@ -6,10 +5,11 @@ import { cache } from '@lib/utils/cache';
 import { StoreAddOptions, StoreManager } from './store.types';
 import { hookManager } from './hook';
 import { store } from '.';
-import { includeParser } from './includeParser';
+import { includeParser, includeIndex } from './include';
 import { RunMode } from '../dataServer.types';
+import { tracker } from './diff/tracker';
 
-const fileCache = cache.bin<FileType>('file');
+const fileCache = cache.bin<string>('file');
 
 /**
  * Tells whether a watcher for hooks is enabled.
@@ -21,7 +21,7 @@ const fileCache = cache.bin<FileType>('file');
  * 2) A watcher detects a hook change: all files in data dir are read again.
  *
  * For the second case, we want to avoid having to actually read all
- * files from cache if they have not changed. To do so, there is a
+ * files from disk if they have not changed. To do so, there is a
  * file cache that caches the file raw contents. That cache uses a lot of
  * memory, and should only be enabled when run mode is DEV (hence, a watcher
  * is enabled) and a hook directory is defined.
@@ -44,17 +44,11 @@ const setFileIntoStore = (
   options: StoreAddOptions = { readFileFromCache: false },
 ): FileType => {
   const hookWatcherEnabled = isHookWatcherEnabled();
-  let fileContent =
-    hookWatcherEnabled && options.readFileFromCache
-      ? fileCache.get(relativeFilepath)
-      : undefined;
-  if (!fileContent) {
-    const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
-    fileContent = getFileContent(absoluteFilePath);
-    if (hookWatcherEnabled) {
-      fileCache.set(relativeFilepath, fileContent);
-    }
-  }
+  const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
+  let fileContent = getFileContent(absoluteFilePath, {
+    readFileFromCache: options.readFileFromCache,
+    isFileCacheEnabled: hookWatcherEnabled,
+  });
 
   // Invoke "process file" hook.
   const hookModulesInfo = hookManager.getModuleGroupInfo();
@@ -69,12 +63,29 @@ const setFileIntoStore = (
       });
     }
   });
+
   const dataToStore = fileContent.json || fileContent.raw;
   if (fileContent.json) {
     // Check if the object already exists to make sure we don't break the reference
     const previousData = store.data.get(relativeFilepath);
     if (dataToStore && typeof dataToStore === 'object') {
       if (previousData) {
+        // Remove previous data from URL index.
+        const url = previousData.data?.content?.url?.path;
+        if (url) {
+          store.index.url.delete(url);
+        }
+
+        // Remove previous data from UUID index.
+        const uuid = previousData.data?.content?.uuid;
+        const langcode = previousData.data?.content?.langcode?.value;
+        if (uuid && langcode) {
+          store.index.uuid.get(langcode)?.delete(uuid);
+        }
+
+        // Remove previous include data from includeIndex.
+        includeIndex.remove(relativeFilepath, previousData);
+
         // Delete all referenced object properties
         Object.keys(previousData).forEach(key => {
           delete previousData[key];
@@ -84,18 +95,25 @@ const setFileIntoStore = (
           previousData[key] = dataToStore[key];
         });
       }
+
+      // Add data to UUID index.
       const uuid = dataToStore.data?.content?.uuid;
       const langcode = dataToStore.data?.content?.langcode?.value;
       if (uuid && langcode) {
         const langcodeMap =
           store.index.uuid.get(langcode) ||
-          store.index.uuid.set(langcode, new Map<string, any>());
+          store.index.uuid.set(langcode, new Map<string, any>()).get(langcode);
         langcodeMap.set(uuid, dataToStore);
       }
+
+      // Add data to URL index.
       const url = dataToStore.data?.content?.url?.path;
       if (url) {
         store.index.url.set(url, dataToStore);
       }
+
+      // Add data to include index.
+      includeIndex.set(relativeFilepath, dataToStore);
     }
   }
   store.data.set(relativeFilepath, dataToStore);
@@ -128,9 +146,12 @@ export const storeManager: StoreManager = {
   },
 
   remove: (relativeFilepath: string): StoreManager => {
+    // Track down file before it changes.
+    tracker.trackChangedFile(relativeFilepath);
+
     if (isHookWatcherEnabled()) {
       // Delete file contents from cache.
-      fileCache.delete(relativeFilepath);
+      fileCache.delete(`${config.dataDir}/${relativeFilepath}`);
     }
 
     // Delete file contents from store.
@@ -158,6 +179,9 @@ export const storeManager: StoreManager = {
   },
 
   update: (relativeFilepath: string): StoreManager => {
+    // Track down file before it changes.
+    tracker.trackChangedFile(relativeFilepath);
+
     const fileContent = setFileIntoStore(relativeFilepath, {
       readFileFromCache: false,
     });
@@ -176,13 +200,16 @@ export const storeManager: StoreManager = {
       }
     });
 
+    // Track down file after it changes.
+    tracker.trackChangedFile(relativeFilepath);
+
     return storeManager;
   },
 
   parseIncludes: (): StoreManager => {
     // Parses static includes.
-    store.data.forEach(fileContent => {
-      storeManager.parseSingleFileIncludes(fileContent);
+    store.data.forEach((fileContent, relativeFilepath) => {
+      includeParser.static(relativeFilepath, fileContent);
     });
 
     // Parses dynamic includes.
@@ -193,8 +220,9 @@ export const storeManager: StoreManager = {
     return storeManager;
   },
 
-  parseSingleFileIncludes: (fileContent): StoreManager => {
-    includeParser.static(fileContent);
+  parseSingleFileIncludes: (relativeFilepath, fileContent): StoreManager => {
+    includeParser.static(relativeFilepath, fileContent);
+    includeParser.dynamic(fileContent);
     return storeManager;
   },
 };

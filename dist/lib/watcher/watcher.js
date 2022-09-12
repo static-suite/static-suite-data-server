@@ -8,12 +8,12 @@ const cache_1 = require("@lib/utils/cache");
 const fs_1 = require("@lib/utils/fs");
 const hook_1 = require("@lib/store/hook");
 const query_1 = require("@lib/query");
-const task_1 = require("@lib/store/task");
+const task_1 = require("@lib/task");
 /**
- * Initializes a watcher on any file inside queryDir and hookDir.
+ * Initializes a watcher on any file inside queryDir, hookDir and taskDir.
  *
  * @remarks
- * If runMode is DEV and queryDir and/or hookDir are defined by current
+ * If runMode is DEV and queryDir, hookDir and/or taskDir are defined by current
  * configuration, a watcher is initialized on them.
  *
  * When something changes inside query directory:
@@ -49,7 +49,7 @@ const initWatcher = () => {
         if (config_1.config.hookDir && filePath.startsWith(config_1.config.hookDir)) {
             hook_1.hookManager.reset();
             dataDirManager_1.dataDirManager.load({ incremental: true });
-            logger_1.logger.debug(`Re-building store done`);
+            logger_1.logger.debug('Re-building store done');
         }
         // Remove all modules inside the task directory.
         if (config_1.config.taskDir && filePath.startsWith(config_1.config.taskDir)) {

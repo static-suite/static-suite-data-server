@@ -1,8 +1,8 @@
 /**
- * Initializes a watcher on any file inside queryDir and hookDir.
+ * Initializes a watcher on any file inside queryDir, hookDir and taskDir.
  *
  * @remarks
- * If runMode is DEV and queryDir and/or hookDir are defined by current
+ * If runMode is DEV and queryDir, hookDir and/or taskDir are defined by current
  * configuration, a watcher is initialized on them.
  *
  * When something changes inside query directory:

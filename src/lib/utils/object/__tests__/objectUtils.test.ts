@@ -1,5 +1,5 @@
 import { getObjValue } from '..';
-import { isEmptyObject, hasKey, deepClone } from '../objectUtils';
+import { isEmptyObject, hasKey, deepClone, jsonify } from '../objectUtils';
 
 describe('Object utils test', () => {
   describe('isEmptyObject', () => {
@@ -44,6 +44,19 @@ describe('Object utils test', () => {
     });
     it('gets undefined when path does not exist', () => {
       expect(getObjValue(testObject, 'x.z.z')).toBeUndefined();
+    });
+  });
+
+  describe('jsonify', () => {
+    const testObject = {
+      x: new Set([1, 2]),
+      y: new Map([['mapKey', 'mapValue']]),
+    };
+    it('jsonify object containing Set and Map', () => {
+      expect(jsonify(testObject)).toEqual({
+        x: [1, 2],
+        y: { mapKey: 'mapValue' },
+      });
     });
   });
 });

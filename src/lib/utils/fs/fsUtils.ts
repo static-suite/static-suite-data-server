@@ -3,7 +3,8 @@ import fg, { Options as fastGlobOptions } from 'fast-glob';
 import chokidar from 'chokidar';
 import { logger } from '@lib/utils/logger';
 import { parseJsonString } from '@lib/utils/string';
-import { FileType } from './fs.types';
+import { FileType, GetFileContentOptions } from './fs.types';
+import { cache } from '../cache';
 
 /**
  * Tells whether a path is JSON or not.
@@ -14,7 +15,8 @@ import { FileType } from './fs.types';
  *
  * @internal
  */
-const isJson = (filepath: string): boolean => filepath.substr(-5) === '.json';
+export const isJsonFile = (filepath: string): boolean =>
+  filepath.slice(-5) === '.json';
 
 /**
  * Reads a file and logs an error on failure.
@@ -26,8 +28,7 @@ const isJson = (filepath: string): boolean => filepath.substr(-5) === '.json';
 export const readFile = (filePath: string): string | null => {
   let contents = null;
   try {
-    contents = fs.readFileSync(filePath, 'utf8');
-    // contents = '{}';
+    contents = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
   } catch (error) {
     // When an error is thrown, contents is undefined, so ensure
     // it is converted to null.
@@ -40,19 +41,34 @@ export const readFile = (filePath: string): string | null => {
 /**
  * Gets raw and JSON parsed content from a file.
  *
- * @param filePath - A path to a file.
+ * @param filepath - A path to a file.
  *
  * @returns Object with two properties, "raw" and "json", which contain
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-export const getFileContent = (filePath: string): FileType => {
-  const raw = readFile(filePath);
+export const getFileContent = (
+  filepath: string,
+  options: GetFileContentOptions = {
+    readFileFromCache: false,
+    isFileCacheEnabled: false,
+  },
+): FileType => {
+  let raw: string | null | undefined;
+  if (options.isFileCacheEnabled && options.readFileFromCache) {
+    raw = cache.bin<string>('file').get(filepath);
+  }
+  if (!raw) {
+    raw = readFile(filepath);
+    if (options.isFileCacheEnabled) {
+      cache.bin('file').set(filepath, raw);
+    }
+  }
   let json = null;
-  if (isJson(filePath) && raw) {
+  if (raw && isJsonFile(filepath)) {
     json = parseJsonString(raw);
     if (!json) {
-      logger.error(`Error getting JSON from file "${filePath}"`);
+      logger.error(`Error getting JSON from file "${filepath}"`);
     }
   }
   return { raw, json };

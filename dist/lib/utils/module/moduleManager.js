@@ -21,7 +21,7 @@ const internalModuleCache = {};
  * Internal resolve cache.
  *
  * @remarks
- * It does not use the shared cache util since this cache must to be
+ * It does not use the shared cache util since this cache must be
  * managed only by this module, and should not be accessible nor
  * managed from the outside.
  */
@@ -30,7 +30,7 @@ const internalResolveCache = {};
  * Resolves a path to a module
  *
  * @param modulePath - A path to a module
- * @returns The resolved path, or the passed unresolved path if module cannot be found
+ * @returns The resolved path, or the given unresolved path if module cannot be found
  */
 const resolve = (modulePath) => {
     let resolvedModulePath = internalResolveCache[modulePath];
@@ -75,7 +75,7 @@ exports.moduleManager = {
      */
     load: (modulePath) => {
         const resolvedModulePath = resolve(modulePath);
-        exports.moduleManager.remove(resolvedModulePath);
+        exports.moduleManager.remove(resolvedModulePath, { useLogger: false });
         try {
             internalModuleCache[resolvedModulePath] = require(resolvedModulePath);
         }
@@ -90,12 +90,18 @@ exports.moduleManager = {
      * Removes a single module from Node.js cache
      *
      * @param modulePath - Path to the module to be removed
+     * @param options - Object of options:
+     * useLogger: Flag to use logger or not. Useful to avoid
+     * "remove" log lines when this function is called from
+     * other functions.
      */
-    remove: (modulePath) => {
+    remove: (modulePath, options = { useLogger: true }) => {
         const resolvedModulePath = resolve(modulePath);
         (0, clear_module_1.default)(resolvedModulePath);
         delete internalModuleCache[resolvedModulePath];
-        logger_1.logger.debug(`Module ${resolvedModulePath} successfully removed.`);
+        if (options.useLogger) {
+            logger_1.logger.debug(`Module ${resolvedModulePath} successfully removed.`);
+        }
     },
     /**
      * Removes several modules from Node.js cache at once

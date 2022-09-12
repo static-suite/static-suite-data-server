@@ -28,7 +28,7 @@ export const getChangedLinesSince = (sinceDate: Date): string[] => {
   const dateOffset = -(date.getTimezoneOffset() * 60 * 1000);
 
   const changedLines = allLines.filter(line => {
-    const uniqueId = line.substr(0, 32);
+    const uniqueId = line.substring(0, 32);
     if (!uniqueId) {
       return false;
     }

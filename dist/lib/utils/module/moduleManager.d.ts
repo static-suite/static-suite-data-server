@@ -31,8 +31,14 @@ export declare const moduleManager: {
      * Removes a single module from Node.js cache
      *
      * @param modulePath - Path to the module to be removed
+     * @param options - Object of options:
+     * useLogger: Flag to use logger or not. Useful to avoid
+     * "remove" log lines when this function is called from
+     * other functions.
      */
-    remove: (modulePath: string) => void;
+    remove: (modulePath: string, options?: {
+        useLogger: boolean;
+    }) => void;
     /**
      * Removes several modules from Node.js cache at once
      *

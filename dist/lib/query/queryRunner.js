@@ -40,7 +40,6 @@ exports.queryRunner = {
         count += 1;
         const startDate = microtime_1.default.now();
         const argsString = JSON.stringify(args);
-        logger_1.logger.debug(`#${count} Query started: "${queryId}", args "${argsString}"`);
         // Implement a query cache.
         const cacheId = `${queryId}--${argsString}`;
         let isCacheMiss = false;
@@ -77,7 +76,9 @@ exports.queryRunner = {
                 cache: isCacheMiss ? query_types_1.CacheStatus.MISS : query_types_1.CacheStatus.HIT,
             },
         };
-        logger_1.logger.debug(`#${count} Query "${queryId}" took ${execTimeMs} ms.`);
+        /*     logger.debug(
+          `#${count} Query "${queryId}" args "${argsString}" took ${execTimeMs} ms.`,
+        ); */
         return response;
     },
     getCount: () => count,

@@ -1,5 +1,31 @@
 export type CacheBin<Type> = Map<string, Type>;
 
+export type Cache = {
+  /**
+   * Gets a cache bin by its id.
+   *
+   * @param binId - The id of the bin.
+   * @returns The cache bin.
+   */
+  bin<Type>(binId: string): CacheBin<Type>;
+
+  /**
+   * Returns a boolean indicating whether a cache bin
+   * with the specified key exists or not.
+   *
+   * @param binId - The id of the bin.
+   * @returns True if the cache bin exists, false otherwise.
+   */
+  has(binId: string): boolean;
+
+  /**
+   * Gets an array of keys of all available cache bins.
+   *
+   * @returns An array of cache bin keys.
+   */
+  keys(): string[];
+};
+
 const data = new Map<string, CacheBin<any>>();
 
 /**
@@ -25,13 +51,7 @@ const initBin = <Type>(binId: string): CacheBin<Type> => {
  * which is a kind of "folder" or "directory" where data belonging
  * to the same context/domain is stored altogether.
  */
-export const cache = {
-  /**
-   * Gets a cache bin by its id.
-   *
-   * @param binId - The id of the bin.
-   * @returns The cache bin.
-   */
+export const cache: Cache = {
   bin: <Type>(binId: string): CacheBin<Type> => {
     return cache.has(binId)
       ? (data.get(binId) as CacheBin<Type>)
@@ -45,12 +65,12 @@ export const cache = {
    * @param binId - The id of the bin.
    * @returns True if the cache bin exists, false otherwise.
    */
-  has: (binId: string): boolean => data.has(binId),
+  has: binId => data.has(binId),
 
   /**
    * Gets an array of keys of all available cache bins.
    *
    * @returns An array of cache bin keys.
    */
-  keys: (): string[] => Array.from(data.keys()),
+  keys: () => Array.from(data.keys()),
 };

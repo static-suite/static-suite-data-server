@@ -1,10 +1,13 @@
+import path from 'path';
+import fs from 'fs';
 import { config } from '@lib/config';
-import { resolve } from 'path';
 import { workDirHelper } from '../workDirHelper';
 
 describe('workDirHelper test', () => {
   describe('getChangedFilesSince', () => {
-    config.workDir = resolve('src/__tests__/fixtures/work');
+    config.workDir = fs.realpathSync(
+      path.resolve('src/__tests__/fixtures/work'),
+    );
 
     it(`Gets modified and deleted files from static-suite log`, () => {
       expect(

@@ -1,8 +1,11 @@
-import path, { resolve } from 'path';
+import fs from 'fs';
+import path from 'path';
 import { config } from '@lib/config';
 import { dirBasedModuleGroupManager } from '@lib/utils/module';
 
-config.queryDir = resolve(path.join(__dirname, '../__mocks__'));
+config.queryDir = fs.realpathSync(
+  path.resolve(path.join(__dirname, '../__mocks__')),
+);
 export const exampleQueryManager = dirBasedModuleGroupManager('query');
 
 describe('dirBasedModuleGroupManager test', () => {

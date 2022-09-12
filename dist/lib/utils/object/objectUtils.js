@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getObjValue = exports.deepClone = exports.hasKey = exports.isEmptyObject = void 0;
+exports.jsonify = exports.getObjValue = exports.deepClone = exports.hasKey = exports.isEmptyObject = void 0;
 /**
  * Checks if an object is empty (i.e.- contains zero keys)
  *
@@ -45,3 +45,20 @@ const getObjValue = (object, path, separator) => {
     return pathArray.reduce((previous, current) => previous?.[current], object);
 };
 exports.getObjValue = getObjValue;
+/**
+ * Converts a JavaScript value containing Set and Map, to a JSON object.
+ *
+ * @param value - A JavaScript value to be converted.
+ *
+ * @returns A JSON object
+ */
+const jsonify = (value) => {
+    return JSON.parse(JSON.stringify(value, (k, v) => {
+        if (v instanceof Set)
+            return [...v];
+        if (v instanceof Map)
+            return Object.fromEntries(v);
+        return v;
+    }));
+};
+exports.jsonify = jsonify;

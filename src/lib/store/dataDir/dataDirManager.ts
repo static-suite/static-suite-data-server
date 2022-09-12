@@ -1,3 +1,4 @@
+import microtime from 'microtime';
 import { config } from '@lib/config';
 import { store } from '@lib/store';
 import { findFilesInDir } from '@lib/utils/fs';
@@ -41,10 +42,17 @@ export const dataDirManager: DataDirManager = {
     const updatedFilesContainsData = updatedFiles.length > 0;
     const storeHydrationStartDate = Date.now();
     relativeFilePaths.forEach(relativeFilePath => {
-      storeManager.add(relativeFilePath, {
-        readFileFromCache:
-          updatedFilesContainsData && !updatedFiles.includes(relativeFilePath),
-      });
+      let readFileFromCache = false;
+      if (options.incremental) {
+        readFileFromCache = true;
+        if (
+          updatedFilesContainsData &&
+          updatedFiles.includes(relativeFilePath)
+        ) {
+          readFileFromCache = false;
+        }
+      }
+      storeManager.add(relativeFilePath, { readFileFromCache });
     });
 
     logger.debug(
@@ -89,6 +97,7 @@ export const dataDirManager: DataDirManager = {
         // processes updating the data directory at the same time.
         const storeLastSyncDate = store.syncDate;
         store.syncDate = dataDirModificationDate;
+        const startDate = microtime.now();
         logger.debug(
           `Data dir outdated. Current data loaded at ${storeLastSyncDate.toISOString()} but last updated at ${dataDirModificationDate.toISOString()}`,
         );
@@ -97,9 +106,11 @@ export const dataDirManager: DataDirManager = {
         changedFiles.updated.forEach(file => {
           storeManager.update(file);
           const fileContent = store.data.get(file);
-          storeManager.parseSingleFileIncludes(fileContent);
+          storeManager.parseSingleFileIncludes(file, fileContent);
         });
-        changedFiles.deleted.forEach(file => storeManager.remove(file));
+        changedFiles.deleted.forEach(file => {
+          storeManager.remove(file);
+        });
         // Clear all store subsets and queries, since they are stale.
         // In fact, the subset cache should be cleared only when files
         // are added or deleted, but not when they are simply updated.
@@ -108,6 +119,8 @@ export const dataDirManager: DataDirManager = {
         // cache in all situations.
         cache.bin('store-subset').clear();
         cache.bin('query').clear();
+        const execTimeMs = (microtime.now() - startDate) / 1000;
+        logger.debug(`Data dir updated in ${execTimeMs}ms.`);
       } else {
         logger.debug(
           `Data dir up to date. Current data loaded at ${store.syncDate.toISOString()} and last updated at ${dataDirModificationDate.toISOString()}`,

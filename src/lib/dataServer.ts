@@ -6,7 +6,7 @@ import { dataDirManager } from '@lib/store/dataDir';
 import { store } from '@lib/store';
 import { Store } from '@lib/store/store.types';
 import { queryRunner } from '@lib/query';
-import { taskRunner } from '@lib/store/task/taskRunner';
+import { taskRunner } from '@lib/task/taskRunner';
 import {
   QueryRunner,
   QuerySuccessfulResponse,
@@ -45,6 +45,7 @@ const dataServer = {
       queryDir: options.queryDir,
       hookDir: options.hookDir,
       taskDir: options.taskDir,
+      dumpDir: options.dumpDir,
       runMode: options.runMode,
     });
 

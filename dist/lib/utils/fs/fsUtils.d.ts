@@ -1,5 +1,15 @@
 import { Options as fastGlobOptions } from 'fast-glob';
-import { FileType } from './fs.types';
+import { FileType, GetFileContentOptions } from './fs.types';
+/**
+ * Tells whether a path is JSON or not.
+ *
+ * @remarks
+ * A fast checker that avoids reading the contents of a file, or doing
+ * some other complex operation to determine if a file contains JSON data.
+ *
+ * @internal
+ */
+export declare const isJsonFile: (filepath: string) => boolean;
 /**
  * Reads a file and logs an error on failure.
  *
@@ -11,13 +21,13 @@ export declare const readFile: (filePath: string) => string | null;
 /**
  * Gets raw and JSON parsed content from a file.
  *
- * @param filePath - A path to a file.
+ * @param filepath - A path to a file.
  *
  * @returns Object with two properties, "raw" and "json", which contain
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-export declare const getFileContent: (filePath: string) => FileType;
+export declare const getFileContent: (filepath: string, options?: GetFileContentOptions) => FileType;
 /**
  * Finds all files inside a directory
  *

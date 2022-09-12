@@ -32,7 +32,6 @@ export type LogLineData = {
   file: {
     /**
      * File ID, a string identifying the file in a meaningful way, usually a numeric ID
-     * U.
      */
     id: string;
 

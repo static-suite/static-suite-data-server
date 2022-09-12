@@ -25,12 +25,6 @@ const initBin = (binId) => {
  * to the same context/domain is stored altogether.
  */
 exports.cache = {
-    /**
-     * Gets a cache bin by its id.
-     *
-     * @param binId - The id of the bin.
-     * @returns The cache bin.
-     */
     bin: (binId) => {
         return exports.cache.has(binId)
             ? data.get(binId)
@@ -43,7 +37,7 @@ exports.cache = {
      * @param binId - The id of the bin.
      * @returns True if the cache bin exists, false otherwise.
      */
-    has: (binId) => data.has(binId),
+    has: binId => data.has(binId),
     /**
      * Gets an array of keys of all available cache bins.
      *

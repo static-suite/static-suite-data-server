@@ -16,6 +16,10 @@ exports.store = {
     index: {
         url: new Map(),
         uuid: new Map(),
+        include: {
+            static: new Map(),
+            dynamic: new Map(),
+        },
         custom: new Map(),
     },
 };

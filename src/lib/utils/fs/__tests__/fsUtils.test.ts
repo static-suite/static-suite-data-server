@@ -6,6 +6,7 @@ import {
   getFileContent,
   findFilesInDir,
   getModificationDate,
+  isJsonFile,
 } from '../fsUtils';
 
 const fixturesDir = path.join(__dirname, './fixtures/');
@@ -18,6 +19,15 @@ beforeEach(() => {
 });
 
 describe('File System utils test', () => {
+  describe('isJsonFile', () => {
+    it('detects a valid JSON filepath', () => {
+      expect(isJsonFile('valid-file.json')).toBe(true);
+    });
+    it('detects an invalid JSON filepath', () => {
+      expect(isJsonFile('invalid-file.txt')).toBe(false);
+    });
+  });
+
   describe('readFile', () => {
     it('reads an existing filepath without logging any error', () => {
       expect(readFile(jsonFixturePath)).toBe(jsonRawValue);
