@@ -12,4 +12,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./InvalidRunMode"), exports);
 __exportStar(require("./MissingDirectory"), exports);
+__exportStar(require("./NonWritableDirectory"), exports);
 __exportStar(require("./MissingRequiredOption"), exports);

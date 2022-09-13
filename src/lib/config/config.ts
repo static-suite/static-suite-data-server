@@ -6,6 +6,7 @@ import { ConfigOptions, NonSanitizedConfigOptions } from './config.types';
 import {
   InvalidRunMode,
   MissingDirectory,
+  NonWritableDirectory,
   MissingRequiredOption,
 } from './error';
 
@@ -47,7 +48,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
   ) {
     throw new MissingDirectory('dataDir', localOptions.dataDir);
   }
-  // fs.realpathSync() throws and error if path does not exist.
+  // fs.realpathSync() throws an error if path does not exist.
   localOptions.dataDir = fs.realpathSync(localOptions.dataDir);
 
   if (localOptions.workDir) {
@@ -58,7 +59,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
     ) {
       throw new MissingDirectory('workDir', localOptions.workDir);
     }
-    // fs.realpathSync() throws and error if path does not exist.
+    // fs.realpathSync() throws an error if path does not exist.
     localOptions.workDir = fs.realpathSync(localOptions.workDir);
   }
 
@@ -70,7 +71,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
     ) {
       throw new MissingDirectory('queryDir', localOptions.queryDir);
     }
-    // fs.realpathSync() throws and error if path does not exist.
+    // fs.realpathSync() throws an error if path does not exist.
     localOptions.queryDir = fs.realpathSync(localOptions.queryDir);
   }
 
@@ -82,7 +83,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
     ) {
       throw new MissingDirectory('hookDir', localOptions.hookDir);
     }
-    // fs.realpathSync() throws and error if path does not exist.
+    // fs.realpathSync() throws an error if path does not exist.
     localOptions.hookDir = fs.realpathSync(localOptions.hookDir);
   }
 
@@ -94,7 +95,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
     ) {
       throw new MissingDirectory('taskDir', localOptions.taskDir);
     }
-    // fs.realpathSync() throws and error if path does not exist.
+    // fs.realpathSync() throws an error if path does not exist.
     localOptions.taskDir = fs.realpathSync(localOptions.taskDir);
   }
 
@@ -106,7 +107,12 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
     ) {
       throw new MissingDirectory('dumpDir', localOptions.dumpDir);
     }
-    // fs.realpathSync() throws and error if path does not exist.
+    try {
+      fs.accessSync(localOptions.dumpDir, fs.constants.W_OK);
+    } catch (e) {
+      throw new NonWritableDirectory('dumpDir', localOptions.dumpDir);
+    }
+    // fs.realpathSync() throws an error if path does not exist.
     localOptions.dumpDir = fs.realpathSync(localOptions.dumpDir);
   }
 

@@ -45,7 +45,7 @@ const setConfig = (options) => {
         !fs_1.default.lstatSync(localOptions.dataDir).isDirectory()) {
         throw new error_1.MissingDirectory('dataDir', localOptions.dataDir);
     }
-    // fs.realpathSync() throws and error if path does not exist.
+    // fs.realpathSync() throws an error if path does not exist.
     localOptions.dataDir = fs_1.default.realpathSync(localOptions.dataDir);
     if (localOptions.workDir) {
         localOptions.workDir = path_1.default.resolve(localOptions.workDir);
@@ -53,7 +53,7 @@ const setConfig = (options) => {
             !fs_1.default.lstatSync(localOptions.workDir).isDirectory()) {
             throw new error_1.MissingDirectory('workDir', localOptions.workDir);
         }
-        // fs.realpathSync() throws and error if path does not exist.
+        // fs.realpathSync() throws an error if path does not exist.
         localOptions.workDir = fs_1.default.realpathSync(localOptions.workDir);
     }
     if (localOptions.queryDir) {
@@ -62,7 +62,7 @@ const setConfig = (options) => {
             !fs_1.default.lstatSync(localOptions.queryDir).isDirectory()) {
             throw new error_1.MissingDirectory('queryDir', localOptions.queryDir);
         }
-        // fs.realpathSync() throws and error if path does not exist.
+        // fs.realpathSync() throws an error if path does not exist.
         localOptions.queryDir = fs_1.default.realpathSync(localOptions.queryDir);
     }
     if (localOptions.hookDir) {
@@ -71,7 +71,7 @@ const setConfig = (options) => {
             !fs_1.default.lstatSync(localOptions.hookDir).isDirectory()) {
             throw new error_1.MissingDirectory('hookDir', localOptions.hookDir);
         }
-        // fs.realpathSync() throws and error if path does not exist.
+        // fs.realpathSync() throws an error if path does not exist.
         localOptions.hookDir = fs_1.default.realpathSync(localOptions.hookDir);
     }
     if (localOptions.taskDir) {
@@ -80,7 +80,7 @@ const setConfig = (options) => {
             !fs_1.default.lstatSync(localOptions.taskDir).isDirectory()) {
             throw new error_1.MissingDirectory('taskDir', localOptions.taskDir);
         }
-        // fs.realpathSync() throws and error if path does not exist.
+        // fs.realpathSync() throws an error if path does not exist.
         localOptions.taskDir = fs_1.default.realpathSync(localOptions.taskDir);
     }
     if (localOptions.dumpDir) {
@@ -89,7 +89,13 @@ const setConfig = (options) => {
             !fs_1.default.lstatSync(localOptions.dumpDir).isDirectory()) {
             throw new error_1.MissingDirectory('dumpDir', localOptions.dumpDir);
         }
-        // fs.realpathSync() throws and error if path does not exist.
+        try {
+            fs_1.default.accessSync(localOptions.dumpDir, fs_1.default.constants.W_OK);
+        }
+        catch (e) {
+            throw new error_1.NonWritableDirectory('dumpDir', localOptions.dumpDir);
+        }
+        // fs.realpathSync() throws an error if path does not exist.
         localOptions.dumpDir = fs_1.default.realpathSync(localOptions.dumpDir);
     }
     if (!localOptions.runMode) {
