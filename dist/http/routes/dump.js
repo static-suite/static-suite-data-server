@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dumpMetadata = exports.dumpFull = exports.dumpIncremental = exports.dumpIndex = void 0;
+exports.dumpMetadataReset = exports.dumpMetadataShow = exports.dumpFull = exports.dumpIncremental = exports.dumpIndex = void 0;
 const fs_1 = __importDefault(require("fs"));
 const dump_1 = require("@lib/store/dump");
 const object_1 = require("@lib/utils/object");
@@ -13,7 +13,8 @@ const dumpIndex = (req, res) => {
         links: {
             '/dump/incremental': 'Execute an incremental dump',
             '/dump/full': 'Execute a full dump',
-            '/dump/metadata': 'Dump metadata info',
+            '/dump/metadata/show': 'Show dump metadata info',
+            '/dump/metadata/reset': 'Reset dump metadata info',
         },
     });
 };
@@ -32,17 +33,25 @@ const dumpFull = (req, res) => {
     res.send((0, object_1.jsonify)(dump));
 };
 exports.dumpFull = dumpFull;
-const dumpMetadata = (req, res) => {
+const getMetadata = () => {
     const metadataFilepath = `${config_1.config.dumpDir}/metadata.json`;
-    if (fs_1.default.existsSync(metadataFilepath)) {
-        const metadata = fs_1.default.readFileSync(metadataFilepath).toString();
-        res.status(200);
-        res.set({ 'Content-Type': 'application/json' });
-        res.send(metadata);
-    }
-    else {
-        res.status(404);
-        res.send('Metadata file not found');
-    }
+    return fs_1.default.existsSync(metadataFilepath)
+        ? fs_1.default.readFileSync(metadataFilepath).toString()
+        : '[]';
 };
-exports.dumpMetadata = dumpMetadata;
+const dumpMetadataShow = (req, res) => {
+    res.status(200);
+    res.set({ 'Content-Type': 'application/json' });
+    res.send(getMetadata());
+};
+exports.dumpMetadataShow = dumpMetadataShow;
+const dumpMetadataReset = (req, res) => {
+    const args = req.query;
+    if (args?.timestamp) {
+        dump_1.dumpManager.reset(parseInt(args.timestamp, 10));
+    }
+    res.status(200);
+    res.set({ 'Content-Type': 'application/json' });
+    res.send(getMetadata());
+};
+exports.dumpMetadataReset = dumpMetadataReset;

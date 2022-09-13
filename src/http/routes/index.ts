@@ -15,7 +15,13 @@ import {
 import { data } from './data';
 import { docs } from './docs';
 import { runTask, taskIndex } from './task';
-import { dumpIndex, dumpIncremental, dumpFull, dumpMetadata } from './dump';
+import {
+  dumpIndex,
+  dumpIncremental,
+  dumpFull,
+  dumpMetadataShow,
+  dumpMetadataReset,
+} from './dump';
 
 const routes = Router();
 
@@ -38,7 +44,8 @@ routes.get('/cache/*/clear', cacheClear);
 routes.get('/dump', dumpIndex);
 routes.get('/dump/incremental', dumpIncremental);
 routes.get('/dump/full', dumpFull);
-routes.get('/dump/metadata', dumpMetadata);
+routes.get('/dump/metadata/show', dumpMetadataShow);
+routes.get('/dump/metadata/reset', dumpMetadataReset);
 routes.get(['/data/*', '/data'], data);
 
 export default routes;

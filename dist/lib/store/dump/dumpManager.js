@@ -166,4 +166,24 @@ exports.dumpManager = {
         }
         return dump;
     },
+    reset(timestamp) {
+        if (config_1.config.dumpDir) {
+            const metadataFilepath = `${config_1.config.dumpDir}/metadata.json`;
+            const metadata = JSON.parse(fs_1.default.existsSync(metadataFilepath)
+                ? fs_1.default.readFileSync(metadataFilepath).toString()
+                : '[]');
+            // Remove any dump data older that timestamp
+            const resetMetadata = metadata.filter((dump) => dump.since > timestamp);
+            logger_1.logger.debug(`Dump reset : "${JSON.stringify(resetMetadata)}"`);
+            try {
+                fs_1.default.writeFileSync(metadataFilepath, JSON.stringify(resetMetadata));
+            }
+            catch (e) {
+                logger_1.logger.error(`Dump: error resetting dump metadata to "${metadataFilepath}": ${e}`);
+            }
+        }
+        else {
+            logger_1.logger.error('"dumpDir" option not provided. Dump reset cannot be executed.');
+        }
+    },
 };

@@ -9,12 +9,22 @@ export type DumpManager = {
    * Raw data stored in Data Server does not resolve its includes until
    * each file is consumed (and therefore stringified). A dump consumes
    * that raw data and stores it in a directory, along its metadata
-   * (a list of changed/ deleted files), so a later process can store
+   * (a list of changed/deleted files), so a later process can store
    * those changes in another service like AWS S3.
    *
    * @param options - Configuration options
    */
   dump(options?: { incremental: boolean }): Dump;
+
+  /**
+   * Reset dump metadata.
+   *
+   * @remarks
+   * Resets dump metadata, removing any dump information older than the passed timestamp.
+   *
+   * @param timestamp - Timestamp
+   */
+  reset(timestamp: number): void;
 };
 
 /**

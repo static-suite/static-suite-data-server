@@ -29,6 +29,7 @@ routes.get('/cache/*/clear', cache_1.cacheClear);
 routes.get('/dump', dump_1.dumpIndex);
 routes.get('/dump/incremental', dump_1.dumpIncremental);
 routes.get('/dump/full', dump_1.dumpFull);
-routes.get('/dump/metadata', dump_1.dumpMetadata);
+routes.get('/dump/metadata/show', dump_1.dumpMetadataShow);
+routes.get('/dump/metadata/reset', dump_1.dumpMetadataReset);
 routes.get(['/data/*', '/data'], data_1.data);
 exports.default = routes;
