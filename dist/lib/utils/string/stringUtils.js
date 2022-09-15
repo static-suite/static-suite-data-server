@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseURLSearchParamsBAK = exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
+exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
 const logger_1 = require("@lib/utils/logger");
 /**
  * Separator for variant data files saved to storage.
@@ -47,16 +47,6 @@ exports.parseJsonString = parseJsonString;
  * @returns An object where its keys are the query arguments.
  */
 const parseURLSearchParams = (queryString) => {
-    const obj = {};
-    const pairs = queryString.split('&');
-    for (let i = 0; i < pairs.length; i += 1) {
-        const pair = pairs[i].split('=');
-        obj[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-    }
-    return obj;
-};
-exports.parseURLSearchParams = parseURLSearchParams;
-const parseURLSearchParamsBAK = (queryString) => {
     const params = new URLSearchParams(queryString);
     const obj = {};
     Array.from(params.keys()).forEach(key => {
@@ -69,4 +59,4 @@ const parseURLSearchParamsBAK = (queryString) => {
     });
     return obj;
 };
-exports.parseURLSearchParamsBAK = parseURLSearchParamsBAK;
+exports.parseURLSearchParams = parseURLSearchParams;

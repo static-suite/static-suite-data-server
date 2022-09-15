@@ -34,5 +34,4 @@ export declare const parseJsonString: (jsonString: string) => any;
  * @returns An object where its keys are the query arguments.
  */
 export declare const parseURLSearchParams: (queryString: string) => URLSearchParamsObject;
-export declare const parseURLSearchParamsBAK: (queryString: string) => URLSearchParamsObject;
 //# sourceMappingURL=stringUtils.d.ts.map

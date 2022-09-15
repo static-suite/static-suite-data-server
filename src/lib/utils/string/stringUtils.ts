@@ -1,5 +1,4 @@
 import { logger } from '@lib/utils/logger';
-// import { query } from 'express';
 import { URLSearchParamsObject } from './string.types';
 
 /**
@@ -47,19 +46,6 @@ export const parseJsonString = (jsonString: string): any => {
  * @returns An object where its keys are the query arguments.
  */
 export const parseURLSearchParams = (
-  queryString: string,
-): URLSearchParamsObject => {
-  const obj: URLSearchParamsObject = {};
-  const pairs = queryString.split('&');
-  for (let i = 0; i < pairs.length; i += 1) {
-    const pair = pairs[i].split('=');
-    obj[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-  }
-
-  return obj;
-};
-
-export const parseURLSearchParamsBAK = (
   queryString: string,
 ): URLSearchParamsObject => {
   const params = new URLSearchParams(queryString);
