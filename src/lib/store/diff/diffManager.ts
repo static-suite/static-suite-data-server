@@ -92,8 +92,8 @@ export const diffManager: DiffManager = {
     let updated = new Set<string>();
     let deleted = new Set<string>();
     const sinceDate = getLastDiffDate();
-    logger.debug(`Getting diff using date "${sinceDate}"`);
     if (options.incremental && sinceDate) {
+      logger.debug(`Getting incremental diff using date "${sinceDate}"`);
       // Only process changedFiles if not empty.
       const changedFiles = workDirHelper.getChangedFilesSince(sinceDate);
       if (changedFiles.updated.length || changedFiles.deleted.length) {
@@ -124,6 +124,7 @@ export const diffManager: DiffManager = {
       }
     } else {
       // If no sinceDate is passed, return all files
+      logger.debug(`Getting full diff with no date`);
       updated = new Set<string>(store.data.keys());
     }
 

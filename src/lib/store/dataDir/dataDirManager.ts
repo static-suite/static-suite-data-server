@@ -13,6 +13,22 @@ export const dataDirManager: DataDirManager = {
   load: (options = { incremental: false }) => {
     logger.info('Loading data dir...');
     const startDate = Date.now();
+
+    // Reset custom indexes if a load is called on an already loaded store.
+    store.index.custom = new Map<string, any>();
+
+    // Invoke "store load start" hook.
+    const hookModulesInfo = hookManager.getModuleGroupInfo();
+    hookModulesInfo.forEach(hookInfo => {
+      const hookModule = hookInfo.getModule();
+      if (hookModule.onStoreLoadStart) {
+        hookModule.onStoreLoadStart({
+          dataDir: config.dataDir,
+          store,
+        });
+      }
+    });
+
     const dataDirModificationDate = dataDirManager.getModificationDate();
     // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
     // processes loading the data directory at the same time.
@@ -71,7 +87,6 @@ export const dataDirManager: DataDirManager = {
     cache.bin('query').clear();
 
     // Invoke "store load done" hook.
-    const hookModulesInfo = hookManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreLoadDone) {
