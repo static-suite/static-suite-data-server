@@ -2,6 +2,7 @@ import { config } from '@lib/config';
 import { getFileContent } from '@lib/utils/fs';
 import { FileType } from '@lib/utils/fs/fs.types';
 import { cache } from '@lib/utils/cache';
+import { queryTagManager } from '@lib/query/queryTagManager';
 import { StoreAddOptions, StoreManager } from './store.types';
 import { hookManager } from './hook';
 import { store } from '.';
@@ -60,6 +61,7 @@ const setFileIntoStore = (
         relativeFilepath,
         fileContent,
         store,
+        queryTagManager,
       });
     }
   });
@@ -138,6 +140,7 @@ export const storeManager: StoreManager = {
           relativeFilepath,
           fileContent,
           store,
+          queryTagManager,
         });
       }
     });
@@ -154,12 +157,23 @@ export const storeManager: StoreManager = {
       fileCache.delete(`${config.dataDir}/${relativeFilepath}`);
     }
 
-    // Delete file contents from store.
-    const data = store.data.get(relativeFilepath);
-    const uuid = data.data?.content?.uuid;
-    const langcode = data.data?.content?.langcode?.value;
-    store.index.url.get(langcode).delete(uuid);
+    // Get stored data before removing it from store.
+    const storedData = store.data.get(relativeFilepath);
 
+    // Remove data from URL index.
+    const url = storedData.data?.content?.url?.path;
+    if (url) {
+      store.index.url.delete(url);
+    }
+
+    // Remove data from UUID index.
+    const uuid = storedData.data?.content?.uuid;
+    const langcode = storedData.data?.content?.langcode?.value;
+    if (uuid && langcode) {
+      store.index.uuid.get(langcode)?.delete(uuid);
+    }
+
+    // Delete file contents from store.
     store.data.delete(relativeFilepath);
 
     // Invoke "store remove" hook.
@@ -171,6 +185,8 @@ export const storeManager: StoreManager = {
           dataDir: config.dataDir,
           relativeFilepath,
           store,
+          queryTagManager,
+          fileContent: storedData,
         });
       }
     });
@@ -196,6 +212,7 @@ export const storeManager: StoreManager = {
           relativeFilepath,
           fileContent,
           store,
+          queryTagManager,
         });
       }
     });

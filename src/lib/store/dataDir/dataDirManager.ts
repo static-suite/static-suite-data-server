@@ -5,6 +5,7 @@ import { findFilesInDir } from '@lib/utils/fs';
 import { logger } from '@lib/utils/logger';
 import { workDirHelper } from '@lib/store/workDir';
 import { cache } from '@lib/utils/cache';
+import { queryTagManager } from '@lib/query/queryTagManager';
 import { DataDirManager } from './dataDir.types';
 import { storeManager } from '../storeManager';
 import { hookManager } from '../hook';
@@ -25,6 +26,7 @@ export const dataDirManager: DataDirManager = {
         hookModule.onStoreLoadStart({
           dataDir: config.dataDir,
           store,
+          queryTagManager,
         });
       }
     });
@@ -93,6 +95,7 @@ export const dataDirManager: DataDirManager = {
         hookModule.onStoreLoadDone({
           dataDir: config.dataDir,
           store,
+          queryTagManager,
         });
       }
     });

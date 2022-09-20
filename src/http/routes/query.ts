@@ -16,10 +16,9 @@ const queryIndex = (req: Request, res: Response): void => {
 
 const runQuery = (req: Request, res: Response): void => {
   dataDirManager.update();
-  const args: any = req.query;
-  const queryId = req.params[0];
+  const queryDefinition = req.originalUrl.replace(/^\/query\//, '');
   const response: QuerySuccessfulResponse | QueryErrorResponse =
-    queryRunner.run(queryId, args);
+    queryRunner.run(queryDefinition);
   res.status(200);
   res.set('application/json');
   res.send(response);

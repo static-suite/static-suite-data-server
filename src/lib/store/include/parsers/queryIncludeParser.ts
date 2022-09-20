@@ -3,7 +3,6 @@ import { RunMode } from '@lib/dataServer.types';
 import { queryRunner } from '@lib/query';
 import { isQueryErrorResponse } from '@lib/query/query.types';
 import { getObjValue } from '@lib/utils/object';
-import { parseURLSearchParams } from '@lib/utils/string';
 import { QueryIncludeParserOptions } from '../includeParser.types';
 import { aliasWithoutTypeIncludeParser } from './types/aliasWithoutTypeIncludeParser';
 
@@ -28,11 +27,7 @@ export const queryIncludeParser = ({
   const proxyHandler = {
     get: (target: any, prop: string) => {
       if (prop === 'data') {
-        const [queryId, rawQueryArgs] = queryDefinition.split('?');
-        const queryArgs = rawQueryArgs
-          ? parseURLSearchParams(rawQueryArgs)
-          : {};
-        const queryResponse = queryRunner.run(queryId, queryArgs);
+        const queryResponse = queryRunner.run(queryDefinition);
         if (isQueryErrorResponse(queryResponse)) {
           return config.runMode === RunMode.DEV
             ? `${queryResponse.error} (message visible only in run mode DEV)`

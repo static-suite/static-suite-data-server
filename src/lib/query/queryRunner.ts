@@ -3,6 +3,7 @@ import { config } from '@lib/config';
 import { store } from '@lib/store';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
+import { parseURLSearchParams } from '@lib/utils/string';
 import { queryManager } from './queryManager';
 import {
   QueryModuleResult,
@@ -10,7 +11,9 @@ import {
   CacheStatus,
   QueryErrorResponse,
   QuerySuccessfulResponse,
+  QueryArgs,
 } from './query.types';
+import { queryTagManager } from './queryTagManager';
 
 let count = 0;
 
@@ -29,10 +32,16 @@ const createErrorResponse = (message: string): QueryErrorResponse => {
 };
 
 export const queryRunner: QueryRunner = {
-  run: (queryId, args): QuerySuccessfulResponse | QueryErrorResponse => {
+  run: (queryDefinition): QuerySuccessfulResponse | QueryErrorResponse => {
     if (!config.queryDir) {
       return createErrorResponse('No query directory ("queryDir") configured');
     }
+
+    const [queryId, queryArgsString] = queryDefinition.split('?');
+    const queryArgs: QueryArgs = queryArgsString
+      ? parseURLSearchParams(queryArgsString)
+      : {};
+
     if (!queryId) {
       return createErrorResponse('No query ID received');
     }
@@ -43,10 +52,9 @@ export const queryRunner: QueryRunner = {
 
     count += 1;
     const startDate = microtime.now();
-    const argsString = JSON.stringify(args);
 
     // Implement a query cache.
-    const cacheId = `${queryId}--${argsString}`;
+    const cacheId = queryDefinition;
     let isCacheMiss = false;
     const queryCache = cache.bin<QueryModuleResult>('query');
     let queryResult = queryCache.get(cacheId);
@@ -55,7 +63,7 @@ export const queryRunner: QueryRunner = {
         const queryModule = queryModuleInfo.getModule();
         const queryResponse = queryModule.default({
           store,
-          args,
+          args: queryArgs,
         });
         queryResult = {
           result: queryResponse?.result,
@@ -65,10 +73,17 @@ export const queryRunner: QueryRunner = {
         if (queryResponse?.cacheable !== false) {
           queryCache.set(cacheId, queryResult);
         }
+
+        // Set tags for this query.
+        const queryTags =
+          queryResponse.tags && queryResponse.tags?.length > 0
+            ? new Set(queryResponse.tags)
+            : null;
+        queryTagManager.setTagsToQuery(queryDefinition, queryTags);
       } catch (e) {
         // Log error and rethrow.
         logger.error(
-          `#${count} Query error: "${queryId}", args "${argsString}": ${e}`,
+          `#${count} Query error: "${queryId}", args "${queryArgsString}": ${e}`,
         );
         throw e;
       }
@@ -80,6 +95,7 @@ export const queryRunner: QueryRunner = {
         contentType: queryResult?.contentType || 'application/json',
         execTimeMs,
         cache: isCacheMiss ? CacheStatus.MISS : CacheStatus.HIT,
+        tags: queryResult.tags ? Array.from(queryResult.tags) : undefined,
       },
     };
 

@@ -101,7 +101,7 @@ export declare type Store = {
      * ```
      * // Find an specific article.
      * const article = store.data.get('en/entity/node/article/123.json');
-     * const article = store.index.url.get('science/embvrosadas/sdaasd');
+     * const article = store.index.url.get('public/pretty/url');
      * const article = store.index.uuid.get('nl').get('ce736c8b-a6ea-43c4-9a6b-ad1fc498017c');
      * const article = store.index.custom.get('taxonomies').get('12234');
      *

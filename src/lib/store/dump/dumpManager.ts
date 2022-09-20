@@ -9,6 +9,7 @@ import { store } from '@lib/store';
 import { diffManager } from '../diff/diffManager';
 import { Diff } from '../diff/diffManager.types';
 import { Dump, DumpManager } from './dumpManager.types';
+import { hookManager } from '../hook';
 
 const removeEmptyDirsUpwards = (dir: string): void => {
   const isEmpty = fs.readdirSync(dir).length === 0;
@@ -27,10 +28,10 @@ const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
   diff.updated.forEach(relativeFilepath => {
     const storeFileContentData = store.data.get(relativeFilepath);
     if (storeFileContentData) {
-      const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
+      const absoluteFilepathInDumpDir = `${dumpDir}/${relativeFilepath}`;
       try {
         // Create parent directories if they are missing.
-        const dir = path.dirname(absoluteFilepath);
+        const dir = path.dirname(absoluteFilepathInDumpDir);
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
         }
@@ -44,38 +45,40 @@ const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
 
         // Before overwriting a file, check it has changed.
         let needsSave = true;
-        if (fs.existsSync(absoluteFilepath)) {
-          const dumpFileContentString = readFile(absoluteFilepath);
+        let oldPublicUrl: string | null = null;
+        const newPublicUrl: string | null =
+          storeFileContentData.data?.content?.url?.path || null;
+        if (fs.existsSync(absoluteFilepathInDumpDir)) {
+          const dumpFileContentString = readFile(absoluteFilepathInDumpDir);
           if (storeFileContentString === dumpFileContentString) {
             // No need to save it, file has not changed.
             needsSave = false;
           } else if (isJson && dumpFileContentString) {
-            // Track outdated public URLs.
-            // Note that status changes (publishing or unpublishing a file) is meaningless for
-            // Data Server. If an unpublished file must be used in an specific way, or even
-            // deleted, that is something outside of the scope of Data Server.
-            const storeFilePublicUrl: string | null =
-              storeFileContentData.data?.content?.url?.path;
-            const dumpFilePublicUrl: string | null = JSON.parse(
-              dumpFileContentString,
-            )?.data?.content?.url?.path;
-            if (dumpFilePublicUrl && dumpFilePublicUrl !== storeFilePublicUrl) {
-              dump.outdatedPublicUrls.add(dumpFilePublicUrl);
-            }
+            // Get old public URL before it changes on disk.
+            oldPublicUrl =
+              JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
+              null;
           }
         }
         if (needsSave) {
           // Save it.
-          fs.writeFileSync(absoluteFilepath, storeFileContentString);
+          fs.writeFileSync(absoluteFilepathInDumpDir, storeFileContentString);
 
           // Mark it as updated.
-          dump.updated.add(relativeFilepath);
+          dump.updated.set(relativeFilepath, {
+            oldPublicUrl,
+            newPublicUrl,
+          });
         }
       } catch (e) {
-        logger.error(`Dump: error writing file "${absoluteFilepath}": ${e}`);
+        logger.error(
+          `Dump: error writing file "${absoluteFilepathInDumpDir}": ${e}`,
+        );
       }
     } else {
-      logger.error(`Dump: data for file "${relativeFilepath}" not found.`);
+      logger.error(
+        `Dump: store data for file "${relativeFilepath}" not found.`,
+      );
     }
   });
 };
@@ -85,19 +88,19 @@ const removeDeletedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
     const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
     try {
       if (fs.existsSync(absoluteFilepath)) {
-        // Track outdated public URLs.
+        // Get old public URLs before they change on disk.
         const dumpContent = getFileContent(absoluteFilepath);
-        const dumpFilePublicUrl: string | null =
+        const oldPublicUrl: string | null =
           dumpContent.json?.data?.content?.url?.path;
-        if (dumpFilePublicUrl) {
-          dump.outdatedPublicUrls.add(dumpFilePublicUrl);
-        }
 
         // Delete it.
         fs.unlinkSync(absoluteFilepath);
 
         // Mark it as deleted.
-        dump.deleted.add(relativeFilepath);
+        dump.deleted.set(relativeFilepath, {
+          oldPublicUrl,
+          newPublicUrl: null,
+        });
       }
     } catch (e) {
       logger.error(`Dump: error deleting file "${absoluteFilepath}": ${e}`);
@@ -140,12 +143,11 @@ export const dumpManager: DumpManager = {
     const diffResetDate = new Date();
     const diff = diffManager.getDiff({ incremental: options.incremental });
 
-    // Diff data is processed and stored in a dump object.
-    const dump: Dump = {
+    // Diff data is processed and transformed into a dump object.
+    let dump: Dump = {
       since: diff.since,
-      updated: new Set(),
-      deleted: new Set(),
-      outdatedPublicUrls: new Set(),
+      updated: new Map(),
+      deleted: new Map(),
     };
 
     if (config.dumpDir) {
@@ -159,12 +161,21 @@ export const dumpManager: DumpManager = {
         // Remove deleted files.
         removeDeletedFiles(diff, dump, dumpDir);
 
+        // Invoke "onDumpCreate" hook.
+        const hookModulesInfo = hookManager.getModuleGroupInfo();
+        hookModulesInfo.forEach(hookInfo => {
+          const hookModule = hookInfo.getModule();
+          if (hookModule.onDumpCreate && config.dumpDir) {
+            dump = hookModule.onDumpCreate({
+              dataDir: config.dataDir,
+              dumpDir: config.dumpDir,
+              store,
+              dump,
+            });
+          }
+        });
         // Merge and store dump metadata if any.
-        if (
-          dump.updated.size ||
-          dump.deleted.size ||
-          dump.outdatedPublicUrls.size
-        ) {
+        if (dump.updated.size || dump.deleted.size) {
           storeDumpMetadata(metadataFilepath, dump, diffResetDate);
 
           logger.info(
@@ -172,7 +183,7 @@ export const dumpManager: DumpManager = {
               (microtime.now() - startDate) / 1000
             } ms. Updated: ${dump.updated.size} / Deleted: ${
               dump.deleted.size
-            } / Outdated public URLs: ${dump.outdatedPublicUrls.size}`,
+            }`,
           );
 
           // Log dump if not empty

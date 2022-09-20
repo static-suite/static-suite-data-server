@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
-import { Json } from '@lib/utils/object/object.types';
+import { queryTagManager } from '@lib/query/queryTagManager';
 import { store } from '../store';
 import { config } from '../../config';
 import { workDirHelper } from '../workDir';
@@ -66,17 +66,6 @@ const setLastDiffDate = (date: Date): void => {
   lastDiffDate = date;
 };
 
-const getUpdatedFilesByQueries = (): string[] => {
-  // todo
-  const updatedFilesByQueries: string[] = [];
-  store.data.forEach((json: Json, relativeFilepath: string) => {
-    if (json.metadata?.includes?.dynamic) {
-      updatedFilesByQueries.push(relativeFilepath);
-    }
-  });
-  return updatedFilesByQueries;
-};
-
 export const diffManager: DiffManager = {
   resetDiff(date: Date): void {
     setLastDiffDate(date);
@@ -120,7 +109,10 @@ export const diffManager: DiffManager = {
       // Add updated files affected by queries only if "updated" or "deleted"
       // contain any changes.
       if (updated.size > 0 || deleted.size > 0) {
-        getUpdatedFilesByQueries().forEach(file => updated.add(file));
+        queryTagManager
+          .getInvalidFilepaths()
+          .forEach(file => updated.add(file));
+        queryTagManager.resetInvalidatedTags();
       }
     } else {
       // If no sinceDate is passed, return all files

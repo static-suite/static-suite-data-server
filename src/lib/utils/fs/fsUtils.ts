@@ -26,16 +26,16 @@ export const isJsonFile = (filepath: string): boolean =>
  * @returns The file contents as a string if file is found, or null otherwise.
  */
 export const readFile = (filePath: string): string | null => {
-  let contents = null;
+  let content = null;
   try {
-    contents = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+    content = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
   } catch (error) {
-    // When an error is thrown, contents is undefined, so ensure
+    // When an error is thrown, content is undefined, so ensure
     // it is converted to null.
-    contents = null;
+    content = null;
     logger.error(`Error reading file "${filePath}": ${error}`);
   }
-  return contents;
+  return content;
 };
 
 /**

@@ -17,9 +17,9 @@ export type QueryRunner = {
    * It logs an error and throws an exception if any problem occurs during the
    * query execution.
    *
-   * @param queryId - Query ID (filename without extension and suffix) of the query
-   * to be executed. @see {@link ModuleInfo#id | Definition of a module ID}
-   * @param args - Optional object with query arguments.
+   * @param queryDefinition - An URL containing a query ID (filename without extension
+   * and suffix) of the query to be executed, plus and optional query string with arguments.
+   * @see {@link ModuleInfo#id | Definition of a module ID}
    *
    * @returns The result of the query as a JSON object with data and metadata keys,
    * or an error response if some validation is not met.
@@ -41,10 +41,7 @@ export type QueryRunner = {
   * @throws
    * Exception thrown if any problem occurs during the query execution.
    */
-  run(
-    queryId: string,
-    args: QueryArgs,
-  ): QuerySuccessfulResponse | QueryErrorResponse;
+  run(queryDefinition: string): QuerySuccessfulResponse | QueryErrorResponse;
 
   /**
    * Gets number of executed queries.
@@ -89,6 +86,11 @@ export type QueryModuleResult = {
    * Optional flag that tells whether this result can be cached or not.
    */
   cacheable?: boolean;
+
+  /**
+   * A list of tags to get this query invalidated.
+   */
+  tags?: string[];
 };
 
 /**
@@ -139,6 +141,11 @@ export type QuerySuccessfulResponse = {
      * Tells wether the query results comes from a miss or hit.
      */
     cache: CacheStatus;
+
+    /**
+     * A list of tags to get this query invalidated.
+     */
+    tags?: string[];
   };
 };
 
@@ -150,10 +157,10 @@ export type QueryModule = {
    * The handler that executes a query.
    *
    * @remarks
-   * It receives the store data and a set of arguments, executes the query
+   * It receives the store and a set of arguments, executes the query
    * and returns its results.
    *
-   * @param options - An object with options for the query: data and args
+   * @param options - An object with options for the query: store and args
    */
   default(options: {
     /**
@@ -163,6 +170,7 @@ export type QueryModule = {
     args: QueryArgs;
   }): QueryModuleResult;
 };
+
 /**
  * An error response returned after executing a query.
  *
@@ -189,3 +197,35 @@ export const isQueryErrorResponse = (
   queryResponse: QuerySuccessfulResponse | QueryErrorResponse,
 ): queryResponse is QueryErrorResponse =>
   (queryResponse as QueryErrorResponse).error !== undefined;
+
+export type QueryTagManager = {
+  /**
+   * Marks query items with any of the specified tags as invalid.
+   *
+   * @param tags - The list of tags for which to invalidate query items.
+   */
+  invalidateTags(tags: string[]): void;
+
+  /**
+   * Resets the list of invalidated tags once consumed.
+   */
+  resetInvalidatedTags(): void;
+
+  /**
+   * Adds a list of query tags to a query, or removes it if tags are empty.
+   *
+   * @param queryDefinition - The string containing the query id and its arguments.
+   * @param tags - The list of tags for which to invalidate query items.
+   */
+  setTagsToQuery(
+    queryDefinition: string,
+    tags: Set<string> | null | undefined,
+  ): void;
+
+  /**
+   * Gets a list of filepaths which contain an invalidated query.
+   *
+   * @returns A list of filepaths which contain an invalidated query.
+   */
+  getInvalidFilepaths(): string[];
+};

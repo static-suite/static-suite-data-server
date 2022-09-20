@@ -11,6 +11,7 @@ const fs_1 = require("@lib/utils/fs");
 const logger_1 = require("@lib/utils/logger");
 const workDir_1 = require("@lib/store/workDir");
 const cache_1 = require("@lib/utils/cache");
+const queryTagManager_1 = require("@lib/query/queryTagManager");
 const storeManager_1 = require("../storeManager");
 const hook_1 = require("../hook");
 exports.dataDirManager = {
@@ -27,6 +28,7 @@ exports.dataDirManager = {
                 hookModule.onStoreLoadStart({
                     dataDir: config_1.config.dataDir,
                     store: store_1.store,
+                    queryTagManager: queryTagManager_1.queryTagManager,
                 });
             }
         });
@@ -82,6 +84,7 @@ exports.dataDirManager = {
                 hookModule.onStoreLoadDone({
                     dataDir: config_1.config.dataDir,
                     store: store_1.store,
+                    queryTagManager: queryTagManager_1.queryTagManager,
                 });
             }
         });

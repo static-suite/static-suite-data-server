@@ -1,6 +1,6 @@
+import { QueryTagManager } from '@lib/query/query.types';
 import { Store } from '@lib/store/store.types';
 import { FileType } from '@lib/utils/fs/fs.types';
-import { Tracker } from '../diff/tracker.types';
 import { Dump } from '../dump/dumpManager.types';
 /**
  * Options passed to a hook.
@@ -19,6 +19,10 @@ export interface BaseHookOptions {
      * The data store.
      */
     store: Store;
+    /**
+     * The query tag manager.
+     */
+    queryTagManager: QueryTagManager;
 }
 /**
  * Options passed to a file hook.
@@ -61,10 +65,6 @@ export interface OnDumpHookOptions {
      * The data store.
      */
     store: Store;
-    /**
-     * The diff tracker.
-     */
-    tracker: Tracker;
     /**
      * The dump to be processed.
      */

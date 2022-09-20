@@ -9,6 +9,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const microtime_1 = __importDefault(require("microtime"));
 const logger_1 = require("@lib/utils/logger");
+const queryTagManager_1 = require("@lib/query/queryTagManager");
 const store_1 = require("../store");
 const config_1 = require("../../config");
 const workDir_1 = require("../workDir");
@@ -61,16 +62,6 @@ const setLastDiffDate = (date) => {
     }
     lastDiffDate = date;
 };
-const getUpdatedFilesByQueries = () => {
-    // todo
-    const updatedFilesByQueries = [];
-    store_1.store.data.forEach((json, relativeFilepath) => {
-        if (json.metadata?.includes?.dynamic) {
-            updatedFilesByQueries.push(relativeFilepath);
-        }
-    });
-    return updatedFilesByQueries;
-};
 exports.diffManager = {
     resetDiff(date) {
         setLastDiffDate(date);
@@ -108,7 +99,10 @@ exports.diffManager = {
             // Add updated files affected by queries only if "updated" or "deleted"
             // contain any changes.
             if (updated.size > 0 || deleted.size > 0) {
-                getUpdatedFilesByQueries().forEach(file => updated.add(file));
+                queryTagManager_1.queryTagManager
+                    .getInvalidFilepaths()
+                    .forEach(file => updated.add(file));
+                queryTagManager_1.queryTagManager.resetInvalidatedTags();
             }
         }
         else {

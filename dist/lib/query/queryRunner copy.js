@@ -9,10 +9,8 @@ const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
-const string_1 = require("@lib/utils/string");
 const queryManager_1 = require("./queryManager");
 const query_types_1 = require("./query.types");
-const queryTagManager_1 = require("./queryTagManager");
 let count = 0;
 /**
  * Creates a QueryErrorResponse object ready to be returned to clients.
@@ -28,14 +26,10 @@ const createErrorResponse = (message) => {
     return { error: message };
 };
 exports.queryRunner = {
-    run: (queryDefinition) => {
+    run: (queryId, args) => {
         if (!config_1.config.queryDir) {
             return createErrorResponse('No query directory ("queryDir") configured');
         }
-        const [queryId, queryArgsString] = queryDefinition.split('?');
-        const queryArgs = queryArgsString
-            ? (0, string_1.parseURLSearchParams)(queryArgsString)
-            : {};
         if (!queryId) {
             return createErrorResponse('No query ID received');
         }
@@ -45,8 +39,9 @@ exports.queryRunner = {
         }
         count += 1;
         const startDate = microtime_1.default.now();
+        const argsString = JSON.stringify(args);
         // Implement a query cache.
-        const cacheId = queryDefinition;
+        const cacheId = `${queryId}--${argsString}`;
         let isCacheMiss = false;
         const queryCache = cache_1.cache.bin('query');
         let queryResult = queryCache.get(cacheId);
@@ -55,25 +50,21 @@ exports.queryRunner = {
                 const queryModule = queryModuleInfo.getModule();
                 const queryResponse = queryModule.default({
                     store: store_1.store,
-                    args: queryArgs,
+                    args,
                 });
                 queryResult = {
                     result: queryResponse?.result,
                     contentType: queryResponse?.contentType || 'application/json',
+                    tags: queryResponse?.tags,
                 };
                 isCacheMiss = true;
                 if (queryResponse?.cacheable !== false) {
                     queryCache.set(cacheId, queryResult);
                 }
-                // Set tags for this query.
-                const queryTags = queryResponse.tags && queryResponse.tags?.length > 0
-                    ? new Set(queryResponse.tags)
-                    : null;
-                queryTagManager_1.queryTagManager.setTagsToQuery(queryDefinition, queryTags);
             }
             catch (e) {
                 // Log error and rethrow.
-                logger_1.logger.error(`#${count} Query error: "${queryId}", args "${queryArgsString}": ${e}`);
+                logger_1.logger.error(`#${count} Query error: "${queryId}", args "${argsString}": ${e}`);
                 throw e;
             }
         }
@@ -84,7 +75,7 @@ exports.queryRunner = {
                 contentType: queryResult?.contentType || 'application/json',
                 execTimeMs,
                 cache: isCacheMiss ? query_types_1.CacheStatus.MISS : query_types_1.CacheStatus.HIT,
-                tags: queryResult.tags ? Array.from(queryResult.tags) : undefined,
+                tags: queryResult.tags,
             },
         };
         /*     logger.debug(

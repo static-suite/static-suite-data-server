@@ -4,6 +4,7 @@ exports.storeManager = exports.isHookWatcherEnabled = void 0;
 const config_1 = require("@lib/config");
 const fs_1 = require("@lib/utils/fs");
 const cache_1 = require("@lib/utils/cache");
+const queryTagManager_1 = require("@lib/query/queryTagManager");
 const hook_1 = require("./hook");
 const _1 = require(".");
 const include_1 = require("./include");
@@ -54,6 +55,7 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
                 relativeFilepath,
                 fileContent,
                 store: _1.store,
+                queryTagManager: queryTagManager_1.queryTagManager,
             });
         }
     });
@@ -118,6 +120,7 @@ exports.storeManager = {
                     relativeFilepath,
                     fileContent,
                     store: _1.store,
+                    queryTagManager: queryTagManager_1.queryTagManager,
                 });
             }
         });
@@ -130,11 +133,20 @@ exports.storeManager = {
             // Delete file contents from cache.
             fileCache.delete(`${config_1.config.dataDir}/${relativeFilepath}`);
         }
+        // Get stored data before removing it from store.
+        const storedData = _1.store.data.get(relativeFilepath);
+        // Remove data from URL index.
+        const url = storedData.data?.content?.url?.path;
+        if (url) {
+            _1.store.index.url.delete(url);
+        }
+        // Remove data from UUID index.
+        const uuid = storedData.data?.content?.uuid;
+        const langcode = storedData.data?.content?.langcode?.value;
+        if (uuid && langcode) {
+            _1.store.index.uuid.get(langcode)?.delete(uuid);
+        }
         // Delete file contents from store.
-        const data = _1.store.data.get(relativeFilepath);
-        const uuid = data.data?.content?.uuid;
-        const langcode = data.data?.content?.langcode?.value;
-        _1.store.index.url.get(langcode).delete(uuid);
         _1.store.data.delete(relativeFilepath);
         // Invoke "store remove" hook.
         const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
@@ -145,6 +157,8 @@ exports.storeManager = {
                     dataDir: config_1.config.dataDir,
                     relativeFilepath,
                     store: _1.store,
+                    queryTagManager: queryTagManager_1.queryTagManager,
+                    fileContent: storedData,
                 });
             }
         });
@@ -166,6 +180,7 @@ exports.storeManager = {
                     relativeFilepath,
                     fileContent,
                     store: _1.store,
+                    queryTagManager: queryTagManager_1.queryTagManager,
                 });
             }
         });

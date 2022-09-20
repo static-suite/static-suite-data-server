@@ -37,23 +37,20 @@ export type Dump = {
   since: number;
 
   /**
-   * A list of updated files.
+   * A list of updated files, keyed by file path. Its value is an object with two keys,
+   * old public URL and new public URL (the value stored at data.content.url.path) before
+   * and after updating file in dumpDir.
    */
-  updated: Set<string>;
-  // updated: Map<string, string>;
+  updated: Map<
+    string,
+    { oldPublicUrl: string | null; newPublicUrl: string | null }
+  >;
 
   /**
-   * A list of deleted files.
+   * A list of deleted files, keyed by file path. Its value is an object with two keys,
+   * old public URL and new public URL (the value stored at data.content.url.path) before
+   * and after updating file in dumpDir. New public URL is always null, since file is
+   * deleted. We keep the same structure for both updated and deleted items.
    */
-  deleted: Set<string>;
-
-  /**
-   * A list of outdated public URLs.
-   *
-   * Files usually specify the public URL that should be created from that source file.
-   * That information is located at data.content.url.path. When that URL changes between
-   * dumps, outdated URLs must be deleted. This set keeps a list of all outdated URLs that
-   * must be deleted.
-   */
-  outdatedPublicUrls: Set<string>;
+  deleted: Map<string, { oldPublicUrl: string | null; newPublicUrl: null }>;
 };

@@ -6,7 +6,6 @@ const dataServer_types_1 = require("@lib/dataServer.types");
 const query_1 = require("@lib/query");
 const query_types_1 = require("@lib/query/query.types");
 const object_1 = require("@lib/utils/object");
-const string_1 = require("@lib/utils/string");
 const aliasWithoutTypeIncludeParser_1 = require("./types/aliasWithoutTypeIncludeParser");
 /**
  * Parses query includes.
@@ -25,11 +24,7 @@ const queryIncludeParser = ({ host, includePath, }) => {
     const proxyHandler = {
         get: (target, prop) => {
             if (prop === 'data') {
-                const [queryId, rawQueryArgs] = queryDefinition.split('?');
-                const queryArgs = rawQueryArgs
-                    ? (0, string_1.parseURLSearchParams)(rawQueryArgs)
-                    : {};
-                const queryResponse = query_1.queryRunner.run(queryId, queryArgs);
+                const queryResponse = query_1.queryRunner.run(queryDefinition);
                 if ((0, query_types_1.isQueryErrorResponse)(queryResponse)) {
                     return config_1.config.runMode === dataServer_types_1.RunMode.DEV
                         ? `${queryResponse.error} (message visible only in run mode DEV)`

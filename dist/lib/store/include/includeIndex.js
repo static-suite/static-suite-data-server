@@ -26,9 +26,7 @@ const getRecursiveParents = (relativeFilepath, parentStack) => {
 exports.includeIndex = {
     set: (relativeFilepath, fileContents) => {
         const staticIncludes = fileContents?.metadata?.includes?.static;
-        // console.log('includeIndex.set() staticIncludes', staticIncludes);
         if (staticIncludes) {
-            // console.log('includeIndex.set() INNNNNNN', relativeFilepath);
             Object.values(staticIncludes).forEach((includeRelativeFilepath) => {
                 const includeMap = store_1.store.index.include.static.get(includeRelativeFilepath) ||
                     store_1.store.index.include.static
@@ -52,7 +50,6 @@ exports.includeIndex = {
                         .get(includeRelativeFilepath);
                 if (includeMap) {
                     includeMap.delete(relativeFilepath);
-                    // console.log('includeIndex.remove()', relativeFilepath);
                     if (includeMap.size === 0) {
                         store_1.store.index.include.static.delete(includeRelativeFilepath);
                     }

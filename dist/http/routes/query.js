@@ -12,9 +12,8 @@ const queryIndex = (req, res) => {
 exports.queryIndex = queryIndex;
 const runQuery = (req, res) => {
     dataDir_1.dataDirManager.update();
-    const args = req.query;
-    const queryId = req.params[0];
-    const response = query_1.queryRunner.run(queryId, args);
+    const queryDefinition = req.originalUrl.replace(/^\/query\//, '');
+    const response = query_1.queryRunner.run(queryDefinition);
     res.status(200);
     res.set('application/json');
     res.send(response);

@@ -32,10 +32,7 @@ describe('QueryRunner test', () => {
   describe('run', () => {
     it('Returns query data', () => {
       cache.bin('query').clear();
-      const queryResponse = queryRunner.run('query1', {
-        x: 'x',
-        y: '33',
-      });
+      const queryResponse = queryRunner.run('query1?x=x&y=33');
       const data =
         !isQueryErrorResponse(queryResponse) && queryResponse.data[0];
       expect(data.id).toEqual('33');
@@ -43,10 +40,7 @@ describe('QueryRunner test', () => {
     });
 
     it('Returns query data from cache', () => {
-      const queryResponse = queryRunner.run('query1', {
-        x: 'x',
-        y: '33',
-      });
+      const queryResponse = queryRunner.run('query1?x=x&y=33');
       const response = !isQueryErrorResponse(queryResponse)
         ? queryResponse
         : null;
@@ -57,7 +51,7 @@ describe('QueryRunner test', () => {
     it('Logs error when query fails', () => {
       logger.error = jest.fn();
       try {
-        queryRunner.run('error', {});
+        queryRunner.run('error');
       } catch (e) {
         // none
       }
