@@ -59,6 +59,12 @@ const storeUpdatedFiles = (diff, dump, dumpDir) => {
                         oldPublicUrl =
                             JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
                                 null;
+                        /*
+                        fs.renameSync(
+                          absoluteFilepathInDumpDir,
+                          absoluteFilepathInDumpDir.replace('.json', '.2.json'),
+                        );
+                        */
                     }
                 }
                 if (needsSave) {
@@ -116,7 +122,7 @@ const storeDumpMetadata = (metadataFilepath, dump, diffResetDate) => {
         fs_1.default.writeFileSync(metadataFilepath, currentDumpMetadataString);
         // Resetting the diff must happen when dump metadata is successfully
         // stored into disk.
-        diffManager_1.diffManager.resetDiff(diffResetDate);
+        diffManager_1.diffManager.reset(diffResetDate);
     }
     catch (e) {
         logger_1.logger.error(`Dump: error saving dump metadata to "${metadataFilepath}": ${e}`);
@@ -143,29 +149,22 @@ exports.dumpManager = {
                 // Remove deleted files.
                 removeDeletedFiles(diff, dump, dumpDir);
                 // Invoke "onDumpCreate" hook.
-                const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
-                hookModulesInfo.forEach(hookInfo => {
-                    const hookModule = hookInfo.getModule();
-                    if (hookModule.onDumpCreate && config_1.config.dumpDir) {
-                        dump = hookModule.onDumpCreate({
-                            dataDir: config_1.config.dataDir,
-                            dumpDir: config_1.config.dumpDir,
-                            store: store_1.store,
-                            dump,
-                        });
-                    }
-                });
+                dump = hook_1.hookManager.invokeOnDumpCreate(dump);
+                const execTimeMs = (microtime_1.default.now() - startDate) / 1000;
+                dump.execTimeMs = execTimeMs;
                 // Merge and store dump metadata if any.
                 if (dump.updated.size || dump.deleted.size) {
                     storeDumpMetadata(metadataFilepath, dump, diffResetDate);
-                    logger_1.logger.info(`Dump created in ${(microtime_1.default.now() - startDate) / 1000} ms. Updated: ${dump.updated.size} / Deleted: ${dump.deleted.size}`);
+                    logger_1.logger.info(`Dump created in ${execTimeMs} ms. Updated: ${dump.updated.size} / Deleted: ${dump.deleted.size}`);
                     // Log dump if not empty
                     if (dump.updated.size || dump.deleted.size) {
                         logger_1.logger.debug(`Dump: "${JSON.stringify((0, object_1.jsonify)(dump))}"`);
                     }
                 }
                 else {
-                    logger_1.logger.info('Dump done without changes stored into disk.');
+                    // Resetting the diff must happen when no other operations are pending.
+                    diffManager_1.diffManager.reset(diffResetDate);
+                    logger_1.logger.info(`Dump done in ${execTimeMs} ms without changes stored into disk.`);
                 }
             }
             else {

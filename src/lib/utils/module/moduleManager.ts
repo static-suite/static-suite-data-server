@@ -2,6 +2,8 @@
 /* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
 import { logger } from '@lib/utils/logger';
+import { config } from '@lib/config';
+import { store } from '@lib/store';
 
 /**
  * Internal module cache.
@@ -78,6 +80,9 @@ export const moduleManager = {
     } catch (e) {
       logger.error(`Module "${resolvedModulePath}" not found.`);
       throw e;
+    }
+    if (internalModuleCache[resolvedModulePath].onModuleLoad) {
+      internalModuleCache[resolvedModulePath].onModuleLoad({ config, store });
     }
     logger.debug(`Module ${resolvedModulePath} successfully loaded.`);
     return internalModuleCache[resolvedModulePath];

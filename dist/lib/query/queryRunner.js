@@ -10,9 +10,9 @@ const store_1 = require("@lib/store");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
 const string_1 = require("@lib/utils/string");
+const dependencyTagger_1 = require("@lib/store/dependency/dependencyTagger");
 const queryManager_1 = require("./queryManager");
 const query_types_1 = require("./query.types");
-const queryTagManager_1 = require("./queryTagManager");
 let count = 0;
 /**
  * Creates a QueryErrorResponse object ready to be returned to clients.
@@ -67,9 +67,9 @@ exports.queryRunner = {
                 }
                 // Set tags for this query.
                 const queryTags = queryResponse.tags && queryResponse.tags?.length > 0
-                    ? new Set(queryResponse.tags)
-                    : null;
-                queryTagManager_1.queryTagManager.setTagsToQuery(queryDefinition, queryTags);
+                    ? queryResponse.tags
+                    : ['*'];
+                dependencyTagger_1.dependencyTagger.setDependency(queryDefinition, queryTags);
             }
             catch (e) {
                 // Log error and rethrow.

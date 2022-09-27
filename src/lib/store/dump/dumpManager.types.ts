@@ -53,4 +53,9 @@ export type Dump = {
    * deleted. We keep the same structure for both updated and deleted items.
    */
   deleted: Map<string, { oldPublicUrl: string | null; newPublicUrl: null }>;
+
+  /**
+   * Optional execution time taken by the dump, in milliseconds.
+   */
+  execTimeMs?: number;
 };

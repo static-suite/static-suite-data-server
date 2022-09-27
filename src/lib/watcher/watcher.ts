@@ -48,7 +48,7 @@ export const initWatcher = (): void => {
     // data directory so hooks can be reapplied.
     if (config.hookDir && filePath.startsWith(config.hookDir)) {
       hookManager.reset();
-      dataDirManager.load({ incremental: true });
+      dataDirManager.load();
       logger.debug('Re-building store done');
     }
 

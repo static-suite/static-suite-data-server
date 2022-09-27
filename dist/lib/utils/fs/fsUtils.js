@@ -9,7 +9,6 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const chokidar_1 = __importDefault(require("chokidar"));
 const logger_1 = require("@lib/utils/logger");
 const string_1 = require("@lib/utils/string");
-const cache_1 = require("../cache");
 /**
  * Tells whether a path is JSON or not.
  *
@@ -51,20 +50,8 @@ exports.readFile = readFile;
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-const getFileContent = (filepath, options = {
-    readFileFromCache: false,
-    isFileCacheEnabled: false,
-}) => {
-    let raw;
-    if (options.isFileCacheEnabled && options.readFileFromCache) {
-        raw = cache_1.cache.bin('file').get(filepath);
-    }
-    if (!raw) {
-        raw = (0, exports.readFile)(filepath);
-        if (options.isFileCacheEnabled) {
-            cache_1.cache.bin('file').set(filepath, raw);
-        }
-    }
+const getFileContent = (filepath) => {
+    const raw = (0, exports.readFile)(filepath);
     let json = null;
     if (raw && (0, exports.isJsonFile)(filepath)) {
         json = (0, string_1.parseJsonString)(raw);

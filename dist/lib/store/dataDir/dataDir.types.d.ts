@@ -1,3 +1,4 @@
+import { ChangedFiles } from '../workDir/workDir.types';
 /**
  * A manager for the data dir from Static Suite.
  */
@@ -5,21 +6,8 @@ export declare type DataDirManager = {
     /**
      * Loads all files inside the data directory into the store.
      *
-     * @remarks
-     * By default, it loads all files from disc and reads their contents, unless
-     * options.incremental is set to true. In such case, it ask the work dir helper
-     * for updated files, and reads data from disc only for those updated files.
-     *
-     * The only drawback of this approach is that data can be updated without
-     * informing the work dir system (exporting data from Drupal using a batch process).
-     * For such cases, Data Server should be completely restarted, or this function
-     * should be called with `options.incremental = false`.
-     *
-     * @param options - Configuration options
      */
-    load(options?: {
-        incremental: boolean;
-    }): void;
+    load(): void;
     /**
      * Updates the store with changed files since last sync.
      *
@@ -28,9 +16,9 @@ export declare type DataDirManager = {
      * update() checks if something has changed, not doing anything if nothing
      * has changed. Thus, this method is way faster than load().
      *
-     * @returns The store manager.
+     * @returns A group of changed files in Static Suite's data dir.
      */
-    update(): void;
+    update(): ChangedFiles;
     /**
      * Get date of last modification of data directory.
      *

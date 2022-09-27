@@ -26,9 +26,7 @@ const initBin = (binId) => {
  */
 exports.cache = {
     bin: (binId) => {
-        return exports.cache.has(binId)
-            ? data.get(binId)
-            : initBin(binId);
+        return data.get(binId) || initBin(binId);
     },
     /**
      * Returns a boolean indicating whether a cache bin
@@ -44,4 +42,12 @@ exports.cache = {
      * @returns An array of cache bin keys.
      */
     keys: () => Array.from(data.keys()),
+    /**
+     * Gets an array of keys of all available cache bins.
+     *
+     * @returns An array of cache bin keys.
+     */
+    clear: () => {
+        data.clear();
+    },
 };

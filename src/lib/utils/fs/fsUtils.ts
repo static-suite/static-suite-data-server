@@ -3,8 +3,7 @@ import fg, { Options as fastGlobOptions } from 'fast-glob';
 import chokidar from 'chokidar';
 import { logger } from '@lib/utils/logger';
 import { parseJsonString } from '@lib/utils/string';
-import { FileType, GetFileContentOptions } from './fs.types';
-import { cache } from '../cache';
+import { FileType } from './fs.types';
 
 /**
  * Tells whether a path is JSON or not.
@@ -47,23 +46,8 @@ export const readFile = (filePath: string): string | null => {
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-export const getFileContent = (
-  filepath: string,
-  options: GetFileContentOptions = {
-    readFileFromCache: false,
-    isFileCacheEnabled: false,
-  },
-): FileType => {
-  let raw: string | null | undefined;
-  if (options.isFileCacheEnabled && options.readFileFromCache) {
-    raw = cache.bin<string>('file').get(filepath);
-  }
-  if (!raw) {
-    raw = readFile(filepath);
-    if (options.isFileCacheEnabled) {
-      cache.bin('file').set(filepath, raw);
-    }
-  }
+export const getFileContent = (filepath: string): FileType => {
+  const raw = readFile(filepath);
   let json = null;
   if (raw && isJsonFile(filepath)) {
     json = parseJsonString(raw);

@@ -1,35 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeManager = exports.isHookWatcherEnabled = void 0;
+exports.storeManager = void 0;
 const config_1 = require("@lib/config");
 const fs_1 = require("@lib/utils/fs");
-const cache_1 = require("@lib/utils/cache");
-const queryTagManager_1 = require("@lib/query/queryTagManager");
 const hook_1 = require("./hook");
 const _1 = require(".");
 const include_1 = require("./include");
-const dataServer_types_1 = require("../dataServer.types");
-const tracker_1 = require("./diff/tracker");
-const fileCache = cache_1.cache.bin('file');
-/**
- * Tells whether a watcher for hooks is enabled.
- *
- * @remarks
- * Files from data dir are not read again once data dir is loaded
- * during bootstrap, except when:
- * 1) A file is updated: only that file is read form data dir.
- * 2) A watcher detects a hook change: all files in data dir are read again.
- *
- * For the second case, we want to avoid having to actually read all
- * files from disk if they have not changed. To do so, there is a
- * file cache that caches the file raw contents. That cache uses a lot of
- * memory, and should only be enabled when run mode is DEV (hence, a watcher
- * is enabled) and a hook directory is defined.
- *
- * @returns True if hook watcher is enabled.
- */
-const isHookWatcherEnabled = () => config_1.config.runMode === dataServer_types_1.RunMode.DEV && !!config_1.config.hookDir;
-exports.isHookWatcherEnabled = isHookWatcherEnabled;
+const dependencyFileHelper_1 = require("./dependency/dependencyFileHelper");
+const dependencyTagger_1 = require("./dependency/dependencyTagger");
 /**
  * Sets a file into the store, regardless of being already added or not.
  *
@@ -38,26 +16,13 @@ exports.isHookWatcherEnabled = isHookWatcherEnabled;
  *
  * @returns Object with two properties, "raw" and "json".
  */
-const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false }) => {
-    const hookWatcherEnabled = (0, exports.isHookWatcherEnabled)();
+const setFileIntoStore = (relativeFilepath) => {
     const absoluteFilePath = `${config_1.config.dataDir}/${relativeFilepath}`;
-    let fileContent = (0, fs_1.getFileContent)(absoluteFilePath, {
-        readFileFromCache: options.readFileFromCache,
-        isFileCacheEnabled: hookWatcherEnabled,
-    });
+    let fileContent = (0, fs_1.getFileContent)(absoluteFilePath);
     // Invoke "process file" hook.
-    const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
-    hookModulesInfo.forEach(hookInfo => {
-        const hookModule = hookInfo.getModule();
-        if (hookModule.onProcessFile) {
-            fileContent = hookModule.onProcessFile({
-                dataDir: config_1.config.dataDir,
-                relativeFilepath,
-                fileContent,
-                store: _1.store,
-                queryTagManager: queryTagManager_1.queryTagManager,
-            });
-        }
+    fileContent = hook_1.hookManager.invokeOnProcessFile({
+        relativeFilepath,
+        fileContent,
     });
     const dataToStore = fileContent.json || fileContent.raw;
     if (fileContent.json) {
@@ -65,6 +30,8 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
         const previousData = _1.store.data.get(relativeFilepath);
         if (dataToStore && typeof dataToStore === 'object') {
             if (previousData) {
+                // Delete include dependencies.
+                dependencyFileHelper_1.dependencyIncludeHelper.deleteIncludeDependencies(relativeFilepath, dataToStore);
                 // Remove previous data from URL index.
                 const url = previousData.data?.content?.url?.path;
                 if (url) {
@@ -76,8 +43,6 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
                 if (uuid && langcode) {
                     _1.store.index.uuid.get(langcode)?.delete(uuid);
                 }
-                // Remove previous include data from includeIndex.
-                include_1.includeIndex.remove(relativeFilepath, previousData);
                 // Delete all referenced object properties
                 Object.keys(previousData).forEach(key => {
                     delete previousData[key];
@@ -100,39 +65,41 @@ const setFileIntoStore = (relativeFilepath, options = { readFileFromCache: false
             if (url) {
                 _1.store.index.url.set(url, dataToStore);
             }
-            // Add data to include index.
-            include_1.includeIndex.set(relativeFilepath, dataToStore);
+            // Add include dependencies.
+            dependencyFileHelper_1.dependencyIncludeHelper.setIncludeDependencies(relativeFilepath, dataToStore);
         }
     }
     _1.store.data.set(relativeFilepath, dataToStore);
+    // Remove this path from store.deleted
+    _1.store.deleted.delete(relativeFilepath);
     return fileContent;
 };
 exports.storeManager = {
-    add: (relativeFilepath, options = { readFileFromCache: false }) => {
-        const fileContent = setFileIntoStore(relativeFilepath, options);
+    add: (relativeFilepath) => {
+        const fileContent = setFileIntoStore(relativeFilepath);
         // Invoke "store add" hook.
-        const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
-        hookModulesInfo.forEach(hookInfo => {
-            const hookModule = hookInfo.getModule();
-            if (hookModule.onStoreItemAdd) {
-                hookModule.onStoreItemAdd({
-                    dataDir: config_1.config.dataDir,
-                    relativeFilepath,
-                    fileContent,
-                    store: _1.store,
-                    queryTagManager: queryTagManager_1.queryTagManager,
-                });
-            }
+        hook_1.hookManager.invokeOnStoreItemAdd({ relativeFilepath, fileContent });
+        return exports.storeManager;
+    },
+    update: (relativeFilepath) => {
+        const storedData = _1.store.data.get(relativeFilepath);
+        if (storedData) {
+            hook_1.hookManager.invokeOnStoreItemBeforeUpdate({
+                relativeFilepath,
+                fileContent: storedData,
+            });
+        }
+        const fileContent = setFileIntoStore(relativeFilepath);
+        // Invalidate this item.
+        dependencyTagger_1.dependencyTagger.invalidateTags([relativeFilepath]);
+        // Invoke "store update" hook.
+        hook_1.hookManager.invokeOnStoreItemAfterUpdate({
+            relativeFilepath,
+            fileContent,
         });
         return exports.storeManager;
     },
     remove: (relativeFilepath) => {
-        // Track down file before it changes.
-        tracker_1.tracker.trackChangedFile(relativeFilepath);
-        if ((0, exports.isHookWatcherEnabled)()) {
-            // Delete file contents from cache.
-            fileCache.delete(`${config_1.config.dataDir}/${relativeFilepath}`);
-        }
         // Get stored data before removing it from store.
         const storedData = _1.store.data.get(relativeFilepath);
         // Remove data from URL index.
@@ -148,44 +115,15 @@ exports.storeManager = {
         }
         // Delete file contents from store.
         _1.store.data.delete(relativeFilepath);
+        // Save its path in store.deleted for future reference.
+        _1.store.deleted.add(relativeFilepath);
+        // Invalidate this item.
+        dependencyTagger_1.dependencyTagger.invalidateTags([relativeFilepath]);
         // Invoke "store remove" hook.
-        const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
-        hookModulesInfo.forEach(hookInfo => {
-            const hookModule = hookInfo.getModule();
-            if (hookModule.onStoreItemRemove) {
-                hookModule.onStoreItemRemove({
-                    dataDir: config_1.config.dataDir,
-                    relativeFilepath,
-                    store: _1.store,
-                    queryTagManager: queryTagManager_1.queryTagManager,
-                    fileContent: storedData,
-                });
-            }
+        hook_1.hookManager.invokeOnStoreItemDelete({
+            relativeFilepath,
+            fileContent: storedData,
         });
-        return exports.storeManager;
-    },
-    update: (relativeFilepath) => {
-        // Track down file before it changes.
-        tracker_1.tracker.trackChangedFile(relativeFilepath);
-        const fileContent = setFileIntoStore(relativeFilepath, {
-            readFileFromCache: false,
-        });
-        // Invoke "store update" hook.
-        const hookModulesInfo = hook_1.hookManager.getModuleGroupInfo();
-        hookModulesInfo.forEach(hookInfo => {
-            const hookModule = hookInfo.getModule();
-            if (hookModule.onStoreItemUpdate) {
-                hookModule.onStoreItemUpdate({
-                    dataDir: config_1.config.dataDir,
-                    relativeFilepath,
-                    fileContent,
-                    store: _1.store,
-                    queryTagManager: queryTagManager_1.queryTagManager,
-                });
-            }
-        });
-        // Track down file after it changes.
-        tracker_1.tracker.trackChangedFile(relativeFilepath);
         return exports.storeManager;
     },
     parseIncludes: () => {
@@ -202,6 +140,10 @@ exports.storeManager = {
     parseSingleFileIncludes: (relativeFilepath, fileContent) => {
         include_1.includeParser.static(relativeFilepath, fileContent);
         include_1.includeParser.dynamic(fileContent);
+        return exports.storeManager;
+    },
+    reset: () => {
+        (0, _1.resetStore)();
         return exports.storeManager;
     },
 };

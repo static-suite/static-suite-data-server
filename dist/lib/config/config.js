@@ -117,6 +117,6 @@ const setConfig = (options) => {
             });
         }
     });
-    return config;
+    return Object.freeze(config);
 };
 exports.setConfig = setConfig;

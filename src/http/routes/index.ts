@@ -5,10 +5,8 @@ import { cacheIndex, cacheClear } from './cache';
 import {
   statusBasic,
   statusDiff,
-  statusDiffTracker,
   statusIndex,
   statusIndexCustom,
-  statusIndexInclude,
   statusIndexUrl,
   statusIndexUuid,
 } from './status';
@@ -30,9 +28,7 @@ routes.get('/docs', docs);
 routes.get('/status/basic', statusBasic);
 routes.get('/status/index/url', statusIndexUrl);
 routes.get('/status/index/uuid', statusIndexUuid);
-routes.get('/status/index/include', statusIndexInclude);
 routes.get('/status/index/custom', statusIndexCustom);
-routes.get('/status/diff/tracker', statusDiffTracker);
 routes.get('/status/diff', statusDiff);
 routes.get('/status', statusIndex);
 routes.get('/query', queryIndex);

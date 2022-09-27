@@ -14,9 +14,9 @@ export declare type Tracker = {
      * This function only tracks changed files affected by static includes. There is no need to track
      * intermediate changes in query results, since they are evaluated on demand.
      *
-     * @param file - Relative file path, inside dataDir, to the file to be processed.
+     * @param relativeFilepath - Relative file path, inside dataDir, to the file to be processed.
      */
-    trackChangedFile(file: string): void;
+    trackChangedFile(relativeFilepath: string): void;
     /**
      * Gets the current set of changed files.
      *

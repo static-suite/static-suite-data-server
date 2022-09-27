@@ -48,7 +48,7 @@ const initWatcher = () => {
         // data directory so hooks can be reapplied.
         if (config_1.config.hookDir && filePath.startsWith(config_1.config.hookDir)) {
             hook_1.hookManager.reset();
-            dataDirManager_1.dataDirManager.load({ incremental: true });
+            dataDirManager_1.dataDirManager.load();
             logger_1.logger.debug('Re-building store done');
         }
         // Remove all modules inside the task directory.

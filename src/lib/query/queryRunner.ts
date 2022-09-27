@@ -4,6 +4,7 @@ import { store } from '@lib/store';
 import { logger } from '@lib/utils/logger';
 import { cache } from '@lib/utils/cache';
 import { parseURLSearchParams } from '@lib/utils/string';
+import { dependencyTagger } from '@lib/store/dependency/dependencyTagger';
 import { queryManager } from './queryManager';
 import {
   QueryModuleResult,
@@ -13,7 +14,6 @@ import {
   QuerySuccessfulResponse,
   QueryArgs,
 } from './query.types';
-import { queryTagManager } from './queryTagManager';
 
 let count = 0;
 
@@ -77,9 +77,9 @@ export const queryRunner: QueryRunner = {
         // Set tags for this query.
         const queryTags =
           queryResponse.tags && queryResponse.tags?.length > 0
-            ? new Set(queryResponse.tags)
-            : null;
-        queryTagManager.setTagsToQuery(queryDefinition, queryTags);
+            ? queryResponse.tags
+            : ['*'];
+        dependencyTagger.setDependency(queryDefinition, queryTags);
       } catch (e) {
         // Log error and rethrow.
         logger.error(

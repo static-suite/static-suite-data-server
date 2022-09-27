@@ -21,6 +21,10 @@ export declare type Cache = {
      * @returns An array of cache bin keys.
      */
     keys(): string[];
+    /**
+     * Clears all available cache bins.
+     */
+    clear(): void;
 };
 /**
  * Cache system based on specialized bins.

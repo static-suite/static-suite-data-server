@@ -12,20 +12,20 @@ import {
 // Instantiate the subset cache so it can be accessed faster.
 const subsetCache = cache.bin<StoreSubset>('store-subset');
 
-export const store: Store = {
-  syncDate: null,
-
-  data: new Map<string, any>() as StoreData<string, any>,
-
-  index: {
+const initIndex = () => {
+  return {
     url: new Map<string, any>(),
     uuid: new Map<string, any>(),
-    include: {
-      static: new Map<string, Set<string>>(),
-      dynamic: new Map<string, Set<string>>(),
-    },
     custom: new Map<string, any>(),
-  },
+  };
+};
+
+const initData = () => new Map<string, any>() as StoreData<string, any>;
+export const store: Store = {
+  syncDate: null,
+  data: initData(),
+  deleted: new Set<string>(),
+  index: initIndex(),
 };
 
 store.data.subset = (options: StoreSubsetOptions): StoreSubset => {
@@ -90,4 +90,16 @@ store.data.subset = (options: StoreSubsetOptions): StoreSubset => {
   }
 
   return subset;
+};
+
+/**
+ * Resets store and deletes all loaded data.
+ */
+export const resetStore = (): void => {
+  store.syncDate = null;
+  const previousSubset = store.data.subset;
+  store.data = initData();
+  store.data.subset = previousSubset;
+  store.deleted.clear();
+  store.index = initIndex();
 };

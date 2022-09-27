@@ -24,6 +24,11 @@ export type Cache = {
    * @returns An array of cache bin keys.
    */
   keys(): string[];
+
+  /**
+   * Clears all available cache bins.
+   */
+  clear(): void;
 };
 
 const data = new Map<string, CacheBin<any>>();
@@ -53,9 +58,7 @@ const initBin = <Type>(binId: string): CacheBin<Type> => {
  */
 export const cache: Cache = {
   bin: <Type>(binId: string): CacheBin<Type> => {
-    return cache.has(binId)
-      ? (data.get(binId) as CacheBin<Type>)
-      : initBin<Type>(binId);
+    return (data.get(binId) as CacheBin<Type>) || initBin<Type>(binId);
   },
 
   /**
@@ -73,4 +76,13 @@ export const cache: Cache = {
    * @returns An array of cache bin keys.
    */
   keys: () => Array.from(data.keys()),
+
+  /**
+   * Gets an array of keys of all available cache bins.
+   *
+   * @returns An array of cache bin keys.
+   */
+  clear: () => {
+    data.clear();
+  },
 };

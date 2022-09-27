@@ -5,72 +5,40 @@ import { findFilesInDir } from '@lib/utils/fs';
 import { logger } from '@lib/utils/logger';
 import { workDirHelper } from '@lib/store/workDir';
 import { cache } from '@lib/utils/cache';
-import { queryTagManager } from '@lib/query/queryTagManager';
+import { storeManager } from '@lib/store/storeManager';
+import { hookManager } from '@lib/store/hook';
+import { queryManager } from '@lib/query';
+import { taskManager } from '@lib/task';
 import { DataDirManager } from './dataDir.types';
-import { storeManager } from '../storeManager';
-import { hookManager } from '../hook';
+import { ChangedFiles } from '../workDir/workDir.types';
+import { dependencyManager } from '../dependency/dependencyManager';
 
 export const dataDirManager: DataDirManager = {
-  load: (options = { incremental: false }) => {
+  load: () => {
     logger.info('Loading data dir...');
     const startDate = Date.now();
 
-    // Reset custom indexes if a load is called on an already loaded store.
-    store.index.custom = new Map<string, any>();
+    // Reset store, just in case this load is called on an already loaded store.
+    storeManager.reset();
+
+    // Clear all caches.
+    cache.clear();
+
+    // Reset all managers.
+    hookManager.reset();
+    queryManager.reset();
+    taskManager.reset();
 
     // Invoke "store load start" hook.
-    const hookModulesInfo = hookManager.getModuleGroupInfo();
-    hookModulesInfo.forEach(hookInfo => {
-      const hookModule = hookInfo.getModule();
-      if (hookModule.onStoreLoadStart) {
-        hookModule.onStoreLoadStart({
-          dataDir: config.dataDir,
-          store,
-          queryTagManager,
-        });
-      }
-    });
+    hookManager.invokeOnStoreLoadStart();
 
-    const dataDirModificationDate = dataDirManager.getModificationDate();
-    // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
-    // processes loading the data directory at the same time.
-    const storeLastSyncDate = store.syncDate;
-    store.syncDate = dataDirModificationDate;
+    store.syncDate = dataDirManager.getModificationDate();
+
+    // Add all files, one by one.
     const relativeFilePaths = findFilesInDir(config.dataDir);
-
-    let updatedFiles: string[] = [];
-    // Look for updated files since last update
-    if (options.incremental) {
-      if (storeLastSyncDate) {
-        // No need to support deleted files, since we have all files
-        // inside the dataDir (and deleted ones are already gone).
-        ({ updated: updatedFiles } =
-          workDirHelper.getChangedFilesSince(storeLastSyncDate));
-
-        updatedFiles.forEach(file => {
-          logger.info(`Loading updated file "${file}"`);
-        });
-      }
-    } else {
-      // Clear all file cache so new cache data doesn't contain any stale data or file.
-      cache.bin('file').clear();
-    }
-
-    // Add all files, one by one, taking cache option into account.
-    const updatedFilesContainsData = updatedFiles.length > 0;
     const storeHydrationStartDate = Date.now();
     relativeFilePaths.forEach(relativeFilePath => {
-      let readFileFromCache = false;
-      if (options.incremental) {
-        readFileFromCache = true;
-        if (
-          updatedFilesContainsData &&
-          updatedFiles.includes(relativeFilePath)
-        ) {
-          readFileFromCache = false;
-        }
-      }
-      storeManager.add(relativeFilePath, { readFileFromCache });
+      storeManager.add(relativeFilePath);
     });
 
     logger.debug(
@@ -83,22 +51,8 @@ export const dataDirManager: DataDirManager = {
       `Store include parser done in ${Date.now() - includeParserStartDate}ms.`,
     );
 
-    // Clear all queries, since they are stale.
-    // No need to clear the store subset cache, since no
-    // file has been added/updated/deleted.
-    cache.bin('query').clear();
-
     // Invoke "store load done" hook.
-    hookModulesInfo.forEach(hookInfo => {
-      const hookModule = hookInfo.getModule();
-      if (hookModule.onStoreLoadDone) {
-        hookModule.onStoreLoadDone({
-          dataDir: config.dataDir,
-          store,
-          queryTagManager,
-        });
-      }
-    });
+    hookManager.invokeOnStoreLoadDone();
 
     logger.info(
       `${relativeFilePaths.length} files loaded in ${
@@ -109,6 +63,12 @@ export const dataDirManager: DataDirManager = {
 
   update: () => {
     const dataDirModificationDate = dataDirManager.getModificationDate();
+
+    let changedFiles: ChangedFiles = {
+      updated: [],
+      deleted: [],
+    };
+
     if (store.syncDate) {
       if (dataDirModificationDate > store.syncDate) {
         // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
@@ -119,8 +79,13 @@ export const dataDirManager: DataDirManager = {
         logger.debug(
           `Data dir outdated. Current data loaded at ${storeLastSyncDate.toISOString()} but last updated at ${dataDirModificationDate.toISOString()}`,
         );
-        const changedFiles =
-          workDirHelper.getChangedFilesSince(storeLastSyncDate);
+
+        // Before updating anything, track down which filepaths are invalidated with
+        // the current set of dependencies, before those dependencies change.
+        dependencyManager.trackInvalidatedFilepaths();
+
+        changedFiles = workDirHelper.getChangedFilesSince(storeLastSyncDate);
+        hookManager.invokeOnStoreChangeStart(changedFiles);
         changedFiles.updated.forEach(file => {
           storeManager.update(file);
           const fileContent = store.data.get(file);
@@ -137,6 +102,7 @@ export const dataDirManager: DataDirManager = {
         // cache in all situations.
         cache.bin('store-subset').clear();
         cache.bin('query').clear();
+        hookManager.invokeOnStoreChangeDone(changedFiles);
         const execTimeMs = (microtime.now() - startDate) / 1000;
         logger.debug(`Data dir updated in ${execTimeMs}ms.`);
       } else {
@@ -147,6 +113,7 @@ export const dataDirManager: DataDirManager = {
     } else {
       logger.debug(`Data dir not yet loaded, so it cannot be updated.`);
     }
+    return changedFiles;
   },
 
   getModificationDate: (): Date =>

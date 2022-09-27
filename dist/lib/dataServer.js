@@ -45,7 +45,7 @@ const dataServer = {
             (0, watcher_1.initWatcher)();
         }
         // Load data from dataDir.
-        dataDir_1.dataDirManager.load({ incremental: false });
+        dataDir_1.dataDirManager.load();
         return {
             store: store_1.store,
             queryRunner: query_1.queryRunner,

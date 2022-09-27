@@ -7,7 +7,7 @@ export declare type DiffManager = {
      *
      * @param date - Date to be used as a timestamp for the next diff.
      */
-    resetDiff(date: Date): void;
+    reset(date: Date): void;
     /**
      * Gets a list of changed files affected by includes and queries.
      *

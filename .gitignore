@@ -4,3 +4,4 @@ docs/
 coverage/
 .idea
 .vscode/settings.json
+*.log

@@ -1,36 +1,12 @@
 import { config } from '@lib/config';
 import { getFileContent } from '@lib/utils/fs';
 import { FileType } from '@lib/utils/fs/fs.types';
-import { cache } from '@lib/utils/cache';
-import { queryTagManager } from '@lib/query/queryTagManager';
-import { StoreAddOptions, StoreManager } from './store.types';
+import { StoreManager } from './store.types';
 import { hookManager } from './hook';
-import { store } from '.';
-import { includeParser, includeIndex } from './include';
-import { RunMode } from '../dataServer.types';
-import { tracker } from './diff/tracker';
-
-const fileCache = cache.bin<string>('file');
-
-/**
- * Tells whether a watcher for hooks is enabled.
- *
- * @remarks
- * Files from data dir are not read again once data dir is loaded
- * during bootstrap, except when:
- * 1) A file is updated: only that file is read form data dir.
- * 2) A watcher detects a hook change: all files in data dir are read again.
- *
- * For the second case, we want to avoid having to actually read all
- * files from disk if they have not changed. To do so, there is a
- * file cache that caches the file raw contents. That cache uses a lot of
- * memory, and should only be enabled when run mode is DEV (hence, a watcher
- * is enabled) and a hook directory is defined.
- *
- * @returns True if hook watcher is enabled.
- */
-export const isHookWatcherEnabled = (): boolean =>
-  config.runMode === RunMode.DEV && !!config.hookDir;
+import { store, resetStore } from '.';
+import { includeParser } from './include';
+import { dependencyIncludeHelper } from './dependency/dependencyFileHelper';
+import { dependencyTagger } from './dependency/dependencyTagger';
 
 /**
  * Sets a file into the store, regardless of being already added or not.
@@ -40,30 +16,14 @@ export const isHookWatcherEnabled = (): boolean =>
  *
  * @returns Object with two properties, "raw" and "json".
  */
-const setFileIntoStore = (
-  relativeFilepath: string,
-  options: StoreAddOptions = { readFileFromCache: false },
-): FileType => {
-  const hookWatcherEnabled = isHookWatcherEnabled();
+const setFileIntoStore = (relativeFilepath: string): FileType => {
   const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
-  let fileContent = getFileContent(absoluteFilePath, {
-    readFileFromCache: options.readFileFromCache,
-    isFileCacheEnabled: hookWatcherEnabled,
-  });
+  let fileContent = getFileContent(absoluteFilePath);
 
   // Invoke "process file" hook.
-  const hookModulesInfo = hookManager.getModuleGroupInfo();
-  hookModulesInfo.forEach(hookInfo => {
-    const hookModule = hookInfo.getModule();
-    if (hookModule.onProcessFile) {
-      fileContent = hookModule.onProcessFile({
-        dataDir: config.dataDir,
-        relativeFilepath,
-        fileContent,
-        store,
-        queryTagManager,
-      });
-    }
+  fileContent = hookManager.invokeOnProcessFile({
+    relativeFilepath,
+    fileContent,
   });
 
   const dataToStore = fileContent.json || fileContent.raw;
@@ -72,6 +32,12 @@ const setFileIntoStore = (
     const previousData = store.data.get(relativeFilepath);
     if (dataToStore && typeof dataToStore === 'object') {
       if (previousData) {
+        // Delete include dependencies.
+        dependencyIncludeHelper.deleteIncludeDependencies(
+          relativeFilepath,
+          dataToStore,
+        );
+
         // Remove previous data from URL index.
         const url = previousData.data?.content?.url?.path;
         if (url) {
@@ -84,9 +50,6 @@ const setFileIntoStore = (
         if (uuid && langcode) {
           store.index.uuid.get(langcode)?.delete(uuid);
         }
-
-        // Remove previous include data from includeIndex.
-        includeIndex.remove(relativeFilepath, previousData);
 
         // Delete all referenced object properties
         Object.keys(previousData).forEach(key => {
@@ -114,49 +77,55 @@ const setFileIntoStore = (
         store.index.url.set(url, dataToStore);
       }
 
-      // Add data to include index.
-      includeIndex.set(relativeFilepath, dataToStore);
+      // Add include dependencies.
+      dependencyIncludeHelper.setIncludeDependencies(
+        relativeFilepath,
+        dataToStore,
+      );
     }
   }
   store.data.set(relativeFilepath, dataToStore);
+
+  // Remove this path from store.deleted
+  store.deleted.delete(relativeFilepath);
 
   return fileContent;
 };
 
 export const storeManager: StoreManager = {
-  add: (
-    relativeFilepath: string,
-    options = { readFileFromCache: false },
-  ): StoreManager => {
-    const fileContent = setFileIntoStore(relativeFilepath, options);
+  add: (relativeFilepath: string): StoreManager => {
+    const fileContent = setFileIntoStore(relativeFilepath);
 
     // Invoke "store add" hook.
-    const hookModulesInfo = hookManager.getModuleGroupInfo();
-    hookModulesInfo.forEach(hookInfo => {
-      const hookModule = hookInfo.getModule();
-      if (hookModule.onStoreItemAdd) {
-        hookModule.onStoreItemAdd({
-          dataDir: config.dataDir,
-          relativeFilepath,
-          fileContent,
-          store,
-          queryTagManager,
-        });
-      }
+    hookManager.invokeOnStoreItemAdd({ relativeFilepath, fileContent });
+
+    return storeManager;
+  },
+
+  update: (relativeFilepath: string): StoreManager => {
+    const storedData = store.data.get(relativeFilepath);
+    if (storedData) {
+      hookManager.invokeOnStoreItemBeforeUpdate({
+        relativeFilepath,
+        fileContent: storedData,
+      });
+    }
+
+    const fileContent = setFileIntoStore(relativeFilepath);
+
+    // Invalidate this item.
+    dependencyTagger.invalidateTags([relativeFilepath]);
+
+    // Invoke "store update" hook.
+    hookManager.invokeOnStoreItemAfterUpdate({
+      relativeFilepath,
+      fileContent,
     });
 
     return storeManager;
   },
 
   remove: (relativeFilepath: string): StoreManager => {
-    // Track down file before it changes.
-    tracker.trackChangedFile(relativeFilepath);
-
-    if (isHookWatcherEnabled()) {
-      // Delete file contents from cache.
-      fileCache.delete(`${config.dataDir}/${relativeFilepath}`);
-    }
-
     // Get stored data before removing it from store.
     const storedData = store.data.get(relativeFilepath);
 
@@ -176,49 +145,17 @@ export const storeManager: StoreManager = {
     // Delete file contents from store.
     store.data.delete(relativeFilepath);
 
+    // Save its path in store.deleted for future reference.
+    store.deleted.add(relativeFilepath);
+
+    // Invalidate this item.
+    dependencyTagger.invalidateTags([relativeFilepath]);
+
     // Invoke "store remove" hook.
-    const hookModulesInfo = hookManager.getModuleGroupInfo();
-    hookModulesInfo.forEach(hookInfo => {
-      const hookModule = hookInfo.getModule();
-      if (hookModule.onStoreItemRemove) {
-        hookModule.onStoreItemRemove({
-          dataDir: config.dataDir,
-          relativeFilepath,
-          store,
-          queryTagManager,
-          fileContent: storedData,
-        });
-      }
+    hookManager.invokeOnStoreItemDelete({
+      relativeFilepath,
+      fileContent: storedData,
     });
-
-    return storeManager;
-  },
-
-  update: (relativeFilepath: string): StoreManager => {
-    // Track down file before it changes.
-    tracker.trackChangedFile(relativeFilepath);
-
-    const fileContent = setFileIntoStore(relativeFilepath, {
-      readFileFromCache: false,
-    });
-
-    // Invoke "store update" hook.
-    const hookModulesInfo = hookManager.getModuleGroupInfo();
-    hookModulesInfo.forEach(hookInfo => {
-      const hookModule = hookInfo.getModule();
-      if (hookModule.onStoreItemUpdate) {
-        hookModule.onStoreItemUpdate({
-          dataDir: config.dataDir,
-          relativeFilepath,
-          fileContent,
-          store,
-          queryTagManager,
-        });
-      }
-    });
-
-    // Track down file after it changes.
-    tracker.trackChangedFile(relativeFilepath);
 
     return storeManager;
   },
@@ -240,6 +177,11 @@ export const storeManager: StoreManager = {
   parseSingleFileIncludes: (relativeFilepath, fileContent): StoreManager => {
     includeParser.static(relativeFilepath, fileContent);
     includeParser.dynamic(fileContent);
+    return storeManager;
+  },
+
+  reset: () => {
+    resetStore();
     return storeManager;
   },
 };

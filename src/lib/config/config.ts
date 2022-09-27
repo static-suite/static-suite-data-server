@@ -137,7 +137,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
       });
     }
   });
-  return config;
+  return Object.freeze(config);
 };
 
 export { config, setConfig };

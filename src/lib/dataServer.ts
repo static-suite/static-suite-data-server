@@ -55,7 +55,7 @@ const dataServer = {
     }
 
     // Load data from dataDir.
-    dataDirManager.load({ incremental: false });
+    dataDirManager.load();
 
     return {
       store,

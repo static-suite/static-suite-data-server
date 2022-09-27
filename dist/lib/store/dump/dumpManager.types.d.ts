@@ -54,5 +54,9 @@ export declare type Dump = {
         oldPublicUrl: string | null;
         newPublicUrl: null;
     }>;
+    /**
+     * Optional execution time taken by the dump, in milliseconds.
+     */
+    execTimeMs?: number;
 };
 //# sourceMappingURL=dumpManager.types.d.ts.map

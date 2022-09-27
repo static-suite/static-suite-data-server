@@ -24,7 +24,7 @@ exports.queryTagManager = {
     getInvalidFilepaths: () => {
         const invalidFilepaths = new Set();
         store_1.store.data.forEach((json, relativeFilepath) => {
-            if (json.metadata?.includes?.dynamic) {
+            if (json?.metadata?.includes?.dynamic) {
                 Object.values(json.metadata.includes.dynamic).forEach(queryDefinition => {
                     const tagsByQuery = tagsByQueryIndex.get(queryDefinition);
                     if (tagsByQuery) {

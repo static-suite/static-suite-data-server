@@ -1,13 +1,3 @@
-/**
- * Options for the store.add() function. @see {@link StoreManager#add}
- */
-export type StoreAddOptions = {
-  /**
-   * Flag to obtain file data from cache instead of the file system.
-   */
-  readFileFromCache: boolean;
-};
-
 export interface StoreData<K, V> extends Map<K, V> {
   /**
    * Create a subset with all files in store that match the given arguments.
@@ -115,6 +105,11 @@ export type Store = {
   data: StoreData<string, any>;
 
   /**
+   * A list of deleted files from store, to be able to track them.
+   */
+  deleted: Set<string>;
+
+  /**
    * An object to hold accessory index data.
    */
   index: {
@@ -127,23 +122,6 @@ export type Store = {
      * An index that holds all data for all files, keyed by their lang and uuid.
      */
     uuid: Map<string, any>;
-
-    /**
-     * An index that holds relationships between includes.
-     *
-     * @remarks
-     * It is a Map with two keys ("static" and "dynamic").
-     *
-     * static: a Map where its key is an include, and its value a
-     * list of files where that include is being used.
-     *
-     * dynamic: a Map where its key is a queryId plus its arguments,
-     * and its value a list of files where that query is being used.
-     */
-    include: {
-      static: Map<string, Set<string>>;
-      dynamic: Map<string, Set<string>>;
-    };
 
     /**
      * An index to hold custom data defined in hooks or queries.
@@ -212,11 +190,10 @@ export type StoreManager = {
    * It invokes "process file" and "store add" hooks.
    *
    * @param relativeFilepath - Relative file path, inside dataDir, to the file to be added.
-   * @param options - Configuration options.
    *
    * @returns The store manager, to allow chaining.
    */
-  add(relativeFilepath: string, options?: StoreAddOptions): StoreManager;
+  add(relativeFilepath: string): StoreManager;
 
   /**
    * Removes a file from the store.
@@ -264,4 +241,11 @@ export type StoreManager = {
     relativeFilepath: string,
     fileContent: any,
   ): StoreManager;
+
+  /**
+   * Resets store and deletes all loaded data.
+   *
+   * @returns The store manager, to allow chaining.
+   */
+  reset(): StoreManager;
 };
