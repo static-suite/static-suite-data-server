@@ -14,8 +14,10 @@ const getTagParents = (tag, parents = new Set()) => {
     (0, dependencyTagger_1.getReversedDependencyTree)()
         .get(tag)
         ?.forEach(parent => {
-        parents.add(parent);
-        getTagParents(parent, parents);
+        if (!parents.has(parent)) {
+            parents.add(parent);
+            getTagParents(parent, parents);
+        }
     });
     return parents;
 };
