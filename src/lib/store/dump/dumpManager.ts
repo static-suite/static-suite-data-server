@@ -114,10 +114,8 @@ export const dumpManager: DumpManager = {
   dump(options = { incremental: true }): Dump {
     const startDate = microtime.now();
 
-    // Create a diff reset date just before consuming a diff.
-    const diff = diffManager.getDiff({ incremental: options.incremental });
-
     // Diff data is processed and transformed into a dump object.
+    const diff = diffManager.getDiff({ incremental: options.incremental });
     let dump: Dump = {
       execTimeMs: 0,
       fromUniqueId: diff.fromUniqueId,

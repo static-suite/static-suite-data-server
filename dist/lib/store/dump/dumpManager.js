@@ -101,9 +101,8 @@ const removeDeletedFiles = (diff, dump, dumpDir) => {
 exports.dumpManager = {
     dump(options = { incremental: true }) {
         const startDate = microtime_1.default.now();
-        // Create a diff reset date just before consuming a diff.
-        const diff = diffManager_1.diffManager.getDiff({ incremental: options.incremental });
         // Diff data is processed and transformed into a dump object.
+        const diff = diffManager_1.diffManager.getDiff({ incremental: options.incremental });
         let dump = {
             execTimeMs: 0,
             fromUniqueId: diff.fromUniqueId,
