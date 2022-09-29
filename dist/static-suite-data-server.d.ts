@@ -126,13 +126,17 @@ export { Store }
  */
 declare type Store_2 = {
     /**
+     * Initial unique set when the store was initially loaded.
+     */
+    initialUniqueId: string;
+    /**
      * Current unique id to tell when was the store last synced.
      *
      * Every time the store is updated, uniqueId is set with the last modification
      * unique id of the data directory, not the date when the store has finished updating.
      *
      */
-    uniqueId: string;
+    currentUniqueId: string;
     /**
      * Map that holds all data for all files.
      *

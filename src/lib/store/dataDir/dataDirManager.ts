@@ -13,6 +13,8 @@ import { DataDirManager } from './dataDir.types';
 import { ChangedFiles } from '../workDir/workDir.types';
 import { dependencyManager } from '../dependency/dependencyManager';
 
+let initialUniqueIdAlreadySet = false;
+
 export const dataDirManager: DataDirManager = {
   load: () => {
     logger.info('Loading data dir...');
@@ -32,8 +34,13 @@ export const dataDirManager: DataDirManager = {
     // Invoke "store load start" hook.
     hookManager.invokeOnStoreLoadStart();
 
-    store.uniqueId = dataDirManager.getModificationUniqueId();
-    logger.info(`Found unique id: ${store.uniqueId}`);
+    const modificationUniqueId = dataDirManager.getModificationUniqueId();
+    if (!initialUniqueIdAlreadySet) {
+      store.initialUniqueId = modificationUniqueId;
+      initialUniqueIdAlreadySet = true;
+    }
+    store.currentUniqueId = modificationUniqueId;
+    logger.info(`Found unique id: ${store.currentUniqueId}`);
 
     // Add all files, one by one.
     const relativeFilePaths = findFilesInDir(config.dataDir);
@@ -69,15 +76,15 @@ export const dataDirManager: DataDirManager = {
     let changedFiles: ChangedFiles = {
       updated: [],
       deleted: [],
-      fromUniqueId: store.uniqueId,
+      fromUniqueId: store.currentUniqueId,
       toUniqueId: dataDirModificationUniqueId,
     };
 
-    if (store.uniqueId) {
-      if (dataDirModificationUniqueId > store.uniqueId) {
+    if (store.currentUniqueId) {
+      if (dataDirModificationUniqueId > store.currentUniqueId) {
         // Save store.syncDate to a variable and set it ASAP.
-        const storeLastUniqueId = store.uniqueId;
-        store.uniqueId = dataDirModificationUniqueId;
+        const storeLastUniqueId = store.currentUniqueId;
+        store.currentUniqueId = dataDirModificationUniqueId;
         const startDate = microtime.now();
         logger.debug(
           `Data dir outdated. Current unique id in memory is ${storeLastUniqueId} but data dir is ${dataDirModificationUniqueId}`,
@@ -113,7 +120,7 @@ export const dataDirManager: DataDirManager = {
         logger.debug(`Data dir updated in ${execTimeMs}ms.`);
       } else {
         logger.debug(
-          `Data dir up to date. Current unique id in memory is ${store.uniqueId} and data dir is ${dataDirModificationUniqueId}`,
+          `Data dir up to date. Current unique id in memory is ${store.currentUniqueId} and data dir is ${dataDirModificationUniqueId}`,
         );
       }
     } else {
@@ -124,6 +131,6 @@ export const dataDirManager: DataDirManager = {
 
   getModificationUniqueId: (): string =>
     workDirHelper.getModificationUniqueId() ||
-    store.uniqueId ||
+    store.currentUniqueId ||
     unixEpochUniqueId,
 };

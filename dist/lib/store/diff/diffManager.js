@@ -23,17 +23,16 @@ exports.diffManager = {
         const changedFiles = dataDirManager_1.dataDirManager.update();
         const updated = new Set();
         const deleted = new Set();
-        // If lastDiffUniqueId is unixEpochUniqueId, it means Data Server has been rebooted.
-        // If currentDumpUniqueId is not unixEpochUniqueId, it means we have a working dump.
-        // If both checks passes, check if something has changed after last dump to avoid a full diff:
         const currentDumpUniqueId = dumpMetadataHelper_1.dumpMetadataHelper.getCurrentDumpUniqueId();
-        if (lastDiffUniqueId === workDir_1.unixEpochUniqueId &&
-            currentDumpUniqueId !== workDir_1.unixEpochUniqueId) {
+        const isFirstDiffAfterReboot = lastDiffUniqueId === workDir_1.unixEpochUniqueId;
+        const isADumpAvailable = currentDumpUniqueId !== workDir_1.unixEpochUniqueId;
+        // If both checks passes, check if something has changed after last dump to avoid a full diff:
+        if (isFirstDiffAfterReboot && isADumpAvailable) {
             const dataDirModificationUniqueId = changedFiles.toUniqueId;
-            if (currentDumpUniqueId === dataDirModificationUniqueId) {
-                // If nothing changed, use dataDirModificationUniqueId as lastDiffUniqueId, to
-                // execute an incremental dump which should lead to zero changes.
-                lastDiffUniqueId = dataDirModificationUniqueId;
+            if (currentDumpUniqueId === store_1.store.initialUniqueId) {
+                // If nothing changed, use store.initialUniqueId as lastDiffUniqueId, to
+                // execute an incremental dump.
+                lastDiffUniqueId = store_1.store.initialUniqueId;
             }
             else {
                 // If something changed, keep lastDiffUniqueId as is, and get the list of

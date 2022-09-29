@@ -24,19 +24,16 @@ export const diffManager: DiffManager = {
     const updated = new Set<string>();
     const deleted = new Set<string>();
 
-    // If lastDiffUniqueId is unixEpochUniqueId, it means Data Server has been rebooted.
-    // If currentDumpUniqueId is not unixEpochUniqueId, it means we have a working dump.
-    // If both checks passes, check if something has changed after last dump to avoid a full diff:
     const currentDumpUniqueId = dumpMetadataHelper.getCurrentDumpUniqueId();
-    if (
-      lastDiffUniqueId === unixEpochUniqueId &&
-      currentDumpUniqueId !== unixEpochUniqueId
-    ) {
+    const isFirstDiffAfterReboot = lastDiffUniqueId === unixEpochUniqueId;
+    const isADumpAvailable = currentDumpUniqueId !== unixEpochUniqueId;
+    // If both checks passes, check if something has changed after last dump to avoid a full diff:
+    if (isFirstDiffAfterReboot && isADumpAvailable) {
       const dataDirModificationUniqueId = changedFiles.toUniqueId;
-      if (currentDumpUniqueId === dataDirModificationUniqueId) {
-        // If nothing changed, use dataDirModificationUniqueId as lastDiffUniqueId, to
-        // execute an incremental dump which should lead to zero changes.
-        lastDiffUniqueId = dataDirModificationUniqueId;
+      if (currentDumpUniqueId === store.initialUniqueId) {
+        // If nothing changed, use store.initialUniqueId as lastDiffUniqueId, to
+        // execute an incremental dump.
+        lastDiffUniqueId = store.initialUniqueId;
       } else {
         // If something changed, keep lastDiffUniqueId as is, and get the list of
         // changed files from last dump. From that list, we need deleted files, since

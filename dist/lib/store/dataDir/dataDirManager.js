@@ -16,6 +16,7 @@ const hook_1 = require("@lib/store/hook");
 const query_1 = require("@lib/query");
 const task_1 = require("@lib/task");
 const dependencyManager_1 = require("../dependency/dependencyManager");
+let initialUniqueIdAlreadySet = false;
 exports.dataDirManager = {
     load: () => {
         logger_1.logger.info('Loading data dir...');
@@ -30,8 +31,13 @@ exports.dataDirManager = {
         task_1.taskManager.reset();
         // Invoke "store load start" hook.
         hook_1.hookManager.invokeOnStoreLoadStart();
-        store_1.store.uniqueId = exports.dataDirManager.getModificationUniqueId();
-        logger_1.logger.info(`Found unique id: ${store_1.store.uniqueId}`);
+        const modificationUniqueId = exports.dataDirManager.getModificationUniqueId();
+        if (!initialUniqueIdAlreadySet) {
+            store_1.store.initialUniqueId = modificationUniqueId;
+            initialUniqueIdAlreadySet = true;
+        }
+        store_1.store.currentUniqueId = modificationUniqueId;
+        logger_1.logger.info(`Found unique id: ${store_1.store.currentUniqueId}`);
         // Add all files, one by one.
         const relativeFilePaths = (0, fs_1.findFilesInDir)(config_1.config.dataDir);
         const storeHydrationStartDate = Date.now();
@@ -51,14 +57,14 @@ exports.dataDirManager = {
         let changedFiles = {
             updated: [],
             deleted: [],
-            fromUniqueId: store_1.store.uniqueId,
+            fromUniqueId: store_1.store.currentUniqueId,
             toUniqueId: dataDirModificationUniqueId,
         };
-        if (store_1.store.uniqueId) {
-            if (dataDirModificationUniqueId > store_1.store.uniqueId) {
+        if (store_1.store.currentUniqueId) {
+            if (dataDirModificationUniqueId > store_1.store.currentUniqueId) {
                 // Save store.syncDate to a variable and set it ASAP.
-                const storeLastUniqueId = store_1.store.uniqueId;
-                store_1.store.uniqueId = dataDirModificationUniqueId;
+                const storeLastUniqueId = store_1.store.currentUniqueId;
+                store_1.store.currentUniqueId = dataDirModificationUniqueId;
                 const startDate = microtime_1.default.now();
                 logger_1.logger.debug(`Data dir outdated. Current unique id in memory is ${storeLastUniqueId} but data dir is ${dataDirModificationUniqueId}`);
                 // Before updating anything, track down which filepaths are invalidated with
@@ -87,7 +93,7 @@ exports.dataDirManager = {
                 logger_1.logger.debug(`Data dir updated in ${execTimeMs}ms.`);
             }
             else {
-                logger_1.logger.debug(`Data dir up to date. Current unique id in memory is ${store_1.store.uniqueId} and data dir is ${dataDirModificationUniqueId}`);
+                logger_1.logger.debug(`Data dir up to date. Current unique id in memory is ${store_1.store.currentUniqueId} and data dir is ${dataDirModificationUniqueId}`);
             }
         }
         else {
@@ -96,6 +102,6 @@ exports.dataDirManager = {
         return changedFiles;
     },
     getModificationUniqueId: () => workDir_1.workDirHelper.getModificationUniqueId() ||
-        store_1.store.uniqueId ||
+        store_1.store.currentUniqueId ||
         workDir_1.unixEpochUniqueId,
 };

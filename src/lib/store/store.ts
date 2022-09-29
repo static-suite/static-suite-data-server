@@ -23,7 +23,8 @@ const initIndex = () => {
 
 const initData = () => new Map<string, any>() as StoreData<string, any>;
 export const store: Store = {
-  uniqueId: unixEpochUniqueId,
+  initialUniqueId: unixEpochUniqueId,
+  currentUniqueId: unixEpochUniqueId,
   data: initData(),
   deleted: new Set<string>(),
   index: initIndex(),
@@ -97,7 +98,8 @@ store.data.subset = (options: StoreSubsetOptions): StoreSubset => {
  * Resets store and deletes all loaded data.
  */
 export const resetStore = (): void => {
-  store.uniqueId = unixEpochUniqueId;
+  store.initialUniqueId = unixEpochUniqueId;
+  store.currentUniqueId = unixEpochUniqueId;
   const previousSubset = store.data.subset;
   store.data = initData();
   store.data.subset = previousSubset;

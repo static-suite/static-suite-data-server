@@ -20,7 +20,8 @@ const initIndex = () => {
 };
 const initData = () => new Map();
 exports.store = {
-    uniqueId: workDir_1.unixEpochUniqueId,
+    initialUniqueId: workDir_1.unixEpochUniqueId,
+    currentUniqueId: workDir_1.unixEpochUniqueId,
     data: initData(),
     deleted: new Set(),
     index: initIndex(),
@@ -80,7 +81,8 @@ exports.store.data.subset = (options) => {
  * Resets store and deletes all loaded data.
  */
 const resetStore = () => {
-    exports.store.uniqueId = workDir_1.unixEpochUniqueId;
+    exports.store.initialUniqueId = workDir_1.unixEpochUniqueId;
+    exports.store.currentUniqueId = workDir_1.unixEpochUniqueId;
     const previousSubset = exports.store.data.subset;
     exports.store.data = initData();
     exports.store.data.subset = previousSubset;
