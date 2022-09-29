@@ -15,6 +15,6 @@ These functions are separated from workDirHelper, since they are specific
 to the current storage backend (log files saved on disk) and they can change
 in the future.
 */
-__exportStar(require("./getChangedLinesSince"), exports);
+__exportStar(require("./getChangedLinesBetween"), exports);
 __exportStar(require("./getDataFromLogLine"), exports);
 __exportStar(require("./getLogFile"), exports);

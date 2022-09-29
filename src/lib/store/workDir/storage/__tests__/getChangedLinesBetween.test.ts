@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from '@lib/config';
-import { getChangedLinesBetween } from '../getChangedLinesSince';
+import { getChangedLinesBetween } from '../getChangedLinesBetween';
 
-describe('workDir storage getChangedLinesSince test', () => {
-  describe('getChangedLinesSince', () => {
+describe('workDir storage getChangedLinesBetween test', () => {
+  describe('getChangedLinesBetween', () => {
     config.workDir = fs.realpathSync(
       path.resolve('src/__tests__/fixtures/work'),
     );

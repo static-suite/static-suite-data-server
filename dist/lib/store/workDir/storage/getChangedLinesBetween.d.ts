@@ -13,4 +13,4 @@
  * @returns Array of changed lines
  */
 export declare const getChangedLinesBetween: (fromUniqueId: string, toUniqueId: string) => string[];
-//# sourceMappingURL=getChangedLinesSince.d.ts.map
+//# sourceMappingURL=getChangedLinesBetween.d.ts.map
