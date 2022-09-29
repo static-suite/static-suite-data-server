@@ -14,19 +14,7 @@ const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
 const diffManager_1 = require("../diff/diffManager");
 const hook_1 = require("../hook");
-const removeEmptyDirsUpwards = (dir) => {
-    const isEmpty = fs_1.default.readdirSync(dir).length === 0;
-    if (isEmpty) {
-        try {
-            fs_1.default.rmdirSync(dir);
-        }
-        catch (e) {
-            logger_1.logger.debug(`Error deleting empty directory "${dir}": ${e}`);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        removeEmptyDirsUpwards(path_1.default.dirname(dir));
-    }
-};
+const dumpMetadataHelper_1 = require("./dumpMetadataHelper");
 const storeUpdatedFiles = (diff, dump, dumpDir) => {
     diff.updated.forEach(relativeFilepath => {
         const storeFileContentData = store_1.store.data.get(relativeFilepath);
@@ -96,6 +84,8 @@ const removeDeletedFiles = (diff, dump, dumpDir) => {
                 const oldPublicUrl = dumpContent.json?.data?.content?.url?.path;
                 // Delete it.
                 fs_1.default.unlinkSync(absoluteFilepath);
+                // Delete any empty directory.
+                (0, fs_2.removeEmptyDirsUpwards)(path_1.default.dirname(absoluteFilepath));
                 // Mark it as deleted.
                 dump.deleted.set(relativeFilepath, {
                     oldPublicUrl,
@@ -108,41 +98,21 @@ const removeDeletedFiles = (diff, dump, dumpDir) => {
         }
     });
 };
-const storeDumpMetadata = (metadataFilepath, dump, diffResetDate) => {
-    let currentDumpMetadata = [];
-    try {
-        currentDumpMetadata = JSON.parse(fs_1.default.readFileSync(metadataFilepath).toString());
-    }
-    catch (e) {
-        currentDumpMetadata = [];
-    }
-    currentDumpMetadata.push((0, object_1.jsonify)(dump));
-    try {
-        const currentDumpMetadataString = JSON.stringify(currentDumpMetadata);
-        fs_1.default.writeFileSync(metadataFilepath, currentDumpMetadataString);
-        // Resetting the diff must happen when dump metadata is successfully
-        // stored into disk.
-        diffManager_1.diffManager.reset(diffResetDate);
-    }
-    catch (e) {
-        logger_1.logger.error(`Dump: error saving dump metadata to "${metadataFilepath}": ${e}`);
-    }
-};
 exports.dumpManager = {
     dump(options = { incremental: true }) {
         const startDate = microtime_1.default.now();
         // Create a diff reset date just before consuming a diff.
-        const diffResetDate = new Date();
         const diff = diffManager_1.diffManager.getDiff({ incremental: options.incremental });
         // Diff data is processed and transformed into a dump object.
         let dump = {
-            since: diff.since,
+            execTimeMs: 0,
+            fromUniqueId: diff.fromUniqueId,
+            toUniqueId: diff.toUniqueId,
             updated: new Map(),
             deleted: new Map(),
         };
         if (config_1.config.dumpDir) {
             const dumpDir = `${config_1.config.dumpDir}/files`;
-            const metadataFilepath = `${config_1.config.dumpDir}/metadata.json`;
             if (diff.updated.size || diff.deleted.size) {
                 // Store updated files.
                 storeUpdatedFiles(diff, dump, dumpDir);
@@ -154,7 +124,12 @@ exports.dumpManager = {
                 dump.execTimeMs = execTimeMs;
                 // Merge and store dump metadata if any.
                 if (dump.updated.size || dump.deleted.size) {
-                    storeDumpMetadata(metadataFilepath, dump, diffResetDate);
+                    const storeSuccessful = dumpMetadataHelper_1.dumpMetadataHelper.storeDumpMetadata(dump);
+                    if (storeSuccessful) {
+                        // Resetting the diff must happen when dump metadata is successfully
+                        // stored into disk.
+                        diffManager_1.diffManager.reset(diff.toUniqueId);
+                    }
                     logger_1.logger.info(`Dump created in ${execTimeMs} ms. Updated: ${dump.updated.size} / Deleted: ${dump.deleted.size}`);
                     // Log dump if not empty
                     if (dump.updated.size || dump.deleted.size) {
@@ -163,7 +138,7 @@ exports.dumpManager = {
                 }
                 else {
                     // Resetting the diff must happen when no other operations are pending.
-                    diffManager_1.diffManager.reset(diffResetDate);
+                    diffManager_1.diffManager.reset(diff.toUniqueId);
                     logger_1.logger.info(`Dump done in ${execTimeMs} ms without changes stored into disk.`);
                 }
             }
@@ -176,21 +151,10 @@ exports.dumpManager = {
         }
         return dump;
     },
-    reset(timestamp) {
+    reset(uniqueId) {
         if (config_1.config.dumpDir) {
-            const metadataFilepath = `${config_1.config.dumpDir}/metadata.json`;
-            const metadata = JSON.parse(fs_1.default.existsSync(metadataFilepath)
-                ? fs_1.default.readFileSync(metadataFilepath).toString()
-                : '[]');
-            // Remove any dump data older that timestamp
-            const resetMetadata = metadata.filter((dump) => dump.since > timestamp);
+            const resetMetadata = dumpMetadataHelper_1.dumpMetadataHelper.removeDumpDataOlderThan(uniqueId);
             logger_1.logger.debug(`Dump reset : "${JSON.stringify(resetMetadata)}"`);
-            try {
-                fs_1.default.writeFileSync(metadataFilepath, JSON.stringify(resetMetadata));
-            }
-            catch (e) {
-                logger_1.logger.error(`Dump: error resetting dump metadata to "${metadataFilepath}": ${e}`);
-            }
         }
         else {
             logger_1.logger.error('"dumpDir" option not provided. Dump reset cannot be executed.');

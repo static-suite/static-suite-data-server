@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import fg, { Options as fastGlobOptions } from 'fast-glob';
 import chokidar from 'chokidar';
 import { logger } from '@lib/utils/logger';
@@ -97,6 +98,23 @@ export const getModificationDate = (filePath: string): Date | null => {
     logger.error(`Error getting modification date for ${`path`}: ${e}`);
   }
   return modificationDate;
+};
+
+/**
+ * Removes empty directories upwards.
+ *
+ * @param dir - Path to a directory
+ */
+export const removeEmptyDirsUpwards = (dir: string): void => {
+  const isEmpty = fs.readdirSync(dir).length === 0;
+  if (isEmpty) {
+    try {
+      fs.rmdirSync(dir);
+    } catch (e) {
+      logger.debug(`Error deleting empty directory "${dir}": ${e}`);
+    }
+    removeEmptyDirsUpwards(path.dirname(dir));
+  }
 };
 
 /**

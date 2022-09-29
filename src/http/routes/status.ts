@@ -32,7 +32,7 @@ const statusBasic = (req: Request, res: Response): void => {
 
   const response = {
     config,
-    dataDirLastUpdate: dataDirManager.getModificationDate(),
+    dataDirLastUpdate: dataDirManager.getModificationUniqueId(),
     query: {
       numberOfExecutions: queryRunner.getCount(),
       numberOfCachedQueries: cache.bin('query').size,

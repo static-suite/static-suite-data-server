@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from '@lib/config';
-import { getChangedLinesSince } from '../getChangedLinesSince';
+import { getChangedLinesBetween } from '../getChangedLinesSince';
 
 describe('workDir storage getChangedLinesSince test', () => {
   describe('getChangedLinesSince', () => {
@@ -10,7 +10,12 @@ describe('workDir storage getChangedLinesSince test', () => {
     );
 
     it(`Gets lines of log since given date`, () => {
-      expect(getChangedLinesSince(new Date('2021-08-01'))).toEqual([
+      expect(
+        getChangedLinesBetween(
+          '2021-08-16_07-11-55.666963__3503',
+          '2021-08-17_08-50-00.235800__1900',
+        ),
+      ).toEqual([
         '2021-08-16_07-11-55.666963__3504 delete [ID: 10] Prueba y cultiva tus propias hierbas | static-local://es/entity/node/article/10.json',
         '2021-08-16_07-12-45.771095__5959 write [ID: 10] Give it a go and grow your own herbs | static-local://en/entity/node/article/10.json',
         '2021-08-16_07-12-46.771095__5959 delete [ID: 10] Give it a go and grow your own herbs | static-local://en/entity/node/article/10.json',

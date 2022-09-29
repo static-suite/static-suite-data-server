@@ -1,5 +1,10 @@
 import { logger } from '@lib/utils/logger';
-import { parseJsonString, parseURLSearchParams } from '../stringUtils';
+import {
+  isUniqueId,
+  parseJsonString,
+  parseUniqueId,
+  parseURLSearchParams,
+} from '../stringUtils';
 
 describe('String utils test', () => {
   describe('parseJsonString', () => {
@@ -25,6 +30,30 @@ describe('String utils test', () => {
       const parsedQuery = parseURLSearchParams('arg1=a&arg2=b&arg1=c');
       const expectedValue = { arg1: ['a', 'c'], arg2: 'b' };
       expect(parsedQuery).toEqual(expectedValue);
+    });
+  });
+
+  describe('parseUniqueId', () => {
+    it('parses a valid unique id and returns a date', () => {
+      const uniqueIdDate = parseUniqueId('2022-09-28_11-42-00.001712__7220');
+      expect(uniqueIdDate?.getTime()).toEqual(1664365320001);
+    });
+
+    it('parses a non valid unique id and returns null', () => {
+      const uniqueIdDate = parseUniqueId('non valid unique id');
+      expect(uniqueIdDate).toEqual(null);
+    });
+  });
+
+  describe('isUniqueId', () => {
+    it('returns true for a valid unique id', () => {
+      const result = isUniqueId('2022-09-28_11-42-00.001712__7220');
+      expect(result).toEqual(true);
+    });
+
+    it('returns false for a non valid unique id', () => {
+      const result = isUniqueId('non valid unique id');
+      expect(result).toEqual(false);
     });
   });
 });

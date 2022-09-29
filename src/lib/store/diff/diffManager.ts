@@ -1,15 +1,17 @@
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
 import { store } from '../store';
-import { DiffManager, Diff } from './diffManager.types';
+import { DiffManager, Diff } from './diff.types';
 import { dataDirManager } from '../dataDir/dataDirManager';
 import { dependencyManager } from '../dependency/dependencyManager';
+import { unixEpochUniqueId, workDirHelper } from '../workDir';
+import { dumpMetadataHelper } from '../dump/dumpMetadataHelper';
 
-let lastDiffDate: Date | null = null;
+let lastDiffUniqueId: string = unixEpochUniqueId;
 
 export const diffManager: DiffManager = {
-  reset(date: Date): void {
-    lastDiffDate = date;
+  reset(uniqueId: string): void {
+    lastDiffUniqueId = uniqueId;
     dependencyManager.reset();
   },
 
@@ -17,31 +19,57 @@ export const diffManager: DiffManager = {
     const startDate = microtime.now();
 
     // Before getting any diff data, update any pending changes from data dir.
-    dataDirManager.update();
+    const changedFiles = dataDirManager.update();
 
-    let updated = new Set<string>();
-    let deleted = new Set<string>();
-    if (options.incremental && lastDiffDate) {
-      logger.debug(`Getting incremental diff using date "${lastDiffDate}"`);
-      const invalidatedFilepaths = dependencyManager.getInvalidatedFilepaths();
-      updated = new Set<string>(invalidatedFilepaths.updated);
-      deleted = new Set<string>(invalidatedFilepaths.deleted);
-    } else {
-      // If no sinceDate is passed, return all files
-      logger.debug(`Getting full diff with no date`);
-      updated = new Set<string>(store.data.keys());
+    const updated = new Set<string>();
+    const deleted = new Set<string>();
+
+    // If lastDiffUniqueId is unixEpochUniqueId, it means Data Server has been rebooted.
+    // Check if something has changed after last dump:
+    if (lastDiffUniqueId === unixEpochUniqueId) {
+      const currentDumpUniqueId = dumpMetadataHelper.getCurrentDumpUniqueId();
+      const dataDirModificationUniqueId = changedFiles.toUniqueId;
+      if (currentDumpUniqueId === dataDirModificationUniqueId) {
+        // If nothing changed, use dataDirModificationUniqueId as lastDiffUniqueId, to
+        // execute an incremental dump which should lead to zero changes.
+        lastDiffUniqueId = dataDirModificationUniqueId;
+      } else {
+        // If something changed, keep lastDiffUniqueId as is, and get the list of
+        // changed files from last dump. From that list, we need deleted files, since
+        // those files are no more in data dir and we need to remove them from dump dir.
+        const changedFilesSinceLastDump = workDirHelper.getChangedFilesBetween(
+          currentDumpUniqueId,
+          dataDirModificationUniqueId,
+        );
+        changedFilesSinceLastDump.deleted.forEach(filepath =>
+          deleted.add(filepath),
+        );
+      }
     }
 
+    if (options.incremental && lastDiffUniqueId !== unixEpochUniqueId) {
+      logger.debug(`Getting incremental diff using date "${lastDiffUniqueId}"`);
+      const invalidatedFilepaths = dependencyManager.getInvalidatedFilepaths();
+      invalidatedFilepaths.updated.forEach(filepath => updated.add(filepath));
+      invalidatedFilepaths.deleted.forEach(filepath => deleted.add(filepath));
+    } else {
+      // Return all files
+      logger.debug(`Getting full diff with no date`);
+      Array.from(store.data.keys()).forEach(key => updated.add(key));
+    }
+
+    const execTimeMs = (microtime.now() - startDate) / 1000;
+
     const diff: Diff = {
-      since: lastDiffDate ? lastDiffDate.getTime() : new Date(0).getTime(),
+      execTimeMs,
+      fromUniqueId: lastDiffUniqueId,
+      toUniqueId: changedFiles.toUniqueId,
       updated,
       deleted,
     };
 
     logger.info(
-      `Diff created in ${(microtime.now() - startDate) / 1000} ms. Updated: ${
-        diff.updated.size
-      } / Deleted: ${diff.deleted.size}`,
+      `Diff created in ${execTimeMs} ms. Updated: ${diff.updated.size} / Deleted: ${diff.deleted.size}`,
     );
 
     // Log diff if not empty
@@ -51,72 +79,4 @@ export const diffManager: DiffManager = {
 
     return diff;
   },
-
-  /*
-  getDiff(options = { incremental: true }): Diff {
-    const startDate = microtime.now();
-
-    // Before getting any diff data, update any pending changes from data dir.
-    const changedFiles = dataDirManager.update();
-
-    let updated = new Set<string>();
-    let deleted = new Set<string>();
-    const sinceDate = getLastDiffDate();
-    if (options.incremental && sinceDate) {
-      logger.debug(`Getting incremental diff using date "${sinceDate}"`);
-      // Only process changedFiles if not empty.
-      if (changedFiles.updated.length || changedFiles.deleted.length) {
-        // Update tracked files so no affected parent is missed.
-        changedFiles.updated.forEach(file => {
-          tracker.trackChangedFile(file);
-        });
-        changedFiles.deleted.forEach(file => {
-          tracker.trackChangedFile(file);
-        });
-      }
-
-      // Create the resulting set of updated and deleted files.
-      // "updated" includes all affected parents tracked down
-      // by tracker, without any deleted file.
-      updated = new Set<string>(tracker.getChangedFiles());
-      changedFiles.deleted.forEach(file => updated.delete(file));
-
-      // "deleted" includes only deleted files, and is based only
-      // on data coming from changedFiles, because all deleted files
-      // are stored on Static Suite Data Server log
-      deleted = new Set<string>(changedFiles.deleted);
-
-      // Add updated files affected by queries only if "updated" or "deleted"
-      // contain any changes.
-      if (updated.size > 0 || deleted.size > 0) {
-        queryTagManager
-          .getInvalidFilepaths()
-          .forEach(file => updated.add(file));
-        queryTagManager.resetInvalidatedTags();
-      }
-    } else {
-      // If no sinceDate is passed, return all files
-      logger.debug(`Getting full diff with no date`);
-      updated = new Set<string>(store.data.keys());
-    }
-
-    const diff: Diff = {
-      since: sinceDate ? sinceDate.getTime() : new Date(0).getTime(),
-      updated,
-      deleted,
-    };
-
-    logger.info(
-      `Diff created in ${(microtime.now() - startDate) / 1000} ms. Updated: ${
-        diff.updated.size
-      } / Deleted: ${diff.deleted.size}`,
-    );
-
-    // Log diff if not empty
-    // if (diff.updated.length || diff.deleted.length) {
-    // logger.debug(`Diff: "${JSON.stringify(jsonify(diff))}"`);
-    // }
-
-    return diff;
-  }, */
 };

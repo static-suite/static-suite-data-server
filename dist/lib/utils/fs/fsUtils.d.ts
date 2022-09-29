@@ -48,6 +48,12 @@ export declare const findFilesInDir: (dir: string, glob?: string, options?: fast
  */
 export declare const getModificationDate: (filePath: string) => Date | null;
 /**
+ * Removes empty directories upwards.
+ *
+ * @param dir - Path to a directory
+ */
+export declare const removeEmptyDirsUpwards: (dir: string) => void;
+/**
  * Watches for changes on a set of paths and attach listener to them
  *
  * @remarks

@@ -40,44 +40,13 @@ export interface StoreData<K, V> extends Map<K, V> {
  */
 export type Store = {
   /**
-   * Date to tell when was the store last synced.
+   * Current unique id to tell when was the store last synced.
    *
-   * Every time the store is updated, syncDate is set with the last modification
-   * date of the data directory, not the date when the store has finished updating.
+   * Every time the store is updated, uniqueId is set with the last modification
+   * unique id of the data directory, not the date when the store has finished updating.
    *
-   * Given this scenario:
-   * - Data directory modified at 12:30:00
-   * - Syncing the store takes 3 seconds and finishes at 12:30:03
-   *
-   * ... syncDate will be 12:30:00, not 12:30:03.
-   *
-   * Doing it the other way round can cause data inconsistencies, because syncing files
-   * to the store takes time, it is done sequentially, and in the meanwhile, other
-   * modifications can happen:
-   * - Store last syncDate is 12:29:00
-   * - Data directory is modified at 12:30:00
-   * - We ask for modified files after 12:29:00 and got 3 files (1.json, 2.json and 3.json)
-   * - File "1.json" is processed and added to the store at 12:30:01
-   * - While "2.json" is being processed and added to the store, data directory is modified
-   * again at 12:30:02 and "1.json" is changed.
-   * - File "3.json" is processed and added to the store at 12:30:03
-   *
-   * At this moment, there are two options:
-   *
-   * 1) Setting syncDate to the current date:
-   * - Store syncDate is set to 12:30:03
-   * - Data directory is modified again at 12:30:10 and only "3.json" is changed
-   * - We ask for modified files after 12:30:03 and get only "3.json"
-   * - Modification done at 12:30:02 to "1.json" is lost and cannot be recovered unless "1.json" is
-   * modified again, or Data Server is restarted
-   *
-   * 2) Setting syncDate to the last modification date of the data directory:
-   * - Store syncDate is set to 12:30:00
-   * - Data directory is modified again at 12:30:10 and only "3.json" is changed
-   * - We ask for modified files after 12:30:00 and get "1.json" and "3.json"
-   * - Modification done at 12:30:02 to "1.json" is properly processed
    */
-  syncDate: Date | null;
+  uniqueId: string;
 
   /**
    * Map that holds all data for all files.

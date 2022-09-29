@@ -30,7 +30,8 @@ exports.dataDirManager = {
         task_1.taskManager.reset();
         // Invoke "store load start" hook.
         hook_1.hookManager.invokeOnStoreLoadStart();
-        store_1.store.syncDate = exports.dataDirManager.getModificationDate();
+        store_1.store.uniqueId = exports.dataDirManager.getModificationUniqueId();
+        logger_1.logger.info(`Found unique id: ${store_1.store.uniqueId}`);
         // Add all files, one by one.
         const relativeFilePaths = (0, fs_1.findFilesInDir)(config_1.config.dataDir);
         const storeHydrationStartDate = Date.now();
@@ -46,23 +47,24 @@ exports.dataDirManager = {
         logger_1.logger.info(`${relativeFilePaths.length} files loaded in ${Date.now() - startDate}ms.`);
     },
     update: () => {
-        const dataDirModificationDate = exports.dataDirManager.getModificationDate();
+        const dataDirModificationUniqueId = exports.dataDirManager.getModificationUniqueId();
         let changedFiles = {
             updated: [],
             deleted: [],
+            fromUniqueId: store_1.store.uniqueId,
+            toUniqueId: dataDirModificationUniqueId,
         };
-        if (store_1.store.syncDate) {
-            if (dataDirModificationDate > store_1.store.syncDate) {
-                // Save store.syncDate to a variable and set it ASAP to avoid two concurrent
-                // processes updating the data directory at the same time.
-                const storeLastSyncDate = store_1.store.syncDate;
-                store_1.store.syncDate = dataDirModificationDate;
+        if (store_1.store.uniqueId) {
+            if (dataDirModificationUniqueId > store_1.store.uniqueId) {
+                // Save store.syncDate to a variable and set it ASAP.
+                const storeLastUniqueId = store_1.store.uniqueId;
+                store_1.store.uniqueId = dataDirModificationUniqueId;
                 const startDate = microtime_1.default.now();
-                logger_1.logger.debug(`Data dir outdated. Current data loaded at ${storeLastSyncDate.toISOString()} but last updated at ${dataDirModificationDate.toISOString()}`);
+                logger_1.logger.debug(`Data dir outdated. Current unique id in memory is ${storeLastUniqueId} but data dir is ${dataDirModificationUniqueId}`);
                 // Before updating anything, track down which filepaths are invalidated with
                 // the current set of dependencies, before those dependencies change.
                 dependencyManager_1.dependencyManager.trackInvalidatedFilepaths();
-                changedFiles = workDir_1.workDirHelper.getChangedFilesSince(storeLastSyncDate);
+                changedFiles = workDir_1.workDirHelper.getChangedFilesBetween(storeLastUniqueId, dataDirModificationUniqueId);
                 hook_1.hookManager.invokeOnStoreChangeStart(changedFiles);
                 changedFiles.updated.forEach(file => {
                     storeManager_1.storeManager.update(file);
@@ -85,7 +87,7 @@ exports.dataDirManager = {
                 logger_1.logger.debug(`Data dir updated in ${execTimeMs}ms.`);
             }
             else {
-                logger_1.logger.debug(`Data dir up to date. Current data loaded at ${store_1.store.syncDate.toISOString()} and last updated at ${dataDirModificationDate.toISOString()}`);
+                logger_1.logger.debug(`Data dir up to date. Current unique id in memory is ${store_1.store.uniqueId} and data dir is ${dataDirModificationUniqueId}`);
             }
         }
         else {
@@ -93,5 +95,7 @@ exports.dataDirManager = {
         }
         return changedFiles;
     },
-    getModificationDate: () => workDir_1.workDirHelper.getModificationDate() || store_1.store.syncDate || new Date(0),
+    getModificationUniqueId: () => workDir_1.workDirHelper.getModificationUniqueId() ||
+        store_1.store.uniqueId ||
+        workDir_1.unixEpochUniqueId,
 };

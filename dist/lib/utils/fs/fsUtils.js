@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.watch = exports.getModificationDate = exports.findFilesInDir = exports.getFileContent = exports.readFile = exports.isJsonFile = void 0;
+exports.watch = exports.removeEmptyDirsUpwards = exports.getModificationDate = exports.findFilesInDir = exports.getFileContent = exports.readFile = exports.isJsonFile = void 0;
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const chokidar_1 = __importDefault(require("chokidar"));
 const logger_1 = require("@lib/utils/logger");
@@ -98,6 +99,24 @@ const getModificationDate = (filePath) => {
     return modificationDate;
 };
 exports.getModificationDate = getModificationDate;
+/**
+ * Removes empty directories upwards.
+ *
+ * @param dir - Path to a directory
+ */
+const removeEmptyDirsUpwards = (dir) => {
+    const isEmpty = fs_1.default.readdirSync(dir).length === 0;
+    if (isEmpty) {
+        try {
+            fs_1.default.rmdirSync(dir);
+        }
+        catch (e) {
+            logger_1.logger.debug(`Error deleting empty directory "${dir}": ${e}`);
+        }
+        (0, exports.removeEmptyDirsUpwards)(path_1.default.dirname(dir));
+    }
+};
+exports.removeEmptyDirsUpwards = removeEmptyDirsUpwards;
 /**
  * Watches for changes on a set of paths and attach listener to them
  *

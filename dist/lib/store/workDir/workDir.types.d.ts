@@ -3,6 +3,14 @@
  */
 export declare type ChangedFiles = {
     /**
+     * A unique id representing the date from which those changes are obtained.
+     */
+    fromUniqueId: string;
+    /**
+     * A unique id representing the date until which those changes are obtained.
+     */
+    toUniqueId: string;
+    /**
      * A list of updated files (both newly added and changed files).
      */
     updated: string[];
@@ -16,7 +24,7 @@ export declare type ChangedFiles = {
  */
 export declare type LogLineData = {
     /**
-     * The unique ID of the write/delete operation from Static Suite.
+     * The unique id of the write/delete operation from Static Suite.
      */
     uniqueId: string;
     /**

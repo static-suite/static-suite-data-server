@@ -59,3 +59,35 @@ export const parseURLSearchParams = (
   });
   return obj;
 };
+
+/**
+ * Parses a unique id from Static Suite and returns a Date.
+ *
+ * @param uniqueId - A unique id from Static Suite
+ *
+ * @returns A date from that unique id, or null if it can be parsed.
+ */
+export const parseUniqueId = (uniqueId: string): Date | null => {
+  // todo - Do not use dates and use timestamps in all cases
+  //  to avoid having to fix offsets.
+  const date = new Date();
+  const dateOffset = -(date.getTimezoneOffset() * 60 * 1000);
+
+  const dateString = uniqueId.replace(
+    /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/,
+    '$1-$2-$3T$4:$5:$6.$7',
+  );
+  const parsedDate = Date.parse(dateString);
+  if (!Number.isNaN(parsedDate)) {
+    return new Date(parsedDate + dateOffset);
+  }
+  return null;
+};
+
+/**
+ * Checks that a string is a unique id.
+ *
+ * @param uniqueId - A unique id t be checked
+ */
+export const isUniqueId = (uniqueId: string): boolean =>
+  /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/.test(uniqueId);

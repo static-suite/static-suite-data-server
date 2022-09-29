@@ -27,7 +27,7 @@ const statusBasic = (req, res) => {
     dataDir_1.dataDirManager.update();
     const response = {
         config: config_1.config,
-        dataDirLastUpdate: dataDir_1.dataDirManager.getModificationDate(),
+        dataDirLastUpdate: dataDir_1.dataDirManager.getModificationUniqueId(),
         query: {
             numberOfExecutions: query_1.queryRunner.getCount(),
             numberOfCachedQueries: cache_1.cache.bin('query').size,

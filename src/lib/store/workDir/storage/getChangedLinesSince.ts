@@ -1,20 +1,31 @@
 import fs from 'fs';
 import { logger } from '@lib/utils/logger';
+import { isUniqueId } from '@lib/utils/string';
 import { getLogFile } from './getLogFile';
 
 /**
-   * Get changed files since a date.
-   *
-   * @param sinceDate - Date to search
-
-  * @returns Array of changed lines
-   */
-export const getChangedLinesSince = (sinceDate: Date): string[] => {
+ * Get changed files between a set of dates.
+ *
+ * @param fromUniqueId - Unique id to search from.
+ * @param toUniqueId - Unique id to search to.
+ *
+ * @remarks
+ * It searches for lines grater than fromUniqueId and lower
+ * or equal to toUniqueId, to avoid getting repeated entries
+ * when dates are advanced in blocks (from 1 to 2, from 2 to 3,
+ * from 3 to 4, etc).
+ *
+ * @returns Array of changed lines
+ */
+export const getChangedLinesBetween = (
+  fromUniqueId: string,
+  toUniqueId: string,
+): string[] => {
   let allLines: string[] = [];
   const logFile = getLogFile();
   if (logFile) {
     try {
-      allLines = fs.readFileSync(logFile).toString().split('\n');
+      allLines = fs.readFileSync(logFile).toString().trim().split('\n');
     } catch (e) {
       logger.error(
         `Error reading metadata log file located at ${`logFile`}: ${e}`,
@@ -22,26 +33,20 @@ export const getChangedLinesSince = (sinceDate: Date): string[] => {
     }
   }
 
-  // todo - Do not use dates and use timestamps in all cases
-  //  to avoid having to fix offsets.
-  const date = new Date();
-  const dateOffset = -(date.getTimezoneOffset() * 60 * 1000);
-
   const changedLines = allLines.filter(line => {
     const uniqueId = line.substring(0, 32);
-    if (!uniqueId) {
-      return false;
-    }
-    const dateString = uniqueId.replace(
-      /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/,
-      '$1-$2-$3T$4:$5:$6.$7',
+    return (
+      uniqueId &&
+      isUniqueId(uniqueId) &&
+      uniqueId > fromUniqueId &&
+      uniqueId <= toUniqueId
     );
-    const uniqueIdDate = Date.parse(dateString) + dateOffset;
-    return uniqueIdDate && uniqueIdDate > sinceDate.getTime();
   });
+
   logger.debug(`Found ${changedLines.length} changed lines`);
   changedLines.forEach(line => {
     logger.debug(`Found changed line: ${line}`);
   });
+
   return changedLines;
 };

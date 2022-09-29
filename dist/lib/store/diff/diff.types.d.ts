@@ -35,6 +35,10 @@ export declare type DiffManager = {
  */
 export declare type Diff = {
     /**
+     * Execution time taken by the diff, in milliseconds.
+     */
+    execTimeMs: number;
+    /**
      * A unique id representing the date from which this diff is obtained.
      */
     fromUniqueId: string;
@@ -51,4 +55,4 @@ export declare type Diff = {
      */
     deleted: Set<string>;
 };
-//# sourceMappingURL=diffManager.types.d.ts.map
+//# sourceMappingURL=diff.types.d.ts.map

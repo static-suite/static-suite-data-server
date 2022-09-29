@@ -8,6 +8,7 @@ const microtime_1 = __importDefault(require("microtime"));
 const string_1 = require("@lib/utils/string");
 const logger_1 = require("@lib/utils/logger");
 const cache_1 = require("@lib/utils/cache");
+const workDir_1 = require("./workDir");
 // Instantiate the subset cache so it can be accessed faster.
 const subsetCache = cache_1.cache.bin('store-subset');
 const initIndex = () => {
@@ -19,7 +20,7 @@ const initIndex = () => {
 };
 const initData = () => new Map();
 exports.store = {
-    syncDate: null,
+    uniqueId: workDir_1.unixEpochUniqueId,
     data: initData(),
     deleted: new Set(),
     index: initIndex(),
@@ -79,7 +80,7 @@ exports.store.data.subset = (options) => {
  * Resets store and deletes all loaded data.
  */
 const resetStore = () => {
-    exports.store.syncDate = null;
+    exports.store.uniqueId = workDir_1.unixEpochUniqueId;
     const previousSubset = exports.store.data.subset;
     exports.store.data = initData();
     exports.store.data.subset = previousSubset;

@@ -7,6 +7,7 @@ import { store } from '@lib/store';
 import { Store } from '@lib/store/store.types';
 import { queryRunner } from '@lib/query';
 import { taskRunner } from '@lib/task/taskRunner';
+import { TaskRunner } from '@lib/task/task.types';
 import {
   QueryRunner,
   QuerySuccessfulResponse,
@@ -77,5 +78,6 @@ export {
   QueryErrorResponse,
   QueryArgs,
   QueryModule,
+  TaskRunner,
   CacheStatus,
 };

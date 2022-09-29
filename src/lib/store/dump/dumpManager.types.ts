@@ -20,11 +20,11 @@ export type DumpManager = {
    * Reset dump metadata.
    *
    * @remarks
-   * Resets dump metadata, removing any dump information older than the passed timestamp.
+   * Resets dump metadata, removing any dump information older than the passed unique id.
    *
-   * @param timestamp - Timestamp
+   * @param uniqueId - Unique id
    */
-  reset(timestamp: number): void;
+  reset(uniqueId: string): void;
 };
 
 /**
@@ -32,9 +32,19 @@ export type DumpManager = {
  */
 export type Dump = {
   /**
-   * Timestamp in milliseconds.
+   * Execution time taken by the dump, in milliseconds.
    */
-  since: number;
+  execTimeMs: number;
+
+  /**
+   * A unique id representing the date from which this dump is obtained.
+   */
+  fromUniqueId: string;
+
+  /**
+   * A unique id representing the date until which this dump is obtained.
+   */
+  toUniqueId: string;
 
   /**
    * A list of updated files, keyed by file path. Its value is an object with two keys,
@@ -53,9 +63,9 @@ export type Dump = {
    * deleted. We keep the same structure for both updated and deleted items.
    */
   deleted: Map<string, { oldPublicUrl: string | null; newPublicUrl: null }>;
+};
 
-  /**
-   * Optional execution time taken by the dump, in milliseconds.
-   */
-  execTimeMs?: number;
+export type DumpMetadata = {
+  current: string;
+  dumps: Dump[];
 };

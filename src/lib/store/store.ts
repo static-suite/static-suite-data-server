@@ -8,6 +8,7 @@ import {
   StoreSubset,
   StoreSubsetOptions,
 } from './store.types';
+import { unixEpochUniqueId } from './workDir';
 
 // Instantiate the subset cache so it can be accessed faster.
 const subsetCache = cache.bin<StoreSubset>('store-subset');
@@ -22,7 +23,7 @@ const initIndex = () => {
 
 const initData = () => new Map<string, any>() as StoreData<string, any>;
 export const store: Store = {
-  syncDate: null,
+  uniqueId: unixEpochUniqueId,
   data: initData(),
   deleted: new Set<string>(),
   index: initIndex(),
@@ -96,7 +97,7 @@ store.data.subset = (options: StoreSubsetOptions): StoreSubset => {
  * Resets store and deletes all loaded data.
  */
 export const resetStore = (): void => {
-  store.syncDate = null;
+  store.uniqueId = unixEpochUniqueId;
   const previousSubset = store.data.subset;
   store.data = initData();
   store.data.subset = previousSubset;

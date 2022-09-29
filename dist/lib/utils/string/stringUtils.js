@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
+exports.isUniqueId = exports.parseUniqueId = exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
 const logger_1 = require("@lib/utils/logger");
 /**
  * Separator for variant data files saved to storage.
@@ -60,3 +60,30 @@ const parseURLSearchParams = (queryString) => {
     return obj;
 };
 exports.parseURLSearchParams = parseURLSearchParams;
+/**
+ * Parses a unique id from Static Suite and returns a Date.
+ *
+ * @param uniqueId - A unique id from Static Suite
+ *
+ * @returns A date from that unique id, or null if it can be parsed.
+ */
+const parseUniqueId = (uniqueId) => {
+    // todo - Do not use dates and use timestamps in all cases
+    //  to avoid having to fix offsets.
+    const date = new Date();
+    const dateOffset = -(date.getTimezoneOffset() * 60 * 1000);
+    const dateString = uniqueId.replace(/(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/, '$1-$2-$3T$4:$5:$6.$7');
+    const parsedDate = Date.parse(dateString);
+    if (!Number.isNaN(parsedDate)) {
+        return new Date(parsedDate + dateOffset);
+    }
+    return null;
+};
+exports.parseUniqueId = parseUniqueId;
+/**
+ * Checks that a string is a unique id.
+ *
+ * @param uniqueId - A unique id t be checked
+ */
+const isUniqueId = (uniqueId) => /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/.test(uniqueId);
+exports.isUniqueId = isUniqueId;

@@ -3,11 +3,11 @@
  */
 export type DiffManager = {
   /**
-   * Clears intermediate changes tracked by trackChangedFile().
+   * Clears intermediate changes tracked by dependency manager.
    *
-   * @param date - Date to be used as a timestamp for the next diff.
+   * @param uniqueId - Unique id to be used for the next diff.
    */
-  reset(date: Date): void;
+  reset(uniqueId: string): void;
 
   /**
    * Gets a list of changed files affected by includes and queries.
@@ -35,9 +35,18 @@ export type DiffManager = {
  */
 export type Diff = {
   /**
-   * Timestamp in milliseconds.
+   * Execution time taken by the diff, in milliseconds.
    */
-  since: number;
+  execTimeMs: number;
+  /**
+   * A unique id representing the date from which this diff is obtained.
+   */
+  fromUniqueId: string;
+
+  /**
+   * A unique id representing the date until which this diff is obtained.
+   */
+  toUniqueId: string;
 
   /**
    * A list of updated files (both newly added and changed files).

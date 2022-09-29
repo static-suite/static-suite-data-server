@@ -1,20 +1,27 @@
 import { ChangedFiles } from './workDir.types';
+/**
+ * The unique id of the Unix Epoch (00:00:00 UTC on 1 January 1970)
+ */
+export declare const unixEpochUniqueId = "1970-01-01_00-00-00.000000__0000";
 export declare const workDirHelper: {
     /**
-     * Gets date of last modification of work directory.
+     * Gets unique id of last modification of work directory.
      *
-     * @returns The date of last modification of work directory, or null if directory not found.
+     * @returns The unique id of last modification of work directory, or null if directory not found.
      */
-    getModificationDate: () => Date | null;
+    getModificationUniqueId: () => string | null;
     /**
      * Get changed files since a date.
      *
-     * @param sinceDate - Date to search
+     * @param fromUniqueId - Date to search from.
+     * @param toUniqueId - Date to search to.
      *
-     * @returns Object with two properties:
+     * @returns Object with four properties:
      * - updated: array of changed files.
      * - deleted: array of deleted files.
+     * - fromTimestamp
+     * - toTimestamp
      */
-    getChangedFilesSince: (sinceDate: Date) => ChangedFiles;
+    getChangedFilesBetween: (fromUniqueId: string, toUniqueId: string) => ChangedFiles;
 };
 //# sourceMappingURL=workDirHelper.d.ts.map

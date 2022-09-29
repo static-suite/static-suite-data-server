@@ -44,8 +44,8 @@ const dumpMetadataShow = (req: Request, res: Response): void => {
 
 const dumpMetadataReset = (req: Request, res: Response): void => {
   const args: any = req.query;
-  if (args?.timestamp) {
-    dumpManager.reset(parseInt(args.timestamp, 10));
+  if (args?.uniqueId) {
+    dumpManager.reset(args.uniqueId);
   }
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });

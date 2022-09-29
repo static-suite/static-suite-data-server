@@ -23,16 +23,16 @@ export type DataDirManager = {
   update(): ChangedFiles;
 
   /**
-   * Get date of last modification of data directory.
+   * Get unique id of last modification of data directory.
    *
    * @remarks
    * Metadata about when and how is the data directory updated is
    * stored in the work directory. If that directory is not present or
-   * not initialized with proper data, it returns the sync date of the store.
-   * If the store is not yet loaded, it returns a date in the past,
+   * not initialized with proper data, it returns the unique id of the store.
+   * If the store is not yet loaded, it returns a unique id in the past,
    * the Unix Epoch (00:00:00 UTC on 1 January 1970).
    *
-   * @returns The date of last modification of data directory
+   * @returns The unique id of last modification of data directory
    */
-  getModificationDate(): Date;
+  getModificationUniqueId(): string;
 };

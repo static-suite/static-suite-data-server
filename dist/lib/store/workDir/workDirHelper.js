@@ -1,30 +1,56 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.workDirHelper = void 0;
-const fs_1 = require("@lib/utils/fs");
+exports.workDirHelper = exports.unixEpochUniqueId = void 0;
+const fs_1 = __importDefault(require("fs"));
 const logger_1 = require("@lib/utils/logger");
+const string_1 = require("@lib/utils/string");
 const storage_1 = require("./storage");
+/**
+ * The unique id of the Unix Epoch (00:00:00 UTC on 1 January 1970)
+ */
+exports.unixEpochUniqueId = '1970-01-01_00-00-00.000000__0000';
 exports.workDirHelper = {
     /**
-     * Gets date of last modification of work directory.
+     * Gets unique id of last modification of work directory.
      *
-     * @returns The date of last modification of work directory, or null if directory not found.
+     * @returns The unique id of last modification of work directory, or null if directory not found.
      */
-    getModificationDate: () => {
+    getModificationUniqueId: () => {
+        let modificationUniqueId = null;
         const logFile = (0, storage_1.getLogFile)();
-        return logFile ? (0, fs_1.getModificationDate)(logFile) : null;
+        let allLines = [];
+        if (logFile) {
+            try {
+                allLines = fs_1.default.readFileSync(logFile).toString().trim().split('\n');
+            }
+            catch (e) {
+                logger_1.logger.error(`Error reading metadata log file located at ${`logFile`}: ${e}`);
+            }
+            const lastLine = allLines.slice(-1)[0];
+            const lastLineUniqueId = lastLine.substring(0, 32);
+            if ((0, string_1.isUniqueId)(lastLineUniqueId)) {
+                modificationUniqueId = lastLineUniqueId;
+            }
+        }
+        return modificationUniqueId;
     },
     /**
      * Get changed files since a date.
      *
-     * @param sinceDate - Date to search
+     * @param fromUniqueId - Date to search from.
+     * @param toUniqueId - Date to search to.
      *
-     * @returns Object with two properties:
+     * @returns Object with four properties:
      * - updated: array of changed files.
      * - deleted: array of deleted files.
+     * - fromTimestamp
+     * - toTimestamp
      */
-    getChangedFilesSince: (sinceDate) => {
-        const changedLines = (0, storage_1.getChangedLinesSince)(sinceDate);
+    getChangedFilesBetween: (fromUniqueId, toUniqueId) => {
+        const changedLines = (0, storage_1.getChangedLinesBetween)(fromUniqueId, toUniqueId);
         const lineData = {};
         changedLines.forEach(line => {
             const dataFromLogLine = (0, storage_1.getDataFromLogLine)(line);
@@ -47,6 +73,11 @@ exports.workDirHelper = {
         deleted.forEach(file => {
             logger_1.logger.debug(`Found deleted file "${file}"`);
         });
-        return { updated, deleted };
+        return {
+            updated,
+            deleted,
+            fromUniqueId,
+            toUniqueId,
+        };
     },
 };

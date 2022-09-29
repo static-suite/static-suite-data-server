@@ -1,34 +1,63 @@
-import { getModificationDate } from '@lib/utils/fs';
+import fs from 'fs';
 import { logger } from '@lib/utils/logger';
+import { isUniqueId } from '@lib/utils/string';
 import { ChangedFiles, LogLineData } from './workDir.types';
 import {
   getLogFile,
-  getChangedLinesSince,
+  getChangedLinesBetween,
   getDataFromLogLine,
 } from './storage';
 
+/**
+ * The unique id of the Unix Epoch (00:00:00 UTC on 1 January 1970)
+ */
+export const unixEpochUniqueId = '1970-01-01_00-00-00.000000__0000';
+
 export const workDirHelper = {
   /**
-   * Gets date of last modification of work directory.
+   * Gets unique id of last modification of work directory.
    *
-   * @returns The date of last modification of work directory, or null if directory not found.
+   * @returns The unique id of last modification of work directory, or null if directory not found.
    */
-  getModificationDate: (): Date | null => {
+  getModificationUniqueId: (): string | null => {
+    let modificationUniqueId: string | null = null;
     const logFile = getLogFile();
-    return logFile ? getModificationDate(logFile) : null;
+    let allLines: string[] = [];
+    if (logFile) {
+      try {
+        allLines = fs.readFileSync(logFile).toString().trim().split('\n');
+      } catch (e) {
+        logger.error(
+          `Error reading metadata log file located at ${`logFile`}: ${e}`,
+        );
+      }
+      const lastLine = allLines.slice(-1)[0];
+      const lastLineUniqueId = lastLine.substring(0, 32);
+      if (isUniqueId(lastLineUniqueId)) {
+        modificationUniqueId = lastLineUniqueId;
+      }
+    }
+
+    return modificationUniqueId;
   },
 
   /**
    * Get changed files since a date.
    *
-   * @param sinceDate - Date to search
+   * @param fromUniqueId - Date to search from.
+   * @param toUniqueId - Date to search to.
    *
-   * @returns Object with two properties:
+   * @returns Object with four properties:
    * - updated: array of changed files.
    * - deleted: array of deleted files.
+   * - fromTimestamp
+   * - toTimestamp
    */
-  getChangedFilesSince: (sinceDate: Date): ChangedFiles => {
-    const changedLines = getChangedLinesSince(sinceDate);
+  getChangedFilesBetween: (
+    fromUniqueId: string,
+    toUniqueId: string,
+  ): ChangedFiles => {
+    const changedLines = getChangedLinesBetween(fromUniqueId, toUniqueId);
     const lineData: Record<string, LogLineData> = {};
     changedLines.forEach(line => {
       const dataFromLogLine = getDataFromLogLine(line);
@@ -54,6 +83,11 @@ export const workDirHelper = {
       logger.debug(`Found deleted file "${file}"`);
     });
 
-    return { updated, deleted };
+    return {
+      updated,
+      deleted,
+      fromUniqueId,
+      toUniqueId,
+    };
   },
 };

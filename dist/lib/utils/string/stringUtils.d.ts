@@ -34,4 +34,18 @@ export declare const parseJsonString: (jsonString: string) => any;
  * @returns An object where its keys are the query arguments.
  */
 export declare const parseURLSearchParams: (queryString: string) => URLSearchParamsObject;
+/**
+ * Parses a unique id from Static Suite and returns a Date.
+ *
+ * @param uniqueId - A unique id from Static Suite
+ *
+ * @returns A date from that unique id, or null if it can be parsed.
+ */
+export declare const parseUniqueId: (uniqueId: string) => Date | null;
+/**
+ * Checks that a string is a unique id.
+ *
+ * @param uniqueId - A unique id t be checked
+ */
+export declare const isUniqueId: (uniqueId: string) => boolean;
 //# sourceMappingURL=stringUtils.d.ts.map
