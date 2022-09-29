@@ -25,9 +25,13 @@ export const diffManager: DiffManager = {
     const deleted = new Set<string>();
 
     // If lastDiffUniqueId is unixEpochUniqueId, it means Data Server has been rebooted.
-    // Check if something has changed after last dump:
-    if (lastDiffUniqueId === unixEpochUniqueId) {
-      const currentDumpUniqueId = dumpMetadataHelper.getCurrentDumpUniqueId();
+    // If currentDumpUniqueId is not unixEpochUniqueId, it means we have a working dump.
+    // If both checks passes, check if something has changed after last dump to avoid a full diff:
+    const currentDumpUniqueId = dumpMetadataHelper.getCurrentDumpUniqueId();
+    if (
+      lastDiffUniqueId === unixEpochUniqueId &&
+      currentDumpUniqueId !== unixEpochUniqueId
+    ) {
       const dataDirModificationUniqueId = changedFiles.toUniqueId;
       if (currentDumpUniqueId === dataDirModificationUniqueId) {
         // If nothing changed, use dataDirModificationUniqueId as lastDiffUniqueId, to
