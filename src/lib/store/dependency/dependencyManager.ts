@@ -10,7 +10,10 @@ const invalidatedFilepaths = {
 /**
  * Gets a list of parents of a dependency tag
  */
-const getTagParents = (tag: string, parents = new Set<string>()) => {
+export const getTagParents = (
+  tag: string,
+  parents = new Set<string>(),
+): Set<string> => {
   getReversedDependencyTree()
     .get(tag)
     ?.forEach(parent => {
@@ -29,7 +32,7 @@ const getTagParents = (tag: string, parents = new Set<string>()) => {
  * Iterates over all explicitly invalidated tags, and obtains all
  * its parents.
  */
-const getInvalidatedTags = (): string[] => {
+export const getAllInvalidatedTags = (): string[] => {
   const allInvalidatedTags = new Set<string>();
   const invalidatedTagsArray = Array.from(invalidatedTags);
   if (invalidatedTagsArray.length > 0) {
@@ -54,7 +57,7 @@ const getInvalidatedTags = (): string[] => {
  */
 export const dependencyManager: DependencyManager = {
   trackInvalidatedFilepaths: () => {
-    const allInvalidatedTags = getInvalidatedTags();
+    const allInvalidatedTags = getAllInvalidatedTags();
     allInvalidatedTags.forEach(invalidatedTag => {
       if (store.deleted.has(invalidatedTag)) {
         invalidatedFilepaths.deleted.add(invalidatedTag);

@@ -29,6 +29,7 @@ exports.dataDirManager = {
         hook_1.hookManager.reset();
         query_1.queryManager.reset();
         task_1.taskManager.reset();
+        dependencyManager_1.dependencyManager.reset();
         // Invoke "store load start" hook.
         hook_1.hookManager.invokeOnStoreLoadStart();
         const modificationUniqueId = exports.dataDirManager.getModificationUniqueId();

@@ -24,10 +24,11 @@ const setFileIntoStore = (relativeFilepath) => {
         relativeFilepath,
         fileContent,
     });
+    let previousStoredData = null;
     const dataToStore = fileContent.json || fileContent.raw;
+    const previousData = _1.store.data.get(relativeFilepath);
     if (fileContent.json) {
         // Check if the object already exists to make sure we don't break the reference
-        const previousData = _1.store.data.get(relativeFilepath);
         if (dataToStore && typeof dataToStore === 'object') {
             if (previousData) {
                 // Delete include dependencies.
@@ -43,8 +44,10 @@ const setFileIntoStore = (relativeFilepath) => {
                 if (uuid && langcode) {
                     _1.store.index.uuid.get(langcode)?.delete(uuid);
                 }
-                // Delete all referenced object properties
+                // Delete all referenced object properties and copy them to another object.
+                previousStoredData = {};
                 Object.keys(previousData).forEach(key => {
+                    previousStoredData[key] = previousData[key];
                     delete previousData[key];
                 });
                 // hydrate new object properties into referenced object
@@ -66,19 +69,25 @@ const setFileIntoStore = (relativeFilepath) => {
                 _1.store.index.url.set(url, dataToStore);
             }
             // Add include dependencies.
-            dependencyFileHelper_1.dependencyIncludeHelper.setIncludeDependencies(relativeFilepath, dataToStore);
+            dependencyFileHelper_1.dependencyIncludeHelper.addIncludeDependencies(relativeFilepath, dataToStore);
         }
+    }
+    else {
+        previousStoredData = previousData;
     }
     _1.store.data.set(relativeFilepath, dataToStore);
     // Remove this path from store.deleted
     _1.store.deleted.delete(relativeFilepath);
-    return fileContent;
+    return { fileContent: dataToStore, previousStoredData };
 };
 exports.storeManager = {
     add: (relativeFilepath) => {
-        const fileContent = setFileIntoStore(relativeFilepath);
+        const { fileContent } = setFileIntoStore(relativeFilepath);
         // Invoke "store add" hook.
-        hook_1.hookManager.invokeOnStoreItemAdd({ relativeFilepath, fileContent });
+        hook_1.hookManager.invokeOnStoreItemAdd({
+            relativeFilepath,
+            storeItem: fileContent,
+        });
         return exports.storeManager;
     },
     update: (relativeFilepath) => {
@@ -86,16 +95,17 @@ exports.storeManager = {
         if (storedData) {
             hook_1.hookManager.invokeOnStoreItemBeforeUpdate({
                 relativeFilepath,
-                fileContent: storedData,
+                storeItem: storedData,
             });
         }
-        const fileContent = setFileIntoStore(relativeFilepath);
+        const { fileContent, previousStoredData } = setFileIntoStore(relativeFilepath);
         // Invalidate this item.
         dependencyTagger_1.dependencyTagger.invalidateTags([relativeFilepath]);
         // Invoke "store update" hook.
         hook_1.hookManager.invokeOnStoreItemAfterUpdate({
             relativeFilepath,
-            fileContent,
+            storeItem: fileContent,
+            previousStoreItem: previousStoredData,
         });
         return exports.storeManager;
     },
@@ -122,7 +132,7 @@ exports.storeManager = {
         // Invoke "store remove" hook.
         hook_1.hookManager.invokeOnStoreItemDelete({
             relativeFilepath,
-            fileContent: storedData,
+            storeItem: storedData,
         });
         return exports.storeManager;
     },

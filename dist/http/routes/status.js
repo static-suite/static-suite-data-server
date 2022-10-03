@@ -8,8 +8,6 @@ const cache_1 = require("@lib/utils/cache");
 const store_1 = require("@lib/store");
 const object_1 = require("@lib/utils/object");
 const diffManager_1 = require("@lib/store/diff/diffManager");
-const dependencyManager_1 = require("@lib/store/dependency/dependencyManager");
-const dependencyTagger_1 = require("@lib/store/dependency/dependencyTagger");
 const statusIndex = (req, res) => {
     res.render('statusIndex', {
         links: {
@@ -32,9 +30,6 @@ const statusBasic = (req, res) => {
             numberOfExecutions: query_1.queryRunner.getCount(),
             numberOfCachedQueries: cache_1.cache.bin('query').size,
         },
-        dependencyTree: (0, object_1.jsonify)(dependencyTagger_1.dependencyTree),
-        reversedDependencyTree: (0, object_1.jsonify)((0, dependencyTagger_1.getReversedDependencyTree)()),
-        invalidatedFilepaths: dependencyManager_1.dependencyManager.getInvalidatedFilepaths(),
     };
     res.status(200);
     res.set({ 'Content-Type': 'application/json' });

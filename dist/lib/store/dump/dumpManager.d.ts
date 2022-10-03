@@ -1,3 +1,3 @@
-import { DumpManager } from './dumpManager.types';
+import { DumpManager } from './dump.types';
 export declare const dumpManager: DumpManager;
 //# sourceMappingURL=dumpManager.d.ts.map

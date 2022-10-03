@@ -86,7 +86,11 @@ exports.moduleManager = {
             throw e;
         }
         if (internalModuleCache[resolvedModulePath].onModuleLoad) {
-            internalModuleCache[resolvedModulePath].onModuleLoad({ config: config_1.config, store: store_1.store });
+            internalModuleCache[resolvedModulePath].onModuleLoad({
+                config: config_1.config,
+                store: store_1.store,
+                logger: logger_1.logger,
+            });
         }
         logger_1.logger.debug(`Module ${resolvedModulePath} successfully loaded.`);
         return internalModuleCache[resolvedModulePath];

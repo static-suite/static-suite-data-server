@@ -56,44 +56,9 @@ exports.dependencyTagger = {
     },
     invalidateTags: tags => {
         tags.forEach(tag => {
-            exports.invalidatedTags.add(tag);
+            if (tag) {
+                exports.invalidatedTags.add(tag);
+            }
         });
     },
 };
-/*
-import { DependencyTagger } from './dependency.types';
-
-export const dependencyTree = new Map<string, Set<string>>();
-
-export const invalidatedTags = new Set<string>();
-
-export const dependencyTagger: DependencyTagger = {
-  setDependency: (tag, dependsOnTags) => {
-    dependsOnTags.forEach(dependsOnTag => {
-      const previousData = dependencyTree.get(dependsOnTag);
-      if (previousData) {
-        previousData.add(tag);
-      } else {
-        dependencyTree.set(dependsOnTag, new Set<string>([tag]));
-      }
-    });
-  },
-
-  deleteDependency: (tag, dependsOnTags) => {
-    dependsOnTags.forEach(dependsOnTag => {
-      const previousData = dependencyTree.get(dependsOnTag);
-      if (previousData) {
-        previousData.delete(tag);
-        if (previousData.size === 0) {
-          dependencyTree.delete(dependsOnTag);
-        }
-      }
-    });
-  },
-
-  invalidateTags: tags => {
-    tags.forEach(tag => {
-      invalidatedTags.add(tag);
-    });
-  },
-}; */

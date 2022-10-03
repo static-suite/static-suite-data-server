@@ -41,7 +41,7 @@ store.data.subset = (options: StoreSubsetOptions): StoreSubset => {
   };
   const opts = { ...defaultOptions, ...options };
 
-  let subset: StoreSubset = { filenames: [], items: [] };
+  let subset: StoreSubset = { map: new Map(), filenames: [], items: [] };
 
   const dirWithTrimmedSlashes = opts.dir?.replace(/^\//, '').replace(/\/$/, '');
   const dirPart = dirWithTrimmedSlashes ? `${dirWithTrimmedSlashes}/` : '';
@@ -79,8 +79,10 @@ store.data.subset = (options: StoreSubsetOptions): StoreSubset => {
     const mapKeys = Array.from(store.data.keys());
     mapKeys.forEach(k => {
       if (k.match(regex)) {
+        const storeItem = store.data.get(k);
+        subset.map.set(k, storeItem);
         subset.filenames.push(k);
-        subset.items.push(store.data.get(k));
+        subset.items.push(storeItem);
       }
     });
     subsetCache.set(pattern, subset);

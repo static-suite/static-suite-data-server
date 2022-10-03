@@ -1,6 +1,6 @@
 import { config } from '@lib/config';
 import { getFileContent } from '@lib/utils/fs';
-import { FileType } from '@lib/utils/fs/fs.types';
+import { Json } from '@lib/utils/object/object.types';
 import { StoreManager } from './store.types';
 import { hookManager } from './hook';
 import { store, resetStore } from '.';
@@ -16,7 +16,12 @@ import { dependencyTagger } from './dependency/dependencyTagger';
  *
  * @returns Object with two properties, "raw" and "json".
  */
-const setFileIntoStore = (relativeFilepath: string): FileType => {
+const setFileIntoStore = (
+  relativeFilepath: string,
+): {
+  fileContent: Json | string | null;
+  previousStoredData: Json | null;
+} => {
   const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
   let fileContent = getFileContent(absoluteFilePath);
 
@@ -26,10 +31,12 @@ const setFileIntoStore = (relativeFilepath: string): FileType => {
     fileContent,
   });
 
+  let previousStoredData: any = null;
+
   const dataToStore = fileContent.json || fileContent.raw;
+  const previousData = store.data.get(relativeFilepath);
   if (fileContent.json) {
     // Check if the object already exists to make sure we don't break the reference
-    const previousData = store.data.get(relativeFilepath);
     if (dataToStore && typeof dataToStore === 'object') {
       if (previousData) {
         // Delete include dependencies.
@@ -51,8 +58,10 @@ const setFileIntoStore = (relativeFilepath: string): FileType => {
           store.index.uuid.get(langcode)?.delete(uuid);
         }
 
-        // Delete all referenced object properties
+        // Delete all referenced object properties and copy them to another object.
+        previousStoredData = {};
         Object.keys(previousData).forEach(key => {
+          previousStoredData[key] = previousData[key];
           delete previousData[key];
         });
         // hydrate new object properties into referenced object
@@ -78,26 +87,31 @@ const setFileIntoStore = (relativeFilepath: string): FileType => {
       }
 
       // Add include dependencies.
-      dependencyIncludeHelper.setIncludeDependencies(
+      dependencyIncludeHelper.addIncludeDependencies(
         relativeFilepath,
         dataToStore,
       );
     }
+  } else {
+    previousStoredData = previousData;
   }
   store.data.set(relativeFilepath, dataToStore);
 
   // Remove this path from store.deleted
   store.deleted.delete(relativeFilepath);
 
-  return fileContent;
+  return { fileContent: dataToStore, previousStoredData };
 };
 
 export const storeManager: StoreManager = {
   add: (relativeFilepath: string): StoreManager => {
-    const fileContent = setFileIntoStore(relativeFilepath);
+    const { fileContent } = setFileIntoStore(relativeFilepath);
 
     // Invoke "store add" hook.
-    hookManager.invokeOnStoreItemAdd({ relativeFilepath, fileContent });
+    hookManager.invokeOnStoreItemAdd({
+      relativeFilepath,
+      storeItem: fileContent,
+    });
 
     return storeManager;
   },
@@ -107,11 +121,12 @@ export const storeManager: StoreManager = {
     if (storedData) {
       hookManager.invokeOnStoreItemBeforeUpdate({
         relativeFilepath,
-        fileContent: storedData,
+        storeItem: storedData,
       });
     }
 
-    const fileContent = setFileIntoStore(relativeFilepath);
+    const { fileContent, previousStoredData } =
+      setFileIntoStore(relativeFilepath);
 
     // Invalidate this item.
     dependencyTagger.invalidateTags([relativeFilepath]);
@@ -119,7 +134,8 @@ export const storeManager: StoreManager = {
     // Invoke "store update" hook.
     hookManager.invokeOnStoreItemAfterUpdate({
       relativeFilepath,
-      fileContent,
+      storeItem: fileContent,
+      previousStoreItem: previousStoredData,
     });
 
     return storeManager;
@@ -154,7 +170,7 @@ export const storeManager: StoreManager = {
     // Invoke "store remove" hook.
     hookManager.invokeOnStoreItemDelete({
       relativeFilepath,
-      fileContent: storedData,
+      storeItem: storedData,
     });
 
     return storeManager;

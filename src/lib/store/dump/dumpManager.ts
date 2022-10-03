@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import microtime from 'microtime';
 import { logger } from '@lib/utils/logger';
-import { jsonify } from '@lib/utils/object';
 import {
   getFileContent,
   isJsonFile,
@@ -13,7 +12,7 @@ import { config } from '@lib/config';
 import { store } from '@lib/store';
 import { diffManager } from '../diff/diffManager';
 import { Diff } from '../diff/diff.types';
-import { Dump, DumpManager } from './dumpManager.types';
+import { Dump, DumpManager } from './dump.types';
 import { hookManager } from '../hook';
 import { dumpMetadataHelper } from './dumpMetadataHelper';
 
@@ -52,9 +51,19 @@ const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
               JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
               null;
             /*
+            // Save a copy for later reference.
+            const backupAbsoluteFilepathInDumpDir =
+              absoluteFilepathInDumpDir.replace(
+                '/dump/files/',
+                '/dump/files.bak/',
+              );
+            const backupDir = path.dirname(backupAbsoluteFilepathInDumpDir);
+            if (!fs.existsSync(backupDir)) {
+              fs.mkdirSync(backupDir, { recursive: true });
+            }
             fs.renameSync(
               absoluteFilepathInDumpDir,
-              absoluteFilepathInDumpDir.replace('.json', '.2.json'),
+              backupAbsoluteFilepathInDumpDir,
             );
             */
           }
@@ -122,6 +131,7 @@ export const dumpManager: DumpManager = {
       toUniqueId: diff.toUniqueId,
       updated: new Map(),
       deleted: new Map(),
+      diff,
     };
 
     if (config.dumpDir) {
@@ -153,10 +163,12 @@ export const dumpManager: DumpManager = {
             `Dump created in ${execTimeMs} ms. Updated: ${dump.updated.size} / Deleted: ${dump.deleted.size}`,
           );
 
+          /*
           // Log dump if not empty
           if (dump.updated.size || dump.deleted.size) {
             logger.debug(`Dump: "${JSON.stringify(jsonify(dump))}"`);
           }
+          */
         } else {
           // Resetting the diff must happen when no other operations are pending.
           diffManager.reset(diff.toUniqueId);

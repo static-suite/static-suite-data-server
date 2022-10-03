@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.hookManager = void 0;
 const config_1 = require("@lib/config");
 const store_1 = require("@lib/store");
+const logger_1 = require("@lib/utils/logger");
 const dependencyTagger_1 = require("@lib/store/dependency/dependencyTagger");
 const module_1 = require("@lib/utils/module");
 /**
@@ -27,6 +28,7 @@ exports.hookManager = {
             if (hookModule.onStoreLoadStart) {
                 hookModule.onStoreLoadStart({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                 });
             }
@@ -43,6 +45,7 @@ exports.hookManager = {
                     relativeFilepath,
                     fileContent: processedFileContent,
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                 });
                 if (returnValue) {
@@ -52,16 +55,17 @@ exports.hookManager = {
         });
         return processedFileContent;
     },
-    invokeOnStoreItemAdd({ relativeFilepath, fileContent }) {
+    invokeOnStoreItemAdd({ relativeFilepath, storeItem }) {
         const hookModulesInfo = moduleManager.getModuleGroupInfo();
         hookModulesInfo.forEach(hookInfo => {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemAdd) {
                 hookModule.onStoreItemAdd({
                     relativeFilepath,
-                    fileContent,
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
+                    storeItem,
                 });
             }
         });
@@ -73,6 +77,7 @@ exports.hookManager = {
             if (hookModule.onStoreLoadDone) {
                 hookModule.onStoreLoadDone({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                 });
             }
@@ -85,50 +90,55 @@ exports.hookManager = {
             if (hookModule.onStoreChangeStart) {
                 hookModule.onStoreChangeStart({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                     changedFiles,
                 });
             }
         });
     },
-    invokeOnStoreItemBeforeUpdate({ relativeFilepath, fileContent }) {
+    invokeOnStoreItemBeforeUpdate({ relativeFilepath, storeItem }) {
         const hookModulesInfo = moduleManager.getModuleGroupInfo();
         hookModulesInfo.forEach(hookInfo => {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemBeforeUpdate) {
                 hookModule.onStoreItemBeforeUpdate({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                     relativeFilepath,
-                    fileContent,
+                    storeItem,
                 });
             }
         });
     },
-    invokeOnStoreItemAfterUpdate({ relativeFilepath, fileContent }) {
+    invokeOnStoreItemAfterUpdate({ relativeFilepath, storeItem, previousStoreItem, }) {
         const hookModulesInfo = moduleManager.getModuleGroupInfo();
         hookModulesInfo.forEach(hookInfo => {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemAfterUpdate) {
                 hookModule.onStoreItemAfterUpdate({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                     relativeFilepath,
-                    fileContent,
+                    storeItem,
+                    previousStoreItem,
                 });
             }
         });
     },
-    invokeOnStoreItemDelete({ relativeFilepath, fileContent }) {
+    invokeOnStoreItemDelete({ relativeFilepath, storeItem }) {
         const hookModulesInfo = moduleManager.getModuleGroupInfo();
         hookModulesInfo.forEach(hookInfo => {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemDelete) {
                 hookModule.onStoreItemDelete({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                     relativeFilepath,
-                    fileContent,
+                    storeItem,
                 });
             }
         });
@@ -140,6 +150,7 @@ exports.hookManager = {
             if (hookModule.onStoreChangeDone) {
                 hookModule.onStoreChangeDone({
                     store: store_1.store,
+                    logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
                     changedFiles,
                 });

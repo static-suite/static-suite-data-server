@@ -8,11 +8,6 @@ import { store } from '@lib/store';
 import { jsonify } from '@lib/utils/object';
 import { diffManager } from '@lib/store/diff/diffManager';
 import { ObjectType } from '@lib/utils/object/object.types';
-import { dependencyManager } from '@lib/store/dependency/dependencyManager';
-import {
-  dependencyTree,
-  getReversedDependencyTree,
-} from '@lib/store/dependency/dependencyTagger';
 
 const statusIndex = (req: Request, res: Response): void => {
   res.render('statusIndex', {
@@ -37,9 +32,6 @@ const statusBasic = (req: Request, res: Response): void => {
       numberOfExecutions: queryRunner.getCount(),
       numberOfCachedQueries: cache.bin('query').size,
     },
-    dependencyTree: jsonify(dependencyTree),
-    reversedDependencyTree: jsonify(getReversedDependencyTree()),
-    invalidatedFilepaths: dependencyManager.getInvalidatedFilepaths(),
   };
 
   res.status(200);

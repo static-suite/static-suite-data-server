@@ -5,6 +5,7 @@ const home = (req, res) => {
     res.render('home', {
         links: {
             '/data': 'Browse all data loaded into the server',
+            '/dependency': 'Dependency data',
             '/dump': 'Dump operations',
             '/query': 'List of available queries',
             '/task': 'List of available tasks',

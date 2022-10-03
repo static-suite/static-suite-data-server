@@ -82,7 +82,11 @@ export const moduleManager = {
       throw e;
     }
     if (internalModuleCache[resolvedModulePath].onModuleLoad) {
-      internalModuleCache[resolvedModulePath].onModuleLoad({ config, store });
+      internalModuleCache[resolvedModulePath].onModuleLoad({
+        config,
+        store,
+        logger,
+      });
     }
     logger.debug(`Module ${resolvedModulePath} successfully loaded.`);
     return internalModuleCache[resolvedModulePath];

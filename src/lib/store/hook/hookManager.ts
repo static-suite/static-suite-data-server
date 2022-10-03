@@ -1,10 +1,11 @@
 import { config } from '@lib/config';
 import { store } from '@lib/store';
+import { logger } from '@lib/utils/logger';
 import { dependencyTagger } from '@lib/store/dependency/dependencyTagger';
 import { FileType } from '@lib/utils/fs/fs.types';
 import { dirBasedModuleGroupManager } from '@lib/utils/module';
 import { HookManager, HookModule } from './hook.types';
-import { Dump } from '../dump/dumpManager.types';
+import { Dump } from '../dump/dump.types';
 
 /**
  * A manager for hooks stored in a user-land directory defined by configuration.
@@ -30,6 +31,7 @@ export const hookManager: HookManager = {
       if (hookModule.onStoreLoadStart) {
         hookModule.onStoreLoadStart({
           store,
+          logger,
           dependencyTagger,
         });
       }
@@ -47,6 +49,7 @@ export const hookManager: HookManager = {
           relativeFilepath,
           fileContent: processedFileContent,
           store,
+          logger,
           dependencyTagger,
         });
         if (returnValue) {
@@ -57,16 +60,17 @@ export const hookManager: HookManager = {
     return processedFileContent;
   },
 
-  invokeOnStoreItemAdd({ relativeFilepath, fileContent }): void {
+  invokeOnStoreItemAdd({ relativeFilepath, storeItem }): void {
     const hookModulesInfo = moduleManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemAdd) {
         hookModule.onStoreItemAdd({
           relativeFilepath,
-          fileContent,
           store,
+          logger,
           dependencyTagger,
+          storeItem,
         });
       }
     });
@@ -79,6 +83,7 @@ export const hookManager: HookManager = {
       if (hookModule.onStoreLoadDone) {
         hookModule.onStoreLoadDone({
           store,
+          logger,
           dependencyTagger,
         });
       }
@@ -92,6 +97,7 @@ export const hookManager: HookManager = {
       if (hookModule.onStoreChangeStart) {
         hookModule.onStoreChangeStart({
           store,
+          logger,
           dependencyTagger,
           changedFiles,
         });
@@ -99,46 +105,54 @@ export const hookManager: HookManager = {
     });
   },
 
-  invokeOnStoreItemBeforeUpdate({ relativeFilepath, fileContent }) {
+  invokeOnStoreItemBeforeUpdate({ relativeFilepath, storeItem }) {
     const hookModulesInfo = moduleManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemBeforeUpdate) {
         hookModule.onStoreItemBeforeUpdate({
           store,
+          logger,
           dependencyTagger,
           relativeFilepath,
-          fileContent,
+          storeItem,
         });
       }
     });
   },
 
-  invokeOnStoreItemAfterUpdate({ relativeFilepath, fileContent }) {
+  invokeOnStoreItemAfterUpdate({
+    relativeFilepath,
+    storeItem,
+    previousStoreItem,
+  }) {
     const hookModulesInfo = moduleManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemAfterUpdate) {
         hookModule.onStoreItemAfterUpdate({
           store,
+          logger,
           dependencyTagger,
           relativeFilepath,
-          fileContent,
+          storeItem,
+          previousStoreItem,
         });
       }
     });
   },
 
-  invokeOnStoreItemDelete({ relativeFilepath, fileContent }) {
+  invokeOnStoreItemDelete({ relativeFilepath, storeItem }) {
     const hookModulesInfo = moduleManager.getModuleGroupInfo();
     hookModulesInfo.forEach(hookInfo => {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemDelete) {
         hookModule.onStoreItemDelete({
           store,
+          logger,
           dependencyTagger,
           relativeFilepath,
-          fileContent,
+          storeItem,
         });
       }
     });
@@ -151,6 +165,7 @@ export const hookManager: HookManager = {
       if (hookModule.onStoreChangeDone) {
         hookModule.onStoreChangeDone({
           store,
+          logger,
           dependencyTagger,
           changedFiles,
         });

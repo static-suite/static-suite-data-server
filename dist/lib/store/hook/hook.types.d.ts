@@ -1,8 +1,10 @@
 import { ConfigOptions } from '@lib/config/config.types';
 import { Store } from '@lib/store/store.types';
 import { FileType } from '@lib/utils/fs/fs.types';
+import { Logger } from '@lib/utils/logger/logger.types';
+import { Json } from '@lib/utils/object/object.types';
 import { DependencyTagger } from '../dependency/dependency.types';
-import { Dump } from '../dump/dumpManager.types';
+import { Dump } from '../dump/dump.types';
 import { ChangedFiles } from '../workDir/workDir.types';
 /**
  * A manager for a group of user-land modules.
@@ -12,13 +14,13 @@ import { ChangedFiles } from '../workDir/workDir.types';
 export declare type HookManager = {
     reset(): void;
     invokeOnStoreLoadStart(): void;
-    invokeOnProcessFile(options: FileHookOptions): FileType;
-    invokeOnStoreItemAdd(options: FileHookOptions): void;
+    invokeOnProcessFile(options: FileTypeHookOptions): FileType;
+    invokeOnStoreItemAdd(options: StoreItemHookOptions): void;
     invokeOnStoreLoadDone(): void;
     invokeOnStoreChangeStart(changedFiles: ChangedFiles): void;
-    invokeOnStoreItemBeforeUpdate(options: FileHookOptions): void;
-    invokeOnStoreItemAfterUpdate(options: FileHookOptions): void;
-    invokeOnStoreItemDelete(options: FileHookOptions): void;
+    invokeOnStoreItemBeforeUpdate(options: StoreItemHookOptions): void;
+    invokeOnStoreItemAfterUpdate(options: StoreItemHookOptions): void;
+    invokeOnStoreItemDelete(options: StoreItemHookOptions): void;
     invokeOnStoreChangeDone(changedFiles: ChangedFiles): void;
     invokeOnDumpCreate(dump: Dump): Dump;
 };
@@ -34,6 +36,10 @@ export interface OnModuleLoadHookOptions {
      * The data store.
      */
     store: Store;
+    /**
+     * The logger service.
+     */
+    logger: Logger;
 }
 /**
  * Options passed to a hook.
@@ -49,14 +55,37 @@ export interface BaseHookOptions {
      */
     store: Store;
     /**
+     * The logger service.
+     */
+    logger: Logger;
+    /**
      * The dependency tagger service.
      */
     dependencyTagger: DependencyTagger;
 }
 /**
- * Options passed to a file hook.
+ * Options passed to a store item hook.
  */
-export interface FileHookOptions {
+export interface StoreItemHookOptions {
+    /**
+     * Relative file path inside the data dir.
+     */
+    relativeFilepath: string;
+    /**
+     * Contents of the store item.
+     */
+    storeItem: Json | string | null;
+    /**
+     * Contents of the previous store item before store was updated.
+     */
+    previousStoreItem?: Json | string | null;
+}
+export interface FullStoreItemHookOptions extends StoreItemHookOptions, BaseHookOptions {
+}
+/**
+ * Options passed to a file type hook.
+ */
+export interface FileTypeHookOptions {
     /**
      * Relative file path inside the data dir.
      */
@@ -66,10 +95,7 @@ export interface FileHookOptions {
      */
     fileContent: FileType;
 }
-/**
- * Full options passed to a hook.
- */
-export interface FullHookOptions extends BaseHookOptions, FileHookOptions {
+export interface FullFileTypeHookOptions extends FileTypeHookOptions, BaseHookOptions {
 }
 export interface ChangedFilesHookOptions extends BaseHookOptions {
     /**
@@ -119,11 +145,11 @@ export declare type HookModule = {
      * @remarks
      * This hook is aimed at altering the contents of the file before it being added to the store.
      *
-     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
+     * @param options - An object with options passed to the hook. @see {@link FullFileTypeHookOptions}
      *
      * @returns The file contents, and object with "raw" and "json" members.
      */
-    onProcessFile?(options: FullHookOptions): FileType;
+    onProcessFile?(options: FullFileTypeHookOptions): FileType;
     /**
      * A hook executed after a file is added into the store.
      *
@@ -131,9 +157,9 @@ export declare type HookModule = {
      * This hook is aimed at adding some information to the store, e.g.- indexing all contents
      * by their taxonomy.
      *
-     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
+     * @param options - An object with options passed to the hook. @see {@link StoreItemHookOptions}
      */
-    onStoreItemAdd?(options: FullHookOptions): void;
+    onStoreItemAdd?(options: FullStoreItemHookOptions): void;
     /**
      * A hook executed after the store finishes loading.
      *
@@ -160,9 +186,9 @@ export declare type HookModule = {
      * This hook is aimed at adding some information to the store, e.g.- indexing all contents
      * by their taxonomy.
      *
-     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
+     * @param options - An object with options passed to the hook. @see {@link StoreItemHookOptions}
      */
-    onStoreItemBeforeUpdate?(options: FullHookOptions): void;
+    onStoreItemBeforeUpdate?(options: FullStoreItemHookOptions): void;
     /**
      * A hook executed after a file is updated in the store.
      *
@@ -170,9 +196,9 @@ export declare type HookModule = {
      * This hook is aimed at adding some information to the store, e.g.- indexing all contents
      * by their taxonomy.
      *
-     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
+     * @param options - An object with options passed to the hook. @see {@link StoreItemHookOptions}
      */
-    onStoreItemAfterUpdate?(options: FullHookOptions): void;
+    onStoreItemAfterUpdate?(options: FullStoreItemHookOptions): void;
     /**
      * A hook executed after a file is deleted from the store.
      *
@@ -180,9 +206,9 @@ export declare type HookModule = {
      * This hook is aimed at reverting the actions taken in storeAdd hook, e.g.- removing a file
      * from a taxonomy index.
      *
-     * @param options - An object with options passed to the hook. @see {@link FileHookOptions}
+     * @param options - An object with options passed to the hook. @see {@link StoreItemHookOptions}
      */
-    onStoreItemDelete?(options: FullHookOptions): void;
+    onStoreItemDelete?(options: FullStoreItemHookOptions): void;
     /**
      * A hook executed after the store ends updating.
      *

@@ -35,7 +35,7 @@ exports.store.data.subset = (options) => {
         recursive: 'true',
     };
     const opts = { ...defaultOptions, ...options };
-    let subset = { filenames: [], items: [] };
+    let subset = { map: new Map(), filenames: [], items: [] };
     const dirWithTrimmedSlashes = opts.dir?.replace(/^\//, '').replace(/\/$/, '');
     const dirPart = dirWithTrimmedSlashes ? `${dirWithTrimmedSlashes}/` : '';
     let variantPart;
@@ -68,8 +68,10 @@ exports.store.data.subset = (options) => {
         const mapKeys = Array.from(exports.store.data.keys());
         mapKeys.forEach(k => {
             if (k.match(regex)) {
+                const storeItem = exports.store.data.get(k);
+                subset.map.set(k, storeItem);
                 subset.filenames.push(k);
-                subset.items.push(exports.store.data.get(k));
+                subset.items.push(storeItem);
             }
         });
         subsetCache.set(pattern, subset);

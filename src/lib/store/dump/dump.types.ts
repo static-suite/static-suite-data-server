@@ -1,3 +1,5 @@
+import { Diff } from '../diff/diff.types';
+
 /**
  * Service that dumps resolved data (with resolved includes) into a dump directory.
  */
@@ -63,6 +65,11 @@ export type Dump = {
    * deleted. We keep the same structure for both updated and deleted items.
    */
   deleted: Map<string, { oldPublicUrl: string | null; newPublicUrl: null }>;
+
+  /**
+   * The diff used to generate this dump.
+   */
+  diff: Diff;
 };
 
 export type DumpMetadata = {

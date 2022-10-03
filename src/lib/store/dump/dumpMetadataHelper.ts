@@ -2,7 +2,7 @@ import fs from 'fs';
 import { logger } from '@lib/utils/logger';
 import { jsonify } from '@lib/utils/object';
 import { config } from '@lib/config';
-import { Dump, DumpMetadata } from './dumpManager.types';
+import { Dump, DumpMetadata } from './dump.types';
 import { unixEpochUniqueId } from '../workDir';
 
 const getMetadataFilepath = () => `${config.dumpDir}/metadata.json`;

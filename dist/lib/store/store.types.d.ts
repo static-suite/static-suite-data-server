@@ -131,6 +131,10 @@ export declare type StoreSubsetOptions = {
  */
 export declare type StoreSubset = {
     /**
+     * Map of elements, with the filename as key
+     */
+    map: Map<string, any>;
+    /**
      * Array of filenames in this subset.
      */
     filenames: Array<string>;

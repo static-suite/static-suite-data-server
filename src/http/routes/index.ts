@@ -20,6 +20,15 @@ import {
   dumpMetadataShow,
   dumpMetadataReset,
 } from './dump';
+import {
+  dependencyIndex,
+  dependencyInvalidatedFilepaths,
+  dependencyExplicitlyInvalidatedTags,
+  dependencyAllInvalidatedTags,
+  dependencyTreeReversed,
+  dependencyTreeRoute,
+  dependencyTagParents,
+} from './dependency';
 
 const routes = Router();
 
@@ -42,6 +51,13 @@ routes.get('/dump/incremental', dumpIncremental);
 routes.get('/dump/full', dumpFull);
 routes.get('/dump/metadata/show', dumpMetadataShow);
 routes.get('/dump/metadata/reset', dumpMetadataReset);
+routes.get('/dependency/tree/reversed', dependencyTreeReversed);
+routes.get('/dependency/tree', dependencyTreeRoute);
+routes.get('/dependency/invalidated/tags', dependencyExplicitlyInvalidatedTags);
+routes.get('/dependency/invalidated/tags/all', dependencyAllInvalidatedTags);
+routes.get('/dependency/invalidated/filepaths', dependencyInvalidatedFilepaths);
+routes.get('/dependency/tag/parents', dependencyTagParents);
+routes.get('/dependency', dependencyIndex);
 routes.get(['/data/*', '/data'], data);
 
 export default routes;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dependencyManager = void 0;
+exports.dependencyManager = exports.getAllInvalidatedTags = exports.getTagParents = void 0;
 const store_1 = require("../store");
 const dependencyTagger_1 = require("./dependencyTagger");
 const invalidatedFilepaths = {
@@ -16,11 +16,12 @@ const getTagParents = (tag, parents = new Set()) => {
         ?.forEach(parent => {
         if (!parents.has(parent)) {
             parents.add(parent);
-            getTagParents(parent, parents);
+            (0, exports.getTagParents)(parent, parents);
         }
     });
     return parents;
 };
+exports.getTagParents = getTagParents;
 /**
  * Gets a recursive list of invalidated tags.
  *
@@ -28,7 +29,7 @@ const getTagParents = (tag, parents = new Set()) => {
  * Iterates over all explicitly invalidated tags, and obtains all
  * its parents.
  */
-const getInvalidatedTags = () => {
+const getAllInvalidatedTags = () => {
     const allInvalidatedTags = new Set();
     const invalidatedTagsArray = Array.from(dependencyTagger_1.invalidatedTags);
     if (invalidatedTagsArray.length > 0) {
@@ -40,18 +41,19 @@ const getInvalidatedTags = () => {
             allInvalidatedTags.add(invalidatedTag);
         }
         // Search for parents of this invalidated tag.
-        getTagParents(invalidatedTag).forEach(parentTag => {
+        (0, exports.getTagParents)(invalidatedTag).forEach(parentTag => {
             allInvalidatedTags.add(parentTag);
         });
     });
     return Array.from(allInvalidatedTags);
 };
+exports.getAllInvalidatedTags = getAllInvalidatedTags;
 /**
  * Manager that keeps control of dependencies between data.
  */
 exports.dependencyManager = {
     trackInvalidatedFilepaths: () => {
-        const allInvalidatedTags = getInvalidatedTags();
+        const allInvalidatedTags = (0, exports.getAllInvalidatedTags)();
         allInvalidatedTags.forEach(invalidatedTag => {
             if (store_1.store.deleted.has(invalidatedTag)) {
                 invalidatedFilepaths.deleted.add(invalidatedTag);

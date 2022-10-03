@@ -65,7 +65,8 @@ exports.queryRunner = {
                 if (queryResponse?.cacheable !== false) {
                     queryCache.set(cacheId, queryResult);
                 }
-                // Set tags for this query.
+                // Set tags for this query, replacing any other, because query
+                // dependencies are set only by their "tags" field.
                 const queryTags = queryResponse.tags && queryResponse.tags?.length > 0
                     ? queryResponse.tags
                     : ['*'];

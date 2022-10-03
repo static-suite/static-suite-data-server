@@ -1,4 +1,4 @@
-import { Dump, DumpMetadata } from './dumpManager.types';
+import { Dump, DumpMetadata } from './dump.types';
 export declare const dumpMetadataHelper: {
     storeDumpMetadata: (dump: Dump) => boolean;
     removeDumpDataOlderThan(uniqueId: string): DumpMetadata;

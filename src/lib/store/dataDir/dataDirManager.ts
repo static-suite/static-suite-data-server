@@ -30,6 +30,7 @@ export const dataDirManager: DataDirManager = {
     hookManager.reset();
     queryManager.reset();
     taskManager.reset();
+    dependencyManager.reset();
 
     // Invoke "store load start" hook.
     hookManager.invokeOnStoreLoadStart();
