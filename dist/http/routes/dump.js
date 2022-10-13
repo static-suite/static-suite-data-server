@@ -9,7 +9,7 @@ const dump_1 = require("@lib/store/dump");
 const object_1 = require("@lib/utils/object");
 const config_1 = require("@lib/config");
 const dumpIndex = (req, res) => {
-    res.render('statusIndex', {
+    res.render('dumpIndex', {
         links: {
             '/dump/incremental': 'Execute an incremental dump',
             '/dump/full': 'Execute a full dump',
@@ -19,18 +19,23 @@ const dumpIndex = (req, res) => {
     });
 };
 exports.dumpIndex = dumpIndex;
-const dumpIncremental = (req, res) => {
-    const dump = dump_1.dumpManager.dump({ incremental: true });
+const dumpAction = (req, res, incremental) => {
+    const dump = dump_1.dumpManager.dump({ incremental });
+    const dumpAsJson = (0, object_1.jsonify)(dump);
+    const args = req.query;
+    if (args?.noDiff !== undefined) {
+        delete dumpAsJson.diff;
+    }
     res.status(200);
     res.set({ 'Content-Type': 'application/json' });
-    res.send((0, object_1.jsonify)(dump));
+    res.send(dumpAsJson);
+};
+const dumpIncremental = (req, res) => {
+    dumpAction(req, res, true);
 };
 exports.dumpIncremental = dumpIncremental;
 const dumpFull = (req, res) => {
-    const dump = dump_1.dumpManager.dump({ incremental: false });
-    res.status(200);
-    res.set({ 'Content-Type': 'application/json' });
-    res.send((0, object_1.jsonify)(dump));
+    dumpAction(req, res, false);
 };
 exports.dumpFull = dumpFull;
 const getMetadata = () => {

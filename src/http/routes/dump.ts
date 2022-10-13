@@ -5,7 +5,7 @@ import { jsonify } from '@lib/utils/object';
 import { config } from '@lib/config';
 
 const dumpIndex = (req: Request, res: Response): void => {
-  res.render('statusIndex', {
+  res.render('dumpIndex', {
     links: {
       '/dump/incremental': 'Execute an incremental dump',
       '/dump/full': 'Execute a full dump',
@@ -15,18 +15,29 @@ const dumpIndex = (req: Request, res: Response): void => {
   });
 };
 
-const dumpIncremental = (req: Request, res: Response): void => {
-  const dump = dumpManager.dump({ incremental: true });
+const dumpAction = (
+  req: Request,
+  res: Response,
+  incremental: boolean,
+): void => {
+  const dump = dumpManager.dump({ incremental });
+  const dumpAsJson: any = jsonify(dump);
+  const args: any = req.query;
+  if (args?.noDiff !== undefined) {
+    delete dumpAsJson.diff;
+  }
+
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });
-  res.send(jsonify(dump));
+  res.send(dumpAsJson);
+};
+
+const dumpIncremental = (req: Request, res: Response): void => {
+  dumpAction(req, res, true);
 };
 
 const dumpFull = (req: Request, res: Response): void => {
-  const dump = dumpManager.dump({ incremental: false });
-  res.status(200);
-  res.set({ 'Content-Type': 'application/json' });
-  res.send(jsonify(dump));
+  dumpAction(req, res, false);
 };
 
 const getMetadata = () => {
