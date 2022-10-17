@@ -126,13 +126,13 @@ export { Store }
  */
 declare type Store_2 = {
     /**
-     * Initial unique set when the store was initially loaded.
+     * Initial unique id when the store was initially loaded.
      */
     initialUniqueId: string;
     /**
      * Current unique id to tell when was the store last synced.
      *
-     * Every time the store is updated, uniqueId is set with the last modification
+     * Every time the store is updated, this id is set with the last modification
      * unique id of the data directory, not the date when the store has finished updating.
      *
      */
@@ -162,7 +162,7 @@ declare type Store_2 = {
      */
     data: StoreData<string, any>;
     /**
-     * A list of deleted files from store, to be able to track them.
+     * A list of deleted files since last reboot, to be able to track them.
      */
     deleted: Set<string>;
     /**
@@ -174,7 +174,7 @@ declare type Store_2 = {
          */
         url: Map<string, any>;
         /**
-         * An index that holds all data for all files, keyed by their lang and uuid.
+         * An index that holds all data for all files, keyed by their langcode and UUID.
          */
         uuid: Map<string, any>;
         /**

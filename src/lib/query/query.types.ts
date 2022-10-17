@@ -99,8 +99,8 @@ export type QueryModuleResult = {
  * @public
  */
 export enum CacheStatus {
-  MISS,
-  HIT,
+  MISS = 'miss',
+  HIT = 'hit',
 }
 
 /**

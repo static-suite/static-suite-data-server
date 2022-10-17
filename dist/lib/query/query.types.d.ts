@@ -91,8 +91,8 @@ export declare type QueryModuleResult = {
  * @public
  */
 export declare enum CacheStatus {
-    MISS = 0,
-    HIT = 1
+    MISS = "miss",
+    HIT = "hit"
 }
 /**
  * A successful response returned after executing a query.
