@@ -81,6 +81,7 @@ export const queryRunner: QueryRunner = {
             ? queryResponse.tags
             : ['*'];
         dependencyTagger.setDependency(queryDefinition, queryTags);
+        queryResult.tags = queryTags;
       } catch (e) {
         // Log error and rethrow.
         logger.error(

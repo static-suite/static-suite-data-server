@@ -71,6 +71,7 @@ exports.queryRunner = {
                     ? queryResponse.tags
                     : ['*'];
                 dependencyTagger_1.dependencyTagger.setDependency(queryDefinition, queryTags);
+                queryResult.tags = queryTags;
             }
             catch (e) {
                 // Log error and rethrow.

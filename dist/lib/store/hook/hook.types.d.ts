@@ -147,7 +147,7 @@ export declare type HookModule = {
      *
      * @param options - An object with options passed to the hook. @see {@link FullFileTypeHookOptions}
      *
-     * @returns The file contents, and object with "raw" and "json" members.
+     * @returns The file contents, an object with "raw" and "json" members.
      */
     onProcessFile?(options: FullFileTypeHookOptions): FileType;
     /**

@@ -37,11 +37,6 @@ export type DependencyTagger = {
    * @param tags - The list of tags for which to invalidate dependency items.
    */
   invalidateTags(tags: string[]): void;
-
-  /**
-   * Resets the list of invalidated tags once consumed.
-   */
-  // resetInvalidatedTags(): void;
 };
 
 /**
