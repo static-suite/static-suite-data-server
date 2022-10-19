@@ -31,10 +31,12 @@ There are three main use cases:
 
 ### SSG develop/build phase
 
-Require `dist/lib/dataServer.js` inside the SSG, and call its `init()` function:
+Require `dataServer` from `@static-suite/static-suite-data-server/dist/lib/` inside the SSG, and call its `init()` function:
 
 ```javascript
-const { dataServer } = require('dist/lib/dataServer');
+const {
+  dataServer,
+} = require('@static-suite/static-suite-data-server/dist/lib/');
 
 // Init Data Server.
 const { store } = dataServer.init({ dataDir: '../data/prod' });
