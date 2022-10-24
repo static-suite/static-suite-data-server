@@ -112,16 +112,18 @@ exports.storeManager = {
     remove: (relativeFilepath) => {
         // Get stored data before removing it from store.
         const storedData = _1.store.data.get(relativeFilepath);
-        // Remove data from URL index.
-        const url = storedData.data?.content?.url?.path;
-        if (url) {
-            _1.store.index.url.delete(url);
-        }
-        // Remove data from UUID index.
-        const uuid = storedData.data?.content?.uuid;
-        const langcode = storedData.data?.content?.langcode?.value;
-        if (uuid && langcode) {
-            _1.store.index.uuid.get(langcode)?.delete(uuid);
+        if (storedData) {
+            // Remove data from URL index.
+            const url = storedData.data?.content?.url?.path;
+            if (url) {
+                _1.store.index.url.delete(url);
+            }
+            // Remove data from UUID index.
+            const uuid = storedData.data?.content?.uuid;
+            const langcode = storedData.data?.content?.langcode?.value;
+            if (uuid && langcode) {
+                _1.store.index.uuid.get(langcode)?.delete(uuid);
+            }
         }
         // Delete file contents from store.
         _1.store.data.delete(relativeFilepath);
