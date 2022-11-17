@@ -43,11 +43,12 @@ exports.cache = {
      */
     keys: () => Array.from(data.keys()),
     /**
-     * Gets an array of keys of all available cache bins.
-     *
-     * @returns An array of cache bin keys.
+     * Deletes all available cache bins.
      */
     clear: () => {
+        data.forEach((bin, binId) => {
+            data.get(binId)?.clear();
+        });
         data.clear();
     },
 };
