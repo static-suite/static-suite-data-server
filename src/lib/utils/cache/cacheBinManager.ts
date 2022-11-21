@@ -31,6 +31,16 @@ export type Cache = {
   clear(): void;
 };
 
+/**
+ * Keeps a list of consumed bins to be able to clear them later.
+ *
+ * "data" is a Map and its bins can be removed, but those bins are
+ * Maps at the same time. That leads to having bin objects used by
+ * some module that cannot be cleared when Cache::clear() runs.
+ *
+ */
+const consumedBins = new Map<string, CacheBin<any>>();
+
 const data = new Map<string, CacheBin<any>>();
 
 /**
@@ -45,7 +55,9 @@ const data = new Map<string, CacheBin<any>>();
  *
  */
 const initBin = <Type>(binId: string): CacheBin<Type> => {
-  data.set(binId, new Map<string, Type>());
+  const bin = new Map<string, Type>();
+  data.set(binId, bin);
+  consumedBins.set(binId, bin);
   return data.get(binId) as CacheBin<Type>;
 };
 
@@ -81,8 +93,8 @@ export const cache: Cache = {
    * Deletes all available cache bins.
    */
   clear: () => {
-    data.forEach((bin, binId) => {
-      data.get(binId)?.clear();
+    consumedBins.forEach(bin => {
+      bin.clear();
     });
     data.clear();
   },

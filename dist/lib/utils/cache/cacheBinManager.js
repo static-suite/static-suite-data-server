@@ -1,6 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cache = void 0;
+/**
+ * Keeps a list of consumed bins to be able to clear them later.
+ *
+ * "data" is a Map and its bins can be removed, but those bins are
+ * Maps at the same time. That leads to having bin objects used by
+ * some module that cannot be cleared when Cache::clear() runs.
+ *
+ */
+const consumedBins = new Map();
 const data = new Map();
 /**
  * Initializes a cache bin.
@@ -14,7 +23,9 @@ const data = new Map();
  *
  */
 const initBin = (binId) => {
-    data.set(binId, new Map());
+    const bin = new Map();
+    data.set(binId, bin);
+    consumedBins.set(binId, bin);
     return data.get(binId);
 };
 /**
@@ -46,8 +57,8 @@ exports.cache = {
      * Deletes all available cache bins.
      */
     clear: () => {
-        data.forEach((bin, binId) => {
-            data.get(binId)?.clear();
+        consumedBins.forEach(bin => {
+            bin.clear();
         });
         data.clear();
     },
