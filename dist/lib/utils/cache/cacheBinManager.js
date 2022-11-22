@@ -54,11 +54,12 @@ exports.cache = {
      */
     keys: () => Array.from(data.keys()),
     /**
-     * Deletes all available cache bins.
+     * Clears all consumed cache bins.
      */
     clear: () => {
-        consumedBins.forEach(bin => {
+        consumedBins.forEach((bin, binId) => {
             bin.clear();
+            consumedBins.delete(binId);
         });
         data.clear();
     },
