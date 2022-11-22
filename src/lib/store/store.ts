@@ -105,6 +105,7 @@ export const resetStore = (): void => {
   const previousSubset = store.data.subset;
   store.data = initData();
   store.data.subset = previousSubset;
+  subsetCache.clear();
   store.deleted.clear();
   store.index = initIndex();
 };
