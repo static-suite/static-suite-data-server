@@ -5,6 +5,7 @@
   "main": "./dist/lib/index.js",
   "typings": "./dist/lib/index.d.ts",
   "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/static_suite",
   "repository": {
     "type": "git",
     "url": "https://github.com/static-suite/static-suite-data-server"
