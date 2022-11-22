@@ -559,7 +559,7 @@ A dump is executed by accessing an HTTP endpoint located at `/dump/incremental`,
   "fromUniqueId": "2022-06-20_11-29-12.834701__4492",
   "toUniqueId": "2022-06-20_11-59-57.045645__8520",
   "updated": {
-    "en-gb/entity/node/article/60000/61416.json": {
+    "en-gb/entity/node/article/1234.json": {
       "oldPublicUrl": "/my-article",
       "newPublicUrl": "/my-renamed-article"
     }
