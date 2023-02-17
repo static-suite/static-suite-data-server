@@ -36,7 +36,9 @@ describe('String utils test', () => {
   describe('parseUniqueId', () => {
     it('parses a valid unique id and returns a date', () => {
       const uniqueIdDate = parseUniqueId('2022-09-28_11-42-00.001712__7220');
-      expect(uniqueIdDate?.getTime()).toEqual(1664365320001);
+      // Depending on the time of year (Daylight saving time or not), parsing
+      // a unique id returns a different date. This test checks both possible values.
+      expect([1664365320001, 1664361720001]).toContain(uniqueIdDate?.getTime());
     });
 
     it('parses a non valid unique id and returns null', () => {
