@@ -45,7 +45,7 @@ export declare const parseUniqueId: (uniqueId: string) => Date | null;
 /**
  * Checks that a string is a unique id.
  *
- * @param uniqueId - A unique id t be checked
+ * @param uniqueId - A unique id to be checked
  */
 export declare const isUniqueId: (uniqueId: string) => boolean;
 //# sourceMappingURL=stringUtils.d.ts.map
