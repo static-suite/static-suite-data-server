@@ -87,7 +87,7 @@ export const parseUniqueId = (uniqueId: string): Date | null => {
 /**
  * Checks that a string is a unique id.
  *
- * @param uniqueId - A unique id t be checked
+ * @param uniqueId - A unique id to be checked
  */
 export const isUniqueId = (uniqueId: string): boolean =>
   /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/.test(uniqueId);
