@@ -1,8 +1,8 @@
-import { ConfigOptions } from '@lib/config/config.types';
-import { Store } from '@lib/store/store.types';
-import { FileType } from '@lib/utils/fs/fs.types';
-import { Logger } from '@lib/utils/logger/logger.types';
-import { Json } from '@lib/utils/object/object.types';
+import { ConfigOptions } from '../../config/config.types';
+import { Store } from '../store.types';
+import { FileType } from '../../utils/fs/fs.types';
+import { Logger } from '../../utils/logger/logger.types';
+import { Json } from '../../utils/object/object.types';
 import { DependencyTagger } from '../dependency/dependency.types';
 import { Dump } from '../dump/dump.types';
 import { ChangedFiles } from '../workDir/workDir.types';
@@ -11,7 +11,7 @@ import { ChangedFiles } from '../workDir/workDir.types';
  *
  * @typeParam ModuleType - The type of module being managed.
  */
-export declare type HookManager = {
+export type HookManager = {
     reset(): void;
     invokeOnStoreLoadStart(): void;
     invokeOnProcessFile(options: FileTypeHookOptions): FileType;
@@ -120,7 +120,7 @@ export interface OnDumpHookOptions {
 /**
  * A module that defines several hooks.
  */
-export declare type HookModule = {
+export type HookModule = {
     /**
      * A hook executed when a hook module is loaded or reloaded.
      *

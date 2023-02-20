@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dumpMetadataHelper = void 0;
 const fs_1 = __importDefault(require("fs"));
-const logger_1 = require("@lib/utils/logger");
-const object_1 = require("@lib/utils/object");
-const config_1 = require("@lib/config");
+const logger_1 = require("../../utils/logger");
+const object_1 = require("../../utils/object");
+const config_1 = require("../../config");
 const workDir_1 = require("../workDir");
 const getMetadataFilepath = () => `${config_1.config.dumpDir}/metadata.json`;
 exports.dumpMetadataHelper = {

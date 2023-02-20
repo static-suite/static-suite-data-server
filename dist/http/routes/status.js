@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.statusDiff = exports.statusIndexCustom = exports.statusIndexUuid = exports.statusIndexUrl = exports.statusBasic = exports.statusIndex = void 0;
-const dataDir_1 = require("@lib/store/dataDir");
-const query_1 = require("@lib/query");
-const config_1 = require("@lib/config");
-const cache_1 = require("@lib/utils/cache");
-const store_1 = require("@lib/store");
-const object_1 = require("@lib/utils/object");
-const diffManager_1 = require("@lib/store/diff/diffManager");
+const dataDir_1 = require("../../lib/store/dataDir");
+const query_1 = require("../../lib/query");
+const config_1 = require("../../lib/config");
+const cache_1 = require("../../lib/utils/cache");
+const store_1 = require("../../lib/store");
+const object_1 = require("../../lib/utils/object");
+const diffManager_1 = require("../../lib/store/diff/diffManager");
 const statusIndex = (req, res) => {
     res.render('statusIndex', {
         links: {

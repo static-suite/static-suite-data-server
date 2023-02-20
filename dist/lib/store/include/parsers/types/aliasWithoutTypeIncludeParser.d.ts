@@ -1,4 +1,4 @@
-import { GenericIncludeParserOptions } from '@lib/store/include/includeParser.types';
+import { GenericIncludeParserOptions } from '../../includeParser.types';
 /**
  *
  * @param options - Object with options as defined in @see {@link IncludeParserOptions}

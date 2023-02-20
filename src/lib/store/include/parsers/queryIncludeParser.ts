@@ -1,8 +1,8 @@
-import { config } from '@lib/config';
-import { RunMode } from '@lib/dataServer.types';
-import { queryRunner } from '@lib/query';
-import { isQueryErrorResponse } from '@lib/query/query.types';
-import { getObjValue } from '@lib/utils/object';
+import { config } from '../../../config';
+import { RunMode } from '../../../dataServer.types';
+import { queryRunner } from '../../../query';
+import { isQueryErrorResponse } from '../../../query/query.types';
+import { getObjValue } from '../../../utils/object';
 import { QueryIncludeParserOptions } from '../includeParser.types';
 import { aliasWithoutTypeIncludeParser } from './types/aliasWithoutTypeIncludeParser';
 

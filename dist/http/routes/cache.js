@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cacheClear = exports.cacheIndex = void 0;
-const cache_1 = require("@lib/utils/cache");
+const cache_1 = require("../../lib/utils/cache");
 const cacheIndex = (req, res) => {
     const cacheBins = Array.from(cache_1.cache.keys());
     res.render('cacheIndex', { cacheBins });

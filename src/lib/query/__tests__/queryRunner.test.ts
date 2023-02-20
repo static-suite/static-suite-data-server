@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@lib/config';
-import { RunMode } from '@lib/dataServer.types';
-import { cache } from '@lib/utils/cache';
-import { logger } from '@lib/utils/logger';
+import { config } from '../../config';
+import { RunMode } from '../../dataServer.types';
+import { cache } from '../../utils/cache';
+import { logger } from '../../utils/logger';
 import { isQueryErrorResponse } from '../query.types';
 import { queryRunner } from '../queryRunner';
 import { queryManager } from '../queryManager';

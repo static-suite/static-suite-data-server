@@ -18,7 +18,10 @@ export const isEmptyObject = (object: ObjectType): boolean =>
  *
  * @returns True if the object has the given key, false otherwise.
  */
-export const hasKey = <O>(object: O, key: PropertyKey): key is keyof O => {
+export const hasKey = <T extends object>(
+  object: T,
+  key: PropertyKey,
+): key is keyof T => {
   return key in object;
 };
 

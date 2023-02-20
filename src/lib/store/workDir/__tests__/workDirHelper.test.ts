@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { config } from '@lib/config';
+import { config } from '../../../config';
 import { workDirHelper } from '../workDirHelper';
 
 describe('workDirHelper test', () => {

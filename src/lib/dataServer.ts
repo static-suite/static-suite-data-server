@@ -1,13 +1,13 @@
-import { configureLogger } from '@lib/utils/logger';
-import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
-import { initWatcher } from '@lib/watcher';
-import { setConfig } from '@lib/config';
-import { dataDirManager } from '@lib/store/dataDir';
-import { store } from '@lib/store';
-import { Store } from '@lib/store/store.types';
-import { queryRunner } from '@lib/query';
-import { taskRunner } from '@lib/task/taskRunner';
-import { TaskRunner } from '@lib/task/task.types';
+import { configureLogger } from './utils/logger';
+import { LogLevel, LogFile } from './utils/logger/logger.types';
+import { initWatcher } from './watcher';
+import { setConfig } from './config';
+import { dataDirManager } from './store/dataDir';
+import { store } from './store';
+import { Store } from './store/store.types';
+import { queryRunner } from './query';
+import { taskRunner } from './task/taskRunner';
+import { TaskRunner } from './task/task.types';
 import {
   QueryRunner,
   QuerySuccessfulResponse,
@@ -15,7 +15,7 @@ import {
   QueryArgs,
   QueryModule,
   CacheStatus,
-} from '@lib/query/query.types';
+} from './query/query.types';
 import {
   RunMode,
   DataServerReturn,

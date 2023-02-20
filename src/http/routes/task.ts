@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { dataDirManager } from '@lib/store/dataDir';
-import { taskRunner, taskManager } from '@lib/task';
+import { dataDirManager } from '../../lib/store/dataDir';
+import { taskRunner, taskManager } from '../../lib/task';
 import {
   TaskErrorResponse,
   TaskSuccessfulResponse,
-} from '@lib/task/task.types';
+} from '../../lib/task/task.types';
 
 const taskIndex = (req: Request, res: Response): void => {
   const taskIds = Array.from(taskManager.getModuleGroupInfo().keys());

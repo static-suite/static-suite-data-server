@@ -1,4 +1,4 @@
-import { Json } from '@lib/utils/object/object.types';
+import { Json } from '../object/object.types';
 /**
  * An object that represents a file's contents.
  *
@@ -7,7 +7,7 @@ import { Json } from '@lib/utils/object/object.types';
  * the raw and json version of the file. If file is not a JSON, the "json"
  * property is null. If file is not found, both properties are null.
  */
-export declare type FileType = {
+export type FileType = {
     /**
      * The raw contents of the file, as a string. Null if file is not found.
      */

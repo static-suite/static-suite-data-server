@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLogFile = void 0;
-const config_1 = require("@lib/config");
+const config_1 = require("../../../config");
 /**
  * Gets the absolute path to Static Suite's log file.
  *

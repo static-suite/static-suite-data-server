@@ -2,7 +2,7 @@ import { Diff } from '../diff/diff.types';
 /**
  * Service that dumps resolved data (with resolved includes) into a dump directory.
  */
-export declare type DumpManager = {
+export type DumpManager = {
     /**
      * Dump resolved data (with resolved includes) into a dump directory.
      *
@@ -31,7 +31,7 @@ export declare type DumpManager = {
 /**
  * A group of files to by dumped to dump directory.
  */
-export declare type Dump = {
+export type Dump = {
     /**
      * Execution time taken by the dump, in milliseconds.
      */
@@ -68,7 +68,7 @@ export declare type Dump = {
      */
     diff: Diff;
 };
-export declare type DumpMetadata = {
+export type DumpMetadata = {
     current: string;
     dumps: Dump[];
 };

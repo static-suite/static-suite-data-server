@@ -1,5 +1,5 @@
-import { GenericIncludeParserOptions } from '@lib/store/include/includeParser.types';
-import { getObjValue } from '@lib/utils/object';
+import { GenericIncludeParserOptions } from '../../includeParser.types';
+import { getObjValue } from '../../../../utils/object';
 
 export const aliasIncludeParser = ({
   host,

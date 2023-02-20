@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dumpMetadataReset = exports.dumpMetadataShow = exports.dumpFull = exports.dumpIncremental = exports.dumpIndex = void 0;
 const fs_1 = __importDefault(require("fs"));
-const dump_1 = require("@lib/store/dump");
-const object_1 = require("@lib/utils/object");
-const config_1 = require("@lib/config");
+const dump_1 = require("../../lib/store/dump");
+const object_1 = require("../../lib/utils/object");
+const config_1 = require("../../lib/config");
 const dumpIndex = (req, res) => {
     res.render('dumpIndex', {
         links: {

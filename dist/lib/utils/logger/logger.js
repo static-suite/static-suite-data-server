@@ -54,7 +54,9 @@ exports.logger = winston_1.default.createLogger({
  * @throws
  * An exception if a log file is defined, but its path is no writable
  */
-const configureLogger = (level = logger_types_1.LogLevel.WARN, logFile) => {
+const configureLogger = (
+// eslint-disable-next-line default-param-last
+level = logger_types_1.LogLevel.WARN, logFile) => {
     if (level) {
         exports.logger.level = level;
     }

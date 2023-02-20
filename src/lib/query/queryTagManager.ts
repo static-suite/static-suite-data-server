@@ -1,5 +1,5 @@
-import { store } from '@lib/store/store';
-import { Json } from '@lib/utils/object/object.types';
+import { store } from '../store/store';
+import { Json } from '../utils/object/object.types';
 import { QueryTagManager } from './query.types';
 
 const invalidatedTags = new Set<string>();

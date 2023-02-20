@@ -1,7 +1,7 @@
 /**
  * Service that handles the incremental differences in data (includes and queries).
  */
-export declare type DiffManager = {
+export type DiffManager = {
     /**
      * Clears intermediate changes tracked by dependency manager.
      *
@@ -33,7 +33,7 @@ export declare type DiffManager = {
 /**
  * A group of changed files in Static Suite's data dir.
  */
-export declare type Diff = {
+export type Diff = {
     /**
      * Execution time taken by the diff, in milliseconds.
      */

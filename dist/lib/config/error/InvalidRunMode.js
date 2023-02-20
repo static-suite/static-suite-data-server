@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InvalidRunMode = void 0;
-const DomainError_1 = require("@lib/error/DomainError");
+const DomainError_1 = require("../../error/DomainError");
 /**
  * Defines a custom error for invalid run modes.
  *

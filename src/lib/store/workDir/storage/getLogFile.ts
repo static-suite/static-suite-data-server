@@ -1,4 +1,4 @@
-import { config } from '@lib/config';
+import { config } from '../../../config';
 
 /**
  * Gets the absolute path to Static Suite's log file.

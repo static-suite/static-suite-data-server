@@ -1,4 +1,4 @@
-import { Json } from '@lib/utils/object/object.types';
+import { Json } from '../../utils/object/object.types';
 
 /**
  * Global parser that is able to parse static and dynamic includes.

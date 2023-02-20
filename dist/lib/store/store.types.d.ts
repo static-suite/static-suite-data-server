@@ -37,7 +37,7 @@ export interface StoreData<K, V> extends Map<K, V> {
 /**
  * The store that holds all data.
  */
-export declare type Store = {
+export type Store = {
     /**
      * Initial unique id when the store was initially loaded.
      */
@@ -99,7 +99,7 @@ export declare type Store = {
 /**
  * Options for subset() function.
  */
-export declare type StoreSubsetOptions = {
+export type StoreSubsetOptions = {
     /**
      * Optional base directory to filter files.
      *
@@ -129,7 +129,7 @@ export declare type StoreSubsetOptions = {
 /**
  * Object holding a subset of items from the store.
  */
-export declare type StoreSubset = {
+export type StoreSubset = {
     /**
      * Map of elements, with the filename as key
      */
@@ -146,7 +146,7 @@ export declare type StoreSubset = {
 /**
  * The manager that handles the store data.
  */
-export declare type StoreManager = {
+export type StoreManager = {
     /**
      * Adds a file to the store, into a Map structure keyed by its relative filepath.
      *

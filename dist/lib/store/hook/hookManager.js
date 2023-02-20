@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hookManager = void 0;
-const config_1 = require("@lib/config");
-const store_1 = require("@lib/store");
-const logger_1 = require("@lib/utils/logger");
-const dependencyTagger_1 = require("@lib/store/dependency/dependencyTagger");
-const module_1 = require("@lib/utils/module");
+const config_1 = require("../../config");
+const store_1 = require("../store");
+const logger_1 = require("../../utils/logger");
+const dependencyTagger_1 = require("../dependency/dependencyTagger");
+const module_1 = require("../../utils/module");
 /**
  * A manager for hooks stored in a user-land directory defined by configuration.
  *

@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dirBasedModuleGroupManager = void 0;
 const path_1 = __importDefault(require("path"));
-const config_1 = require("@lib/config");
-const fs_1 = require("@lib/utils/fs");
-const cache_1 = require("@lib/utils/cache");
+const config_1 = require("../../config");
+const fs_1 = require("../fs");
+const cache_1 = require("../cache");
 const moduleManager_1 = require("./moduleManager");
 /**
  * A manager of module groups based on a directory.

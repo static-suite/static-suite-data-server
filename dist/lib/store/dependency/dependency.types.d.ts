@@ -1,7 +1,7 @@
 /**
  * Service to define dependencies between data.
  */
-export declare type DependencyTagger = {
+export type DependencyTagger = {
     /**
      * Sets a dependency relationship between a tag that depends on another tags.
      *
@@ -38,7 +38,7 @@ export declare type DependencyTagger = {
 /**
  * Manager that keeps control of dependencies between data.
  */
-export declare type DependencyManager = {
+export type DependencyManager = {
     /**
      * Calculates and tracks down a list of filepaths which contain an invalidated tag.
      *
@@ -66,5 +66,5 @@ export declare type DependencyManager = {
      */
     reset(): void;
 };
-export declare type DependencyTree = Map<string, Set<string>>;
+export type DependencyTree = Map<string, Set<string>>;
 //# sourceMappingURL=dependency.types.d.ts.map

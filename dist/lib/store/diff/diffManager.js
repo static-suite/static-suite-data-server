@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.diffManager = void 0;
 const microtime_1 = __importDefault(require("microtime"));
-const logger_1 = require("@lib/utils/logger");
+const logger_1 = require("../../utils/logger");
 const store_1 = require("../store");
 const dataDirManager_1 = require("../dataDir/dataDirManager");
 const dependencyManager_1 = require("../dependency/dependencyManager");

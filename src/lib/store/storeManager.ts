@@ -1,6 +1,6 @@
-import { config } from '@lib/config';
-import { getFileContent } from '@lib/utils/fs';
-import { Json } from '@lib/utils/object/object.types';
+import { config } from '../config';
+import { getFileContent } from '../utils/fs';
+import { Json } from '../utils/object/object.types';
 import { StoreManager } from './store.types';
 import { hookManager } from './hook';
 import { store, resetStore } from '.';

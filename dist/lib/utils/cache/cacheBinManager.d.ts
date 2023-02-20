@@ -1,5 +1,5 @@
-export declare type CacheBin<Type> = Map<string, Type>;
-export declare type Cache = {
+export type CacheBin<Type> = Map<string, Type>;
+export type Cache = {
     /**
      * Gets a cache bin by its id.
      *

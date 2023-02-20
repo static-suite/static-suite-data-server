@@ -1,15 +1,12 @@
-import { CacheStatus } from '@lib/query/query.types';
-import { LogFile } from '@lib/utils/logger/logger.types';
-import { LogLevel } from '@lib/utils/logger/logger.types';
-import { QueryArgs } from '@lib/query/query.types';
-import { QueryErrorResponse } from '@lib/query/query.types';
-import { QueryModule } from '@lib/query/query.types';
-import { QueryRunner } from '@lib/query/query.types';
-import { QuerySuccessfulResponse } from '@lib/query/query.types';
-import { Store } from '@lib/store/store.types';
-import { TaskRunner } from '@lib/task/task.types';
-
-export { CacheStatus }
+/**
+ * Possible values for a cache get operation: miss or hit.
+ *
+ * @public
+ */
+export declare enum CacheStatus {
+    MISS = "miss",
+    HIT = "hit"
+}
 
 /**
  * The Data Server instance.
@@ -84,7 +81,7 @@ export declare type DataServerReturn = {
     /**
      * The data store.
      */
-    store: Store_2;
+    store: Store;
     /**
      * The query runner, to be able to run queries on demand.
      */
@@ -92,22 +89,203 @@ export declare type DataServerReturn = {
     /**
      * The task runner, to be able to run tasks on demand.
      */
-    taskRunner: TaskRunner_2;
+    taskRunner: TaskRunner;
 };
 
-export { LogFile }
+/**
+ * A log file definition.
+ */
+export declare type LogFile = {
+    /**
+     * Path to the log file.
+     */
+    path: string;
+    /**
+     * Log level for the log file.
+     */
+    level: LogLevel;
+};
 
-export { LogLevel }
+/**
+ * Log levels: error, warn, info and debug.
+ *
+ * @public
+ */
+export declare enum LogLevel {
+    ERROR = "error",
+    WARN = "warn",
+    INFO = "info",
+    DEBUG = "debug"
+}
 
-export { QueryArgs }
+/**
+ * An object with query arguments.
+ *
+ * @public
+ */
+export declare type QueryArgs = Record<string, any>;
 
-export { QueryErrorResponse }
+/**
+ * An error response returned after executing a query.
+ *
+ * @remarks
+ * It takes an string from QueryModule#queryHandler, and wraps them into an
+ * structure with metadata. @see {@link QueryModule#default}
+ *
+ * @public
+ */
+export declare type QueryErrorResponse = {
+    /**
+     * Error message from the query, usually coming from a failed validation.
+     */
+    error: string;
+};
 
-export { QueryModule }
+/**
+ * A module that defines a query.
+ */
+export declare type QueryModule = {
+    /**
+     * The handler that executes a query.
+     *
+     * @remarks
+     * It receives the store and a set of arguments, executes the query
+     * and returns its results.
+     *
+     * @param options - An object with options for the query: store and args
+     */
+    default(options: {
+        /**
+         * Store data to be used in the query
+         */
+        store: Store;
+        args: QueryArgs;
+    }): QueryModuleResult;
+};
 
-export { QueryRunner }
+/**
+ * The result that a query returns after being executed.
+ */
+declare type QueryModuleResult = {
+    /**
+     * A result, which can be of any kind (and array, an object, a string, etc)
+     */
+    result: any;
+    /**
+     * Optional content type for the data available in "result"
+     *
+     * @remarks
+     * Data coming from the query can be anything (XML, a string, etc).
+     * This content type is added to the metadata section of the QueryResponse.
+     * @see {@link QuerySuccessfulResponse#metadata}.
+     *
+     * @defaultValue 'application/json'
+     */
+    contentType?: string;
+    /**
+     * Optional flag that tells whether this result can be cached or not.
+     */
+    cacheable?: boolean;
+    /**
+     * A list of tags to get this query invalidated.
+     */
+    tags?: string[];
+};
 
-export { QuerySuccessfulResponse }
+/**
+ * A service to handle the execution of queries.
+ *
+ * @public
+ */
+export declare type QueryRunner = {
+    /**
+     * Runs a query and returns its results with metadata.
+     *
+     * @remarks
+     * It checks several validations before a query is run, and then it tries to get
+     * the query result from cache. If cache is empty, query is executed and saved
+     * into the cache.
+     *
+     * It logs an error and throws an exception if any problem occurs during the
+     * query execution.
+     *
+     * @param queryDefinition - An URL containing a query ID (filename without extension
+     * and suffix) of the query to be executed, plus and optional query string with arguments.
+     * @see {@link ModuleInfo#id | Definition of a module ID}
+     *
+     * @returns The result of the query as a JSON object with data and metadata keys,
+     * or an error response if some validation is not met.
+     *
+     * @example
+     * Here's a result example:
+     * ```
+     * {
+     * data: ['title 1', 'title 2'],
+     *  metadata: {
+     *    contentType: 'application/json',
+     *    execTime: 2,
+     *    cache: ['miss'|'hit'],
+     *    num: 2,
+     *  }
+     * }
+     * ```
+
+     * @throws
+     * Exception thrown if any problem occurs during the query execution.
+     */
+    run(queryDefinition: string): QuerySuccessfulResponse | QueryErrorResponse;
+    /**
+     * Gets number of executed queries.
+     *
+     * @remarks
+     * A simple counter that stores the number of executed queries, of any type.
+     *
+     * @returns Number of executed queries.
+     */
+    getCount(): number;
+};
+
+/**
+ * A successful response returned after executing a query.
+ *
+ * @remarks
+ * It takes the results from a QueryModule#queryHandler, and wraps them into an
+ * structure with metadata. @see {@link QueryModule#default}
+ *
+ * @public
+ */
+export declare type QuerySuccessfulResponse = {
+    /**
+     * Data returned by the query. @see {@link QueryModule#default}
+     */
+    data: any;
+    /**
+     * Query metadata
+     */
+    metadata: {
+        /**
+         * Content type for the data available in "data"
+         *
+         * @remarks
+         * Even thought this structure is a JSON object, data coming from the
+         * query can be anything (XML, a string, etc). It must be specified so any
+         * consumer of this data knows what is being returned.
+         */
+        contentType: string;
+        /**
+         * Execution time taken by the query, in milliseconds.
+         */
+        execTimeMs: number;
+        /**
+         * Tells wether the query results comes from a miss or hit.
+         */
+        cache: CacheStatus;
+        /**
+         * A list of tags to get this query invalidated.
+         */
+        tags?: string[];
+    };
+};
 
 /**
  * Available run modes: dev or prod.
@@ -119,12 +297,10 @@ export declare enum RunMode {
     PROD = "prod"
 }
 
-export { Store }
-
 /**
  * The store that holds all data.
  */
-declare type Store_2 = {
+export declare type Store = {
     /**
      * Initial unique id when the store was initially loaded.
      */
@@ -293,14 +469,12 @@ declare type TaskErrorResponse = {
     error: string;
 };
 
-export { TaskRunner }
-
 /**
  * A service to handle the execution of tasks.
  *
  * @public
  */
-declare type TaskRunner_2 = {
+export declare type TaskRunner = {
     /**
      * Runs a task and returns its results with metadata.
      *

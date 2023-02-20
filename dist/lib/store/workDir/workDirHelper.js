@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.workDirHelper = exports.unixEpochUniqueId = void 0;
 const fs_1 = __importDefault(require("fs"));
-const logger_1 = require("@lib/utils/logger");
-const string_1 = require("@lib/utils/string");
+const logger_1 = require("../../utils/logger");
+const string_1 = require("../../utils/string");
 const storage_1 = require("./storage");
 /**
  * The unique id of the Unix Epoch (00:00:00 UTC on 1 January 1970)

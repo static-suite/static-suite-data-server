@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryTagManager = void 0;
-const store_1 = require("@lib/store/store");
+const store_1 = require("../store/store");
 const invalidatedTags = new Set();
 const tagsByQueryIndex = new Map();
 exports.queryTagManager = {

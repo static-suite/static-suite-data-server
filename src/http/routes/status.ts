@@ -1,13 +1,13 @@
 // import microtime from 'microtime';
 import { Request, Response } from 'express';
-import { dataDirManager } from '@lib/store/dataDir';
-import { queryRunner } from '@lib/query';
-import { config } from '@lib/config';
-import { cache } from '@lib/utils/cache';
-import { store } from '@lib/store';
-import { jsonify } from '@lib/utils/object';
-import { diffManager } from '@lib/store/diff/diffManager';
-import { ObjectType } from '@lib/utils/object/object.types';
+import { dataDirManager } from '../../lib/store/dataDir';
+import { queryRunner } from '../../lib/query';
+import { config } from '../../lib/config';
+import { cache } from '../../lib/utils/cache';
+import { store } from '../../lib/store';
+import { jsonify } from '../../lib/utils/object';
+import { diffManager } from '../../lib/store/diff/diffManager';
+import { ObjectType } from '../../lib/utils/object/object.types';
 
 const statusIndex = (req: Request, res: Response): void => {
   res.render('statusIndex', {

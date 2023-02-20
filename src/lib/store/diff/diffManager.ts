@@ -1,5 +1,5 @@
 import microtime from 'microtime';
-import { logger } from '@lib/utils/logger';
+import { logger } from '../../utils/logger';
 import { store } from '../store';
 import { DiffManager, Diff } from './diff.types';
 import { dataDirManager } from '../dataDir/dataDirManager';

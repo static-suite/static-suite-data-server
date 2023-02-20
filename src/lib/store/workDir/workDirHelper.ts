@@ -1,6 +1,6 @@
 import fs from 'fs';
-import { logger } from '@lib/utils/logger';
-import { isUniqueId } from '@lib/utils/string';
+import { logger } from '../../utils/logger';
+import { isUniqueId } from '../../utils/string';
 import { ChangedFiles, LogLineData } from './workDir.types';
 import {
   getLogFile,

@@ -7,12 +7,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs/yargs"));
 const helpers_1 = require("yargs/helpers");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('module-alias')(`${__dirname}/../..`);
-const httpServer_1 = require("@http/httpServer");
-const dataServer_1 = require("@lib/dataServer");
-const dataServer_types_1 = require("@lib/dataServer.types");
-const logger_types_1 = require("@lib/utils/logger/logger.types");
+const httpServer_1 = require("../http/httpServer");
+const dataServer_1 = require("../lib/dataServer");
+const dataServer_types_1 = require("../lib/dataServer.types");
+const logger_types_1 = require("../lib/utils/logger/logger.types");
 const argv = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
     .usage('Usage: $0 http --data-dir [path]')
     .command(['http [--port]'], 'Start an HTTP server')

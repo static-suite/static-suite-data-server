@@ -7,9 +7,9 @@ exports.moduleManager = void 0;
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 const clear_module_1 = __importDefault(require("clear-module"));
-const logger_1 = require("@lib/utils/logger");
-const config_1 = require("@lib/config");
-const store_1 = require("@lib/store");
+const logger_1 = require("../logger");
+const config_1 = require("../../config");
+const store_1 = require("../../store");
 /**
  * Internal module cache.
  *

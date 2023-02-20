@@ -1,8 +1,8 @@
-import { Json } from '@lib/utils/object/object.types';
+import { Json } from '../../utils/object/object.types';
 /**
  * Global parser that is able to parse static and dynamic includes.
  */
-export declare type IncludeParser = {
+export type IncludeParser = {
     /**
      * Parse all static includes (entity, config, locale and custom).
      *
@@ -20,7 +20,7 @@ export declare type IncludeParser = {
 /**
  * Option to be passed a generic include parser (except entity and query includes).
  */
-export declare type GenericIncludeParserOptions = {
+export type GenericIncludeParserOptions = {
     /**
      * Object that will host a pointer to a target.
      */
@@ -50,7 +50,7 @@ export declare type GenericIncludeParserOptions = {
 /**
  * Option to be passed an entity include parser.
  */
-export declare type EntityIncludeParserOptions = {
+export type EntityIncludeParserOptions = {
     /**
      * Object that will host a pointer to a target.
      */
@@ -75,7 +75,7 @@ export declare type EntityIncludeParserOptions = {
 /**
  * Option to be passed a query include parser.
  */
-export declare type QueryIncludeParserOptions = {
+export type QueryIncludeParserOptions = {
     /**
      * Object that will host a pointer to a target.
      */

@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setConfig = exports.config = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const dataServer_types_1 = require("@lib/dataServer.types");
-const object_1 = require("@lib/utils/object");
+const dataServer_types_1 = require("../dataServer.types");
+const object_1 = require("../utils/object");
 const error_1 = require("./error");
 const config = Object.create(null); // no inherited properties
 exports.config = config;

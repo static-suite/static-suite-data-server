@@ -3,13 +3,11 @@
 
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('module-alias')(`${__dirname}/../..`);
 
-import { httpServer } from '@http/httpServer';
-import { dataServer } from '@lib/dataServer';
-import { RunMode, RunModeStrings } from '@lib/dataServer.types';
-import { LogLevel, LogLevelStrings } from '@lib/utils/logger/logger.types';
+import { httpServer } from '../http/httpServer';
+import { dataServer } from '../lib/dataServer';
+import { RunMode, RunModeStrings } from '../lib/dataServer.types';
+import { LogLevel, LogLevelStrings } from '../lib/utils/logger/logger.types';
 
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 http --data-dir [path]')

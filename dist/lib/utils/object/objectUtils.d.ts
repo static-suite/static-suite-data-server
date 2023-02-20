@@ -15,7 +15,7 @@ export declare const isEmptyObject: (object: ObjectType) => boolean;
  *
  * @returns True if the object has the given key, false otherwise.
  */
-export declare const hasKey: <O>(object: O, key: PropertyKey) => key is keyof O;
+export declare const hasKey: <T extends object>(object: T, key: PropertyKey) => key is keyof T;
 /**
  * Clones an object and all its nested objects
  *
@@ -33,7 +33,7 @@ export declare const deepClone: (object: ObjectType) => ObjectType;
  *
  * @returns Value of the path or undefined
  */
-export declare const getObjValue: (object: ObjectType, path: string | string[], separator?: string | undefined) => any | undefined;
+export declare const getObjValue: (object: ObjectType, path: string | string[], separator?: string) => any | undefined;
 /**
  * Converts a JavaScript value containing Set and Map, to a JSON object.
  *

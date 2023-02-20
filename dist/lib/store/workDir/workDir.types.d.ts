@@ -1,7 +1,7 @@
 /**
  * A group of changed files in Static Suite's data dir.
  */
-export declare type ChangedFiles = {
+export type ChangedFiles = {
     /**
      * A unique id representing the date from which those changes are obtained.
      */
@@ -22,7 +22,7 @@ export declare type ChangedFiles = {
 /**
  * Information from a Static Suite's log line.
  */
-export declare type LogLineData = {
+export type LogLineData = {
     /**
      * The unique id of the write/delete operation from Static Suite.
      */

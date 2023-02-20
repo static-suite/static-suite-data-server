@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resetStore = exports.store = void 0;
 const microtime_1 = __importDefault(require("microtime"));
-const string_1 = require("@lib/utils/string");
-const logger_1 = require("@lib/utils/logger");
-const cache_1 = require("@lib/utils/cache");
+const string_1 = require("../utils/string");
+const logger_1 = require("../utils/logger");
+const cache_1 = require("../utils/cache");
 const workDir_1 = require("./workDir");
 // Instantiate the subset cache so it can be accessed faster.
 const subsetCache = cache_1.cache.bin('store-subset');

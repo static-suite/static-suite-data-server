@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runTask = exports.taskIndex = void 0;
-const dataDir_1 = require("@lib/store/dataDir");
-const task_1 = require("@lib/task");
+const dataDir_1 = require("../../lib/store/dataDir");
+const task_1 = require("../../lib/task");
 const taskIndex = (req, res) => {
     const taskIds = Array.from(task_1.taskManager.getModuleGroupInfo().keys());
     res.render('taskIndex', {

@@ -1,4 +1,4 @@
-import { getObjValue } from '@lib/utils/object';
+import { getObjValue } from '../../../utils/object';
 import { EntityIncludeParserOptions } from '../includeParser.types';
 
 export const entityIncludeParser = ({

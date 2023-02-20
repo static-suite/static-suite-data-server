@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { RunMode } from '@lib/dataServer.types';
-import { hasKey } from '@lib/utils/object';
+import { RunMode } from '../dataServer.types';
+import { hasKey } from '../utils/object';
 import { ConfigOptions, NonSanitizedConfigOptions } from './config.types';
 import {
   InvalidRunMode,

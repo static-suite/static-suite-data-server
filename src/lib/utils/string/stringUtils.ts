@@ -1,4 +1,4 @@
-import { logger } from '@lib/utils/logger';
+import { logger } from '../logger';
 import { URLSearchParamsObject } from './string.types';
 
 /**

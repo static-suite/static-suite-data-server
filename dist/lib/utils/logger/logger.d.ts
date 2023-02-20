@@ -28,5 +28,5 @@ export declare const logger: winston.Logger;
  * @throws
  * An exception if a log file is defined, but its path is no writable
  */
-export declare const configureLogger: (level?: LogLevel, logFile?: LogFile | undefined) => void;
+export declare const configureLogger: (level?: LogLevel, logFile?: LogFile) => void;
 //# sourceMappingURL=logger.d.ts.map

@@ -8,8 +8,8 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const chokidar_1 = __importDefault(require("chokidar"));
-const logger_1 = require("@lib/utils/logger");
-const string_1 = require("@lib/utils/string");
+const logger_1 = require("../logger");
+const string_1 = require("../string");
 /**
  * Tells whether a path is JSON or not.
  *

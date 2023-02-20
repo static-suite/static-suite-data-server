@@ -1,9 +1,9 @@
 import path from 'path';
 import { Request, Response } from 'express';
 import mime from 'mime-types';
-import { store } from '@lib/store';
-import { logger } from '@lib/utils/logger';
-import { dataDirManager } from '@lib/store/dataDir';
+import { store } from '../../lib/store';
+import { logger } from '../../lib/utils/logger';
+import { dataDirManager } from '../../lib/store/dataDir';
 
 const data = (req: Request, res: Response): void => {
   dataDirManager.update();

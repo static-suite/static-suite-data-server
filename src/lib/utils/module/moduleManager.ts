@@ -1,9 +1,9 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
-import { logger } from '@lib/utils/logger';
-import { config } from '@lib/config';
-import { store } from '@lib/store';
+import { logger } from '../logger';
+import { config } from '../../config';
+import { store } from '../../store';
 
 /**
  * Internal module cache.

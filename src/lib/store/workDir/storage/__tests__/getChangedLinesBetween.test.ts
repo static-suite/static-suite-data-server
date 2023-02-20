@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@lib/config';
+import { config } from '../../../../config';
 import { getChangedLinesBetween } from '../getChangedLinesBetween';
 
 describe('workDir storage getChangedLinesBetween test', () => {

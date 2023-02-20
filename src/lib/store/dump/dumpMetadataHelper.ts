@@ -1,7 +1,7 @@
 import fs from 'fs';
-import { logger } from '@lib/utils/logger';
-import { jsonify } from '@lib/utils/object';
-import { config } from '@lib/config';
+import { logger } from '../../utils/logger';
+import { jsonify } from '../../utils/object';
+import { config } from '../../config';
 import { Dump, DumpMetadata } from './dump.types';
 import { unixEpochUniqueId } from '../workDir';
 

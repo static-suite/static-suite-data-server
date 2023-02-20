@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dependencyTagParents = exports.dependencyInvalidatedFilepaths = exports.dependencyAllInvalidatedTags = exports.dependencyExplicitlyInvalidatedTags = exports.dependencyTreeReversed = exports.dependencyTreeRoute = exports.dependencyIndex = void 0;
-const dataDir_1 = require("@lib/store/dataDir");
-const object_1 = require("@lib/utils/object");
-const dependencyManager_1 = require("@lib/store/dependency/dependencyManager");
-const dependencyTagger_1 = require("@lib/store/dependency/dependencyTagger");
+const dataDir_1 = require("../../lib/store/dataDir");
+const object_1 = require("../../lib/utils/object");
+const dependencyManager_1 = require("../../lib/store/dependency/dependencyManager");
+const dependencyTagger_1 = require("../../lib/store/dependency/dependencyTagger");
 const dependencyIndex = (req, res) => {
     res.render('dependencyIndex', {
         links: {

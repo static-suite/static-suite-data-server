@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.taskRunner = void 0;
 const microtime_1 = __importDefault(require("microtime"));
-const config_1 = require("@lib/config");
-const store_1 = require("@lib/store");
-const logger_1 = require("@lib/utils/logger");
+const config_1 = require("../config");
+const store_1 = require("../store");
+const logger_1 = require("../utils/logger");
 const taskManager_1 = require("./taskManager");
 let count = 0;
 /**

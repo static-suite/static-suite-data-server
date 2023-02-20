@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.aliasWithoutTypeIncludeParser = void 0;
-const object_1 = require("@lib/utils/object");
+const object_1 = require("../../../../utils/object");
 /**
  *
  * @param options - Object with options as defined in @see {@link IncludeParserOptions}
