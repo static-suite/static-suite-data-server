@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@lib/config';
-import { dirBasedModuleGroupManager } from '@lib/utils/module';
+import { config } from '../../../config';
+import { dirBasedModuleGroupManager } from '..';
 
 config.queryDir = fs.realpathSync(
   path.resolve(path.join(__dirname, '../__mocks__')),

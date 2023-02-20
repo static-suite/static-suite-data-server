@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.data = void 0;
 const path_1 = __importDefault(require("path"));
 const mime_types_1 = __importDefault(require("mime-types"));
-const store_1 = require("@lib/store");
-const logger_1 = require("@lib/utils/logger");
-const dataDir_1 = require("@lib/store/dataDir");
+const store_1 = require("../../lib/store");
+const logger_1 = require("../../lib/utils/logger");
+const dataDir_1 = require("../../lib/store/dataDir");
 const data = (req, res) => {
     dataDir_1.dataDirManager.update();
     const storeKey = req.params[0];

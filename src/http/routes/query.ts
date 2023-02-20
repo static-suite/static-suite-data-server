@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { dataDirManager } from '@lib/store/dataDir';
-import { queryRunner, queryManager } from '@lib/query';
+import { dataDirManager } from '../../lib/store/dataDir';
+import { queryRunner, queryManager } from '../../lib/query';
 import {
   QueryErrorResponse,
   QuerySuccessfulResponse,
-} from '@lib/query/query.types';
+} from '../../lib/query/query.types';
 
 const queryIndex = (req: Request, res: Response): void => {
   const queryIds = Array.from(queryManager.getModuleGroupInfo().keys());

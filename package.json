@@ -12,29 +12,28 @@
   },
   "dependencies": {
     "@creativebulma/bulma-tooltip": "^1.2.0",
-    "@microsoft/api-extractor": "^7.18.19",
-    "@types/jest": "^27.0.2",
-    "@types/tap": "^15.0.5",
-    "bulma": "^0.9.3",
-    "chokidar": "^3.5.2",
-    "clear-module": "^4.1.1",
-    "clipboard": "^2.0.8",
+    "@microsoft/api-extractor": "^7.34.4",
+    "@types/jest": "^29.4.0",
+    "@types/tap": "^15.0.8",
+    "bulma": "^0.9.4",
+    "chokidar": "^3.5.3",
+    "clear-module": "^4.1.2",
+    "clipboard": "^2.0.11",
     "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
-    "decache": "^4.6.0",
-    "express": "^4.17.1",
-    "fast-glob": "^3.2.7",
-    "marked": "^3.0.4",
-    "microtime": "^3.0.0",
-    "mime-types": "^2.1.33",
-    "module-alias": "^2.2.2",
-    "nodemon": "^2.0.13",
+    "decache": "^4.6.1",
+    "express": "^4.18.2",
+    "fast-glob": "^3.2.12",
+    "marked": "^4.2.12",
+    "microtime": "^3.1.1",
+    "mime-types": "^2.1.35",
+    "nodemon": "^2.0.20",
     "pug": "^3.0.2",
-    "simple-datatables": "^3.1.2",
-    "tsc-watch": "^4.5.0",
-    "typescript": "^4.4.3",
-    "winston": "^3.3.3",
-    "yargs": "^17.2.1"
+    "simple-datatables": "^7.1.2",
+    "tsc-watch": "^6.0.0",
+    "typescript": "^4.9.5",
+    "winston": "^3.8.2",
+    "yargs": "^17.6.2"
   },
   "bin": {
     "static-suite-data-server": "./dist/bin/serve.js"
@@ -49,37 +48,32 @@
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "test": "jest --watch",
     "copy-http-files-to-src": "node ./scripts/copy-http-files-to-src.js",
-    "copy-http-files-to-dist": "cp -r ./src/http/public/ ./dist/http/ && cp -r ./src/http/views/ ./dist/http/ && cp README.md ./dist/http/"
+    "copy-http-files-to-dist": "cp -r ./src/http/public/ ./dist/http/ && cp -r ./src/http/views/ ./dist/http/ && cp README.md ./dist/http/",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.12",
-    "@types/express": "^4.17.13",
-    "@types/marked": "^3.0.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/marked": "^4.0.8",
     "@types/microtime": "^2.1.0",
     "@types/mime-types": "^2.1.1",
     "@types/module-alias": "^2.0.1",
-    "@types/node": "^16.10.2",
-    "@types/yargs": "^17.0.3",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb-typescript-prettier": "^4.2.0",
-    "eslint-import-resolver-typescript": "^2.5.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-tsdoc": "^0.2.14",
-    "husky": "^4.3.7",
-    "jest": "^27.3.1",
-    "prettier": "^2.4.1",
-    "ts-jest": "^27.0.7",
-    "typedoc": "^0.22.6",
-    "yarn-upgrade-all": "^0.5.4"
-  },
-  "_moduleAliases": {
-    "@bin": "dist/bin",
-    "@http": "dist/http",
-    "@lib": "dist/lib",
-    "@__tests__": "dist/__tests__"
+    "@types/node": "^18.13.0",
+    "@types/yargs": "^17.0.22",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "eslint": "^8.34.0",
+    "eslint-config-airbnb-typescript-prettier": "^5.0.0",
+    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "husky": "^8.0.0",
+    "jest": "^29.4.3",
+    "prettier": "^2.8.4",
+    "ts-jest": "^29.0.5",
+    "typedoc": "^0.23.25",
+    "yarn-upgrade-all": "^0.7.2"
   },
   "jest": {
     "preset": "ts-jest",
@@ -91,17 +85,6 @@
     "testPathIgnorePatterns": [
       "src/__tests__/fixtures/*",
       "src/__tests__/mocks/*"
-    ],
-    "moduleNameMapper": {
-      "^@bin/(.*)$": "<rootDir>/src/bin/$1",
-      "^@http/(.*)$": "<rootDir>/src/http/$1",
-      "^@lib/(.*)$": "<rootDir>/src/lib/$1",
-      "^@__tests__/(.*)$": "<rootDir>/src/__tests__/$1"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn build"
-    }
+    ]
   }
 }

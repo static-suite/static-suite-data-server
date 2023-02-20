@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDataFromLogLine = void 0;
-const logger_1 = require("@lib/utils/logger");
+const logger_1 = require("../../../utils/logger");
 /**
  * Extract information from Static Suite's log line.
  *

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@lib/config';
+import { config } from '../../../config';
 
 beforeEach(() => {
   config.dataDir = fs.realpathSync(path.resolve('src/__tests__/fixtures/data'));

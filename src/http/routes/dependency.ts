@@ -1,17 +1,17 @@
 // import microtime from 'microtime';
 import { Request, Response } from 'express';
-import { dataDirManager } from '@lib/store/dataDir';
-import { jsonify } from '@lib/utils/object';
+import { dataDirManager } from '../../lib/store/dataDir';
+import { jsonify } from '../../lib/utils/object';
 import {
   dependencyManager,
   getAllInvalidatedTags,
   getTagParents,
-} from '@lib/store/dependency/dependencyManager';
+} from '../../lib/store/dependency/dependencyManager';
 import {
   dependencyTree,
   getReversedDependencyTree,
   invalidatedTags,
-} from '@lib/store/dependency/dependencyTagger';
+} from '../../lib/store/dependency/dependencyTagger';
 
 const dependencyIndex = (req: Request, res: Response): void => {
   res.render('dependencyIndex', {

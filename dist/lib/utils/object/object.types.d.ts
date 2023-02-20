@@ -1,4 +1,4 @@
-export declare type ObjectType = Record<string, unknown>;
+export type ObjectType = Record<string, unknown>;
 /**
  * Structure where a content's data and metadata os hold.
  *
@@ -24,7 +24,7 @@ export declare type ObjectType = Record<string, unknown>;
  * }
  * ```
  */
-export declare type Json = {
+export type Json = {
     [key: string]: any;
     /**
      * Optional structure for a content's data.

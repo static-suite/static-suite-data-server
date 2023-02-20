@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { Request, Response } from 'express';
-import { dumpManager } from '@lib/store/dump';
-import { jsonify } from '@lib/utils/object';
-import { config } from '@lib/config';
+import { dumpManager } from '../../lib/store/dump';
+import { jsonify } from '../../lib/utils/object';
+import { config } from '../../lib/config';
 
 const dumpIndex = (req: Request, res: Response): void => {
   res.render('dumpIndex', {

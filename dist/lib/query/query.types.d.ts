@@ -1,10 +1,10 @@
-import { Store } from '@lib/store/store.types';
+import { Store } from '../store/store.types';
 /**
  * A service to handle the execution of queries.
  *
  * @public
  */
-export declare type QueryRunner = {
+export type QueryRunner = {
     /**
      * Runs a query and returns its results with metadata.
      *
@@ -56,11 +56,11 @@ export declare type QueryRunner = {
  *
  * @public
  */
-export declare type QueryArgs = Record<string, any>;
+export type QueryArgs = Record<string, any>;
 /**
  * The result that a query returns after being executed.
  */
-export declare type QueryModuleResult = {
+export type QueryModuleResult = {
     /**
      * A result, which can be of any kind (and array, an object, a string, etc)
      */
@@ -103,7 +103,7 @@ export declare enum CacheStatus {
  *
  * @public
  */
-export declare type QuerySuccessfulResponse = {
+export type QuerySuccessfulResponse = {
     /**
      * Data returned by the query. @see {@link QueryModule#default}
      */
@@ -138,7 +138,7 @@ export declare type QuerySuccessfulResponse = {
 /**
  * A module that defines a query.
  */
-export declare type QueryModule = {
+export type QueryModule = {
     /**
      * The handler that executes a query.
      *
@@ -165,7 +165,7 @@ export declare type QueryModule = {
  *
  * @public
  */
-export declare type QueryErrorResponse = {
+export type QueryErrorResponse = {
     /**
      * Error message from the query, usually coming from a failed validation.
      */
@@ -178,7 +178,7 @@ export declare type QueryErrorResponse = {
  * @returns True if queryResponse is erroneous.
  */
 export declare const isQueryErrorResponse: (queryResponse: QuerySuccessfulResponse | QueryErrorResponse) => queryResponse is QueryErrorResponse;
-export declare type QueryTagManager = {
+export type QueryTagManager = {
     /**
      * Marks query items with any of the specified tags as invalid.
      *

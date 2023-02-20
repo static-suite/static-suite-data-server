@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.storeManager = void 0;
-const config_1 = require("@lib/config");
-const fs_1 = require("@lib/utils/fs");
+const config_1 = require("../config");
+const fs_1 = require("../utils/fs");
 const hook_1 = require("./hook");
 const _1 = require(".");
 const include_1 = require("./include");

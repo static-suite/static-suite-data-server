@@ -1,9 +1,9 @@
-import { config } from '@lib/config';
-import { store } from '@lib/store';
-import { logger } from '@lib/utils/logger';
-import { dependencyTagger } from '@lib/store/dependency/dependencyTagger';
-import { FileType } from '@lib/utils/fs/fs.types';
-import { dirBasedModuleGroupManager } from '@lib/utils/module';
+import { config } from '../../config';
+import { store } from '../store';
+import { logger } from '../../utils/logger';
+import { dependencyTagger } from '../dependency/dependencyTagger';
+import { FileType } from '../../utils/fs/fs.types';
+import { dirBasedModuleGroupManager } from '../../utils/module';
 import { HookManager, HookModule } from './hook.types';
 import { Dump } from '../dump/dump.types';
 

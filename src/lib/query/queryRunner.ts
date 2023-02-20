@@ -1,10 +1,10 @@
 import microtime from 'microtime';
-import { config } from '@lib/config';
-import { store } from '@lib/store';
-import { logger } from '@lib/utils/logger';
-import { cache } from '@lib/utils/cache';
-import { parseURLSearchParams } from '@lib/utils/string';
-import { dependencyTagger } from '@lib/store/dependency/dependencyTagger';
+import { config } from '../config';
+import { store } from '../store';
+import { logger } from '../utils/logger';
+import { cache } from '../utils/cache';
+import { parseURLSearchParams } from '../utils/string';
+import { dependencyTagger } from '../store/dependency/dependencyTagger';
 import { queryManager } from './queryManager';
 import {
   QueryModuleResult,

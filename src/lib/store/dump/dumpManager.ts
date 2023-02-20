@@ -1,15 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import microtime from 'microtime';
-import { logger } from '@lib/utils/logger';
+import { logger } from '../../utils/logger';
 import {
   getFileContent,
   isJsonFile,
   readFile,
   removeEmptyDirsUpwards,
-} from '@lib/utils/fs';
-import { config } from '@lib/config';
-import { store } from '@lib/store';
+} from '../../utils/fs';
+import { config } from '../../config';
+import { store } from '../store';
 import { diffManager } from '../diff/diffManager';
 import { Diff } from '../diff/diff.types';
 import { Dump, DumpManager } from './dump.types';

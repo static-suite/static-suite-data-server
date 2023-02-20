@@ -2,7 +2,7 @@ import { ChangedFiles } from '../workDir/workDir.types';
 /**
  * A manager for the data dir from Static Suite.
  */
-export declare type DataDirManager = {
+export type DataDirManager = {
     /**
      * Loads all files inside the data directory into the store.
      *

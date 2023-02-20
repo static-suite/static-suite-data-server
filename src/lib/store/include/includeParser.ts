@@ -1,4 +1,4 @@
-import { Json } from '@lib/utils/object/object.types';
+import { Json } from '../../utils/object/object.types';
 import { IncludeParser } from './includeParser.types';
 import {
   configIncludeParser,

@@ -5,7 +5,7 @@ import winston from 'winston';
  * @remarks
  * A logger currently based on the "winston" package.
  */
-export declare type Logger = winston.Logger;
+export type Logger = winston.Logger;
 /**
  * Log levels: error, warn, info and debug.
  *
@@ -20,11 +20,11 @@ export declare enum LogLevel {
 /**
  * A helper to get LogLevel type as strings. @see {@link LogLevel}.
  */
-export declare type LogLevelStrings = keyof typeof LogLevel;
+export type LogLevelStrings = keyof typeof LogLevel;
 /**
  * A log file definition.
  */
-export declare type LogFile = {
+export type LogFile = {
     /**
      * Path to the log file.
      */

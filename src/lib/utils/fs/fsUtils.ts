@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import fg, { Options as fastGlobOptions } from 'fast-glob';
 import chokidar from 'chokidar';
-import { logger } from '@lib/utils/logger';
-import { parseJsonString } from '@lib/utils/string';
+import { logger } from '../logger';
+import { parseJsonString } from '../string';
 import { FileType } from './fs.types';
 
 /**

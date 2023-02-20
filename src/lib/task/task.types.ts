@@ -1,4 +1,4 @@
-import { Store } from '@lib/store/store.types';
+import { Store } from '../store/store.types';
 
 /**
  * A service to handle the execution of tasks.

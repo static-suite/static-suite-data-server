@@ -3,7 +3,7 @@
  *
  * @typeParam ModuleType - The type of module being managed.
  */
-export declare type ModuleGroupManager<ModuleType> = {
+export type ModuleGroupManager<ModuleType> = {
     /**
      * Gets an array with information of each module inside a module group.
      *
@@ -24,7 +24,7 @@ export declare type ModuleGroupManager<ModuleType> = {
  *
  * @typeParam ModuleType - The type of the module.
  */
-export declare type ModuleInfo<ModuleType> = {
+export type ModuleInfo<ModuleType> = {
     /**
      * Module ID.
      *

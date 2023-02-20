@@ -1,10 +1,10 @@
-import { Store } from '@lib/store/store.types';
+import { Store } from '../store/store.types';
 /**
  * A service to handle the execution of tasks.
  *
  * @public
  */
-export declare type TaskRunner = {
+export type TaskRunner = {
     /**
      * Runs a task and returns its results with metadata.
      *
@@ -43,11 +43,11 @@ export declare type TaskRunner = {
  *
  * @public
  */
-export declare type TaskArgs = Record<string, any>;
+export type TaskArgs = Record<string, any>;
 /**
  * The result that a task returns after being executed.
  */
-export declare type TaskModuleResult = {
+export type TaskModuleResult = {
     /**
      * A result, which can be of any kind (and array, an object, a string, etc)
      */
@@ -73,7 +73,7 @@ export declare type TaskModuleResult = {
  *
  * @public
  */
-export declare type TaskSuccessfulResponse = {
+export type TaskSuccessfulResponse = {
     /**
      * Data returned by the task. @see {@link TaskModule#default}
      */
@@ -100,7 +100,7 @@ export declare type TaskSuccessfulResponse = {
 /**
  * A module that defines a task.
  */
-export declare type TaskModule = {
+export type TaskModule = {
     /**
      * The handler that executes a task.
      *
@@ -124,7 +124,7 @@ export declare type TaskModule = {
  *
  * @public
  */
-export declare type TaskErrorResponse = {
+export type TaskErrorResponse = {
     /**
      * Error message from the task, usually coming from a failed validation.
      */

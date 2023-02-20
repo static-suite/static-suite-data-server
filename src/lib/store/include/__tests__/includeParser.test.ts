@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@lib/config';
-import { store } from '@lib/store';
+import { config } from '../../../config';
+import { store } from '../../store';
 import { includeParser } from '../includeParser';
 
 const staticFileContent = {

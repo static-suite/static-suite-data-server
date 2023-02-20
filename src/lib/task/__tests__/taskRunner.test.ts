@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@lib/config';
-import { RunMode } from '@lib/dataServer.types';
-import { logger } from '@lib/utils/logger';
+import { config } from '../../config';
+import { RunMode } from '../../dataServer.types';
+import { logger } from '../../utils/logger';
 import { isTaskErrorResponse } from '../task.types';
 import { taskRunner } from '../taskRunner';
 import { taskManager } from '../taskManager';

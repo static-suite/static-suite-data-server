@@ -1,4 +1,4 @@
-import { dirBasedModuleGroupManager } from '@lib/utils/module';
+import { dirBasedModuleGroupManager } from '../utils/module';
 import { TaskModule } from './task.types';
 
 /**

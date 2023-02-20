@@ -1,7 +1,7 @@
 import microtime from 'microtime';
-import { VARIANT_SEPARATOR } from '@lib/utils/string';
-import { logger } from '@lib/utils/logger';
-import { cache } from '@lib/utils/cache';
+import { VARIANT_SEPARATOR } from '../utils/string';
+import { logger } from '../utils/logger';
+import { cache } from '../utils/cache';
 import {
   Store,
   StoreData,

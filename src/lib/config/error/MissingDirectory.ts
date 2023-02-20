@@ -1,4 +1,4 @@
-import { DomainError } from '@lib/error/DomainError';
+import { DomainError } from '../../error/DomainError';
 
 /**
  * Defines a custom error for missing directories.

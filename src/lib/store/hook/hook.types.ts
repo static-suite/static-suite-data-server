@@ -1,8 +1,8 @@
-import { ConfigOptions } from '@lib/config/config.types';
-import { Store } from '@lib/store/store.types';
-import { FileType } from '@lib/utils/fs/fs.types';
-import { Logger } from '@lib/utils/logger/logger.types';
-import { Json } from '@lib/utils/object/object.types';
+import { ConfigOptions } from '../../config/config.types';
+import { Store } from '../store.types';
+import { FileType } from '../../utils/fs/fs.types';
+import { Logger } from '../../utils/logger/logger.types';
+import { Json } from '../../utils/object/object.types';
 import { DependencyTagger } from '../dependency/dependency.types';
 import { Dump } from '../dump/dump.types';
 import { ChangedFiles } from '../workDir/workDir.types';

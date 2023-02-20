@@ -1,11 +1,11 @@
-import { config } from '@lib/config';
-import { dataDirManager } from '@lib/store/dataDir/dataDirManager';
-import { logger } from '@lib/utils/logger';
-import { cache } from '@lib/utils/cache';
-import { watch } from '@lib/utils/fs';
-import { hookManager } from '@lib/store/hook';
-import { queryManager } from '@lib/query';
-import { taskManager } from '@lib/task';
+import { config } from '../config';
+import { dataDirManager } from '../store/dataDir/dataDirManager';
+import { logger } from '../utils/logger';
+import { cache } from '../utils/cache';
+import { watch } from '../utils/fs';
+import { hookManager } from '../store/hook';
+import { queryManager } from '../query';
+import { taskManager } from '../task';
 
 /**
  * Initializes a watcher on any file inside queryDir, hookDir and taskDir.

@@ -1,7 +1,7 @@
 import path from 'path';
-import { config } from '@lib/config';
-import { findFilesInDir } from '@lib/utils/fs';
-import { cache } from '@lib/utils/cache';
+import { config } from '../../config';
+import { findFilesInDir } from '../fs';
+import { cache } from '../cache';
 import { moduleManager } from './moduleManager';
 import { ModuleGroupManager, ModuleInfo } from './module.types';
 

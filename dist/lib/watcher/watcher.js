@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initWatcher = void 0;
-const config_1 = require("@lib/config");
-const dataDirManager_1 = require("@lib/store/dataDir/dataDirManager");
-const logger_1 = require("@lib/utils/logger");
-const cache_1 = require("@lib/utils/cache");
-const fs_1 = require("@lib/utils/fs");
-const hook_1 = require("@lib/store/hook");
-const query_1 = require("@lib/query");
-const task_1 = require("@lib/task");
+const config_1 = require("../config");
+const dataDirManager_1 = require("../store/dataDir/dataDirManager");
+const logger_1 = require("../utils/logger");
+const cache_1 = require("../utils/cache");
+const fs_1 = require("../utils/fs");
+const hook_1 = require("../store/hook");
+const query_1 = require("../query");
+const task_1 = require("../task");
 /**
  * Initializes a watcher on any file inside queryDir, hookDir and taskDir.
  *

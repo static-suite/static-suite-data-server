@@ -1,8 +1,8 @@
-import { RunMode } from '@lib/dataServer.types';
+import { RunMode } from '../dataServer.types';
 /**
  * Configuration options.
  */
-export declare type ConfigOptions = {
+export type ConfigOptions = {
     /**
      * Path to the directory where data is stored.
      */
@@ -41,7 +41,7 @@ export declare type ConfigOptions = {
  *
  * @see {@link ConfigOptions}
  */
-export declare type NonSanitizedConfigOptions = {
+export type NonSanitizedConfigOptions = {
     /**
      * Path to the directory where data is stored.
      */

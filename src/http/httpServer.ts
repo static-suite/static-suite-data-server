@@ -1,7 +1,7 @@
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import { logger } from '@lib/utils/logger';
+import { logger } from '../lib/utils/logger';
 import routes from './routes';
 
 export const httpServer = {

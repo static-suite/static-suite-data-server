@@ -1,5 +1,5 @@
-import { LogLevel, LogFile } from '@lib/utils/logger/logger.types';
-import { QueryRunner } from '@lib/query/query.types';
+import { LogLevel, LogFile } from './utils/logger/logger.types';
+import { QueryRunner } from './query/query.types';
 import { TaskRunner } from './task/task.types';
 import { Store } from './store/store.types';
 /**
@@ -7,7 +7,7 @@ import { Store } from './store/store.types';
  *
  * @public
  */
-export declare type DataServerInitOptions = {
+export type DataServerInitOptions = {
     /**
      * Log level. Optional. @see {@link LogLevel}
      */
@@ -61,13 +61,13 @@ export declare enum RunMode {
 /**
  * A helper to get RunMode type as strings. @see {@link RunMode}.
  */
-export declare type RunModeStrings = keyof typeof RunMode;
+export type RunModeStrings = keyof typeof RunMode;
 /**
  * Data returned by Data Server once initialized.
  *
  * @public
  */
-export declare type DataServerReturn = {
+export type DataServerReturn = {
     /**
      * The data store.
      */

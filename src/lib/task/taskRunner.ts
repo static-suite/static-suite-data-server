@@ -1,7 +1,7 @@
 import microtime from 'microtime';
-import { config } from '@lib/config';
-import { store } from '@lib/store';
-import { logger } from '@lib/utils/logger';
+import { config } from '../config';
+import { store } from '../store';
+import { logger } from '../utils/logger';
 import { taskManager } from './taskManager';
 import {
   TaskRunner,

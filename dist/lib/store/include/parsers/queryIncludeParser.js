@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryIncludeParser = void 0;
-const config_1 = require("@lib/config");
-const dataServer_types_1 = require("@lib/dataServer.types");
-const query_1 = require("@lib/query");
-const query_types_1 = require("@lib/query/query.types");
-const object_1 = require("@lib/utils/object");
+const config_1 = require("../../../config");
+const dataServer_types_1 = require("../../../dataServer.types");
+const query_1 = require("../../../query");
+const query_types_1 = require("../../../query/query.types");
+const object_1 = require("../../../utils/object");
 const aliasWithoutTypeIncludeParser_1 = require("./types/aliasWithoutTypeIncludeParser");
 /**
  * Parses query includes.

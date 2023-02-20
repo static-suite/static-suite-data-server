@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runQuery = exports.queryIndex = void 0;
-const dataDir_1 = require("@lib/store/dataDir");
-const query_1 = require("@lib/query");
+const dataDir_1 = require("../../lib/store/dataDir");
+const query_1 = require("../../lib/query");
 const queryIndex = (req, res) => {
     const queryIds = Array.from(query_1.queryManager.getModuleGroupInfo().keys());
     res.render('queryIndex', {

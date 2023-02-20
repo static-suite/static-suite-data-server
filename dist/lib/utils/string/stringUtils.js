@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isUniqueId = exports.parseUniqueId = exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
-const logger_1 = require("@lib/utils/logger");
+const logger_1 = require("../logger");
 /**
  * Separator for variant data files saved to storage.
  *

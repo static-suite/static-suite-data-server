@@ -1,4 +1,4 @@
-import { RunMode } from '@lib/dataServer.types';
+import { RunMode } from '../dataServer.types';
 
 /**
  * Configuration options.

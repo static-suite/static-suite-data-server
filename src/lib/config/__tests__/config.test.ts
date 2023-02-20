@@ -1,6 +1,6 @@
-import { RunMode } from '@lib/dataServer.types';
 import fs from 'fs';
 import path from 'path';
+import { RunMode } from '../../dataServer.types';
 import { setConfig } from '../config';
 import { ConfigOptions, NonSanitizedConfigOptions } from '../config.types';
 import {

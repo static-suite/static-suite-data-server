@@ -1,8 +1,5 @@
 {
   "settings": {
-    "react": {
-      "version": "latest"
-    },
     "import/resolver": {
       "typescript": {}
     }
