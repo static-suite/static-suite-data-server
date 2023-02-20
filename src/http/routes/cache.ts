@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { cache } from '../../lib/utils/cache';
 
 export const cacheIndex = (req: Request, res: Response): void => {
-  const cacheBins = Array.from(cache.keys());
+  const cacheBins = cache.keys();
   res.render('cacheIndex', { cacheBins });
 };
 

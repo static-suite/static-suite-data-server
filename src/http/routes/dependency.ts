@@ -1,4 +1,3 @@
-// import microtime from 'microtime';
 import { Request, Response } from 'express';
 import { dataDirManager } from '../../lib/store/dataDir';
 import { jsonify } from '../../lib/utils/object';
@@ -74,7 +73,7 @@ const dependencyInvalidatedFilepaths = (req: Request, res: Response): void => {
 const dependencyTagParents = (req: Request, res: Response): void => {
   dataDirManager.update();
   const args: any = req.query;
-  const response = args?.tag ? jsonify(getTagParents(args.tag)) : null;
+  const response = args?.tag ? jsonify(getTagParents(args.tag)) : {};
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });
   res.send(response);
