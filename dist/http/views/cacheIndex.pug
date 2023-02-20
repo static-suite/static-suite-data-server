@@ -7,7 +7,7 @@ block content
   h1(class="title is-1")="Available cache bins"
   table(class="table is-fullwidth  is-hoverable")
     tbody
-      if cacheBins
+      if cacheBins.length
         each cacheBin in cacheBins
           tr
             td= cacheBin

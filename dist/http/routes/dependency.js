@@ -63,7 +63,7 @@ exports.dependencyInvalidatedFilepaths = dependencyInvalidatedFilepaths;
 const dependencyTagParents = (req, res) => {
     dataDir_1.dataDirManager.update();
     const args = req.query;
-    const response = args?.tag ? (0, object_1.jsonify)((0, dependencyManager_1.getTagParents)(args.tag)) : null;
+    const response = args?.tag ? (0, object_1.jsonify)((0, dependencyManager_1.getTagParents)(args.tag)) : {};
     res.status(200);
     res.set({ 'Content-Type': 'application/json' });
     res.send(response);
