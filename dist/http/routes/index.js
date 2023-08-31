@@ -10,6 +10,8 @@ const docs_1 = require("./docs");
 const task_1 = require("./task");
 const dump_1 = require("./dump");
 const dependency_1 = require("./dependency");
+const indexUrl_1 = require("./indexUrl");
+const indexUUID_1 = require("./indexUUID");
 const routes = (0, express_1.Router)();
 routes.get('/', home_1.home);
 routes.get('/docs', docs_1.docs);
@@ -38,4 +40,6 @@ routes.get('/dependency/invalidated/filepaths', dependency_1.dependencyInvalidat
 routes.get('/dependency/tag/parents', dependency_1.dependencyTagParents);
 routes.get('/dependency', dependency_1.dependencyIndex);
 routes.get(['/data/*', '/data'], data_1.data);
+routes.get(['/index/url/*', '/index/url'], indexUrl_1.indexUrl);
+routes.get(['/index/uuid/*', '/index/uuid'], indexUUID_1.indexUUID);
 exports.default = routes;
