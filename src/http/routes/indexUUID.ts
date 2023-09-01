@@ -7,23 +7,24 @@ import { dataDirManager } from '../../lib/store/dataDir';
 const indexUUID = (req: Request, res: Response): void => {
   dataDirManager.update();
   const storeKey = req.params[0].split('/');
-  try {
-    const storeFile = store.index.uuid.get(storeKey[0]).get(storeKey[1]);
-    // Render a single file.
-    logger.debug(
-      `Rendering file "${storeKey.join('/')}", type ${typeof storeFile}`,
-    );
-    res.status(200);
-    res.set({
-      'Content-Type': 'text/plain',
-    });
-    res.send(storeFile);
-  } catch (e) {
+
+  const storeFile = storeKey[1]
+    ? store.index.uuid.get(storeKey[0])?.get(storeKey[1])
+    : undefined;
+  if (storeFile === undefined) {
     res.status(404);
     res.set({
       'Content-Type': 'text/plain',
     });
     res.send('not found');
+  } else {
+    // Render a single file.
+    logger.debug(`Rendering file "${req.params[0]}", type ${typeof storeFile}`);
+    res.status(200);
+    res.set({
+      'Content-Type': 'application/json',
+    });
+    res.send(storeFile);
   }
 };
 

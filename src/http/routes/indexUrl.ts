@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import mime from 'mime-types';
 import { store } from '../../lib/store';
 import { logger } from '../../lib/utils/logger';
 import { dataDirManager } from '../../lib/store/dataDir';
@@ -17,10 +16,10 @@ const indexUrl = (req: Request, res: Response): void => {
     res.send('not found');
   } else {
     // Render a single file.
-    logger.debug(`Rendering file "${storeKey}", type ${typeof storeFile}`);
+    logger.debug(`Rendering file "/${storeKey}", type ${typeof storeFile}`);
     res.status(200);
     res.set({
-      'Content-Type': mime.lookup(storeKey) || 'text/plain',
+      'Content-Type': 'application/json',
     });
     res.send(storeFile);
   }
