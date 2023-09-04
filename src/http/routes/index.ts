@@ -29,6 +29,8 @@ import {
   dependencyTreeRoute,
   dependencyTagParents,
 } from './dependency';
+import { indexUrl } from './indexUrl';
+import { indexUUID } from './indexUUID';
 
 const routes = Router();
 
@@ -59,5 +61,7 @@ routes.get('/dependency/invalidated/filepaths', dependencyInvalidatedFilepaths);
 routes.get('/dependency/tag/parents', dependencyTagParents);
 routes.get('/dependency', dependencyIndex);
 routes.get(['/data/*', '/data'], data);
+routes.get(['/index/url/*', '/index/url'], indexUrl);
+routes.get(['/index/uuid/*', '/index/uuid'], indexUUID);
 
 export default routes;
