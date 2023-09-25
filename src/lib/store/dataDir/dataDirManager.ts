@@ -75,6 +75,7 @@ export const dataDirManager: DataDirManager = {
       dataDirManager.getModificationUniqueId();
 
     let changedFiles: ChangedFiles = {
+      all: [],
       updated: [],
       deleted: [],
       fromUniqueId: store.currentUniqueId,
@@ -100,14 +101,16 @@ export const dataDirManager: DataDirManager = {
           dataDirModificationUniqueId,
         );
         hookManager.invokeOnStoreChangeStart(changedFiles);
-        changedFiles.updated.forEach(file => {
-          storeManager.update(file);
-          const fileContent = store.data.get(file);
-          storeManager.parseSingleFileIncludes(file, fileContent);
+        changedFiles.all.forEach(changedData => {
+          if (changedData.type === 'updated') {
+            storeManager.update(changedData.file);
+            const fileContent = store.data.get(changedData.file);
+            storeManager.parseSingleFileIncludes(changedData.file, fileContent);
+          } else {
+            storeManager.remove(changedData.file);
+          }
         });
-        changedFiles.deleted.forEach(file => {
-          storeManager.remove(file);
-        });
+
         // Clear all store subsets and queries, since they are stale.
         // In fact, the subset cache should be cleared only when files
         // are added or deleted, but not when they are simply updated.
