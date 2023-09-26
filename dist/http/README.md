@@ -362,6 +362,7 @@ Received parameters:
   - `toUniqueId`: a unique id representing the date until which those changes are obtained.
   - `updated`: a list of updated files (both newly added and changed files).
   - `deleted`: a list of deleted files.
+  - `all`: a list of all updated and deleted files, sorted by its unique id.
 
 #### `onStoreItemBeforeUpdate({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
 
@@ -410,11 +411,11 @@ Received parameters:
 - `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `changedFiles`: a group of changed files in Static Suite's data dir, an object with the following keys:
-
   - `fromUniqueId`: a unique id representing the date from which those changes are obtained.
   - `toUniqueId`: a unique id representing the date until which those changes are obtained.
   - `updated`: a list of updated files (both newly added and changed files).
   - `deleted`: a list of deleted files.
+  - `all`: a list of all updated and deleted files, sorted by its unique id.
 
 #### `onDumpCreate(options: OnDumpHookOptions): Dump`
 
