@@ -24,6 +24,18 @@ describe('workDirHelper test', () => {
           'es/config/static_export.settings.json',
           'es/entity/node/recipe/9.json',
         ],
+        all: [
+          { file: 'es/entity/node/article/10.json', type: 'deleted' },
+          { file: 'en/entity/node/article/10.json', type: 'updated' },
+          {
+            file: 'es/config/static_export.settings.json',
+            type: 'updated',
+          },
+          {
+            file: 'es/entity/node/recipe/9.json',
+            type: 'updated',
+          },
+        ],
       });
     });
   });

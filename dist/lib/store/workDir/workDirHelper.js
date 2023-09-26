@@ -61,19 +61,34 @@ exports.workDirHelper = {
             }
         });
         const lineDataArray = Object.values(lineData);
+        const lineDataByUniqueId = {};
+        lineDataArray.forEach(lineDataGroup => {
+            if (!lineDataByUniqueId[lineDataGroup.uniqueId]) {
+                lineDataByUniqueId[lineDataGroup.uniqueId] = [];
+            }
+            lineDataByUniqueId[lineDataGroup.uniqueId].push(lineDataGroup);
+        });
+        const sortedUniqueIds = Object.keys(lineDataByUniqueId).sort();
+        const all = [];
+        sortedUniqueIds.forEach(sortedUniqueId => {
+            lineDataByUniqueId[sortedUniqueId].forEach(data => {
+                all.push({
+                    file: data.file.relativePath,
+                    type: data.operation === 'write' ? 'updated' : 'deleted',
+                });
+            });
+        });
+        all.forEach(data => {
+            logger_1.logger.debug(`Found ${data.type} file "${data.file}"`);
+        });
         const updated = lineDataArray
             .filter(data => data.operation === 'write')
             .map(data => data.file.relativePath);
-        updated.forEach(file => {
-            logger_1.logger.debug(`Found updated file "${file}"`);
-        });
         const deleted = lineDataArray
             .filter(data => data.operation === 'delete')
             .map(data => data.file.relativePath);
-        deleted.forEach(file => {
-            logger_1.logger.debug(`Found deleted file "${file}"`);
-        });
         return {
+            all,
             updated,
             deleted,
             fromUniqueId,
