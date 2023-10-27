@@ -31,6 +31,7 @@ import {
 } from './dependency';
 import { indexUrl } from './indexUrl';
 import { indexUUID } from './indexUUID';
+import { subset } from './subset';
 
 const routes = Router();
 
@@ -63,5 +64,6 @@ routes.get('/dependency', dependencyIndex);
 routes.get(['/data/*', '/data'], data);
 routes.get(['/index/url/*', '/index/url'], indexUrl);
 routes.get(['/index/uuid/*', '/index/uuid'], indexUUID);
+routes.get('/subset', subset);
 
 export default routes;
