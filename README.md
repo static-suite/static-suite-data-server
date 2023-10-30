@@ -167,6 +167,52 @@ const results = store.data
   .items.filter(article => article.data.content.title.includes('foo'));
 ```
 
+### Getting a subset of files via HTTP
+
+It is also possible to get a subset of files via HTTP, querying the HTTP endpoint `/subset` with the following options passed as query strings:
+
+- `dir`: optional base directory to filter files. It requires a trailing slash, but not a leading slash, e.g.- `en/entity/node/article/`
+- `variant`: Optional name of a variant file.
+  - Use `_main` to obtain the default variant.
+  - Use any other string, e.g.- `card`, to obtain the card variant.
+  - Use "null" to avoid searching for any variant.
+  - Defaults to `_main`.
+- `ext`: Optional file extension, without dots. Defaults to `json`.
+- `recursive`: Optional flag to search for files recursively. Defaults to `true`.
+- `as`: Optional flag to get the subset as filenames or URLs. Possible values: `filename` or `url`. Defaults to `filename`.
+
+#### Return value
+
+An array of filenames in the subset.
+
+```http
+// Get a subset of all nodes in English with "json" extension.
+http://localhost:57471/subset?dir=en/entity/node/
+
+// Return value
+[
+  "en/entity/node/article/1.json",
+  "en/entity/node/page/4.json",
+  "en/entity/node/gallery/6.json",
+  ...
+]
+```
+
+An array of URLs in the subset.
+
+```http
+// Get a subset of all nodes in English with "json" extension.
+http://localhost:57471/subset?dir=en/entity/node/&as=url
+
+// Return value
+[
+  "/path/to/public/url-1",
+  "/path/to/public/url-2",
+  "/path/to/public/url-3",
+  ...
+]
+```
+
 ### Indexes
 
 Apart from the main data Map, files are also automatically stored in two more maps (indexes) to be able to access them faster:

@@ -116,7 +116,7 @@ export type StoreSubsetOptions = {
      * Use null to avoid searching for any variant.
      * Defaults to '_main'.
      */
-    variant?: string;
+    variant?: string | null;
     /**
      * Optional file extension, without dots. Defaults to 'json'.
      */
