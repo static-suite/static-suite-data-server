@@ -23,10 +23,20 @@ const subset = (req, res) => {
     if (req.query.recursive) {
         options.recursive = req.query.recursive === 'true';
     }
+    const returnedSubset = store_1.store.data.subset(options);
+    let result;
+    if (req.query.as === 'url') {
+        result = returnedSubset.items
+            .map(item => item.data?.content?.url?.path)
+            .filter(path => !!path);
+    }
+    else {
+        result = returnedSubset.filenames;
+    }
     res.status(200);
     res.set({
         'Content-Type': 'application/json',
     });
-    res.send(store_1.store.data.subset(options).filenames);
+    res.send(result);
 };
 exports.subset = subset;
