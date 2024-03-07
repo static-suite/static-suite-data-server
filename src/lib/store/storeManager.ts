@@ -35,6 +35,7 @@ const setFileIntoStore = (
 
   const dataToStore = fileContent.json || fileContent.raw;
   const previousData = store.data.get(relativeFilepath);
+  let skipUpdating = false;
   if (fileContent.json) {
     // Check if the object already exists to make sure we don't break the reference
     if (dataToStore && typeof dataToStore === 'object') {
@@ -59,15 +60,28 @@ const setFileIntoStore = (
         }
 
         // Delete all referenced object properties and copy them to another object.
-        previousStoredData = {};
-        Object.keys(previousData).forEach(key => {
-          previousStoredData[key] = previousData[key];
-          delete previousData[key];
+        previousStoredData = previousData.data?.content
+          ? { data: { content: {} } }
+          : {};
+        if (previousData.metadata) {
+          // We cannot use structuredClone to clone the whole JSON,
+          // since proxies used by queries are not supported by structuredClone.
+          previousStoredData.metadata = structuredClone(previousData.metadata);
+        }
+        const previousStoredDataPointer =
+          previousStoredData.data?.content || previousStoredData;
+        const previousDataPointer = previousData.data?.content || previousData;
+        Object.keys(previousDataPointer).forEach(key => {
+          previousStoredDataPointer[key] = previousDataPointer[key];
+          delete previousDataPointer[key];
         });
-        // hydrate new object properties into referenced object
-        Object.keys(dataToStore).forEach(key => {
-          previousData[key] = dataToStore[key];
+
+        // Hydrate new object properties into referenced object
+        const dataToStorePointer = dataToStore.data?.content || dataToStore;
+        Object.keys(dataToStorePointer).forEach(key => {
+          previousDataPointer[key] = dataToStorePointer[key];
         });
+        skipUpdating = true;
       }
 
       // Add data to UUID index.
@@ -95,7 +109,10 @@ const setFileIntoStore = (
   } else {
     previousStoredData = previousData;
   }
-  store.data.set(relativeFilepath, dataToStore);
+
+  if (!skipUpdating) {
+    store.data.set(relativeFilepath, dataToStore);
+  }
 
   // Remove this path from store.deleted
   store.deleted.delete(relativeFilepath);
