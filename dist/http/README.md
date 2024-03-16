@@ -21,6 +21,10 @@ Data Server supports static JSON includes (`entityInclude`, `configInclude`, `lo
 - `runMode` / `--run-mode`: "dev" or "prod". Default is "prod". Optional.
 - `--port`: port number for the HTTP endpoint. Default is `57471`. Optional.
 
+## Options from file.
+
+Data Server looks for `dataserver.config.json` in the current working directory. Filename and location can be changed with `DATASERVER_CONFIG_FILE` environment variable.
+
 ## Usage
 
 There are three main use cases:

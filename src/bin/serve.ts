@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable import/first */
 
+import fs from 'fs';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
