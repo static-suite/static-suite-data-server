@@ -1,0 +1,11 @@
+{
+    "port": 57471,
+    "dataDir": "./src/__tests__/fixtures/data",
+    "workDir": "./src/__tests__/fixtures/work",
+    "queryDir": "./src/__tests__/fixtures/query",
+    "hookDir": "./src/__tests__/fixtures/hook",
+    "taskDir": "./src/__tests__/fixtures/task",
+    "runMode": "dev",
+    "logLevel": "debug"
+}
+
