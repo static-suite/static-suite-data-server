@@ -12,9 +12,10 @@ const dependencyTagger_1 = require("./dependency/dependencyTagger");
  * Sets a file into the store, regardless of being already added or not.
  *
  * @param relativeFilepath - Relative file path, inside dataDir, to the file to be added.
- * @param options - Configuration options.
  *
- * @returns Object with two properties, "raw" and "json".
+ * @returns Object with two properties:
+ *  fileContent: the contents of the stored file
+ *  previousStoredData: the contents of the previously stored file
  */
 const setFileIntoStore = (relativeFilepath) => {
     const absoluteFilePath = `${config_1.config.dataDir}/${relativeFilepath}`;
@@ -26,45 +27,51 @@ const setFileIntoStore = (relativeFilepath) => {
     });
     let previousStoredData = null;
     const dataToStore = fileContent.json || fileContent.raw;
-    const previousData = _1.store.data.get(relativeFilepath);
+    const currentData = _1.store.data.get(relativeFilepath);
     let skipUpdating = false;
     if (fileContent.json) {
         // Check if the object already exists to make sure we don't break the reference
         if (dataToStore && typeof dataToStore === 'object') {
-            if (previousData) {
+            if (currentData) {
                 // Delete include dependencies.
-                dependencyFileHelper_1.dependencyIncludeHelper.deleteIncludeDependencies(relativeFilepath, dataToStore);
+                dependencyFileHelper_1.dependencyIncludeHelper.deleteIncludeDependencies(relativeFilepath, currentData);
                 // Remove previous data from URL index.
-                const url = previousData.data?.content?.url?.path;
+                const url = currentData.data?.content?.url?.path;
                 if (url) {
                     _1.store.index.url.delete(url);
                 }
                 // Remove previous data from UUID index.
-                const uuid = previousData.data?.content?.uuid;
-                const langcode = previousData.data?.content?.langcode?.value;
+                const uuid = currentData.data?.content?.uuid;
+                const langcode = currentData.data?.content?.langcode?.value;
                 if (uuid && langcode) {
                     _1.store.index.uuid.get(langcode)?.delete(uuid);
                 }
                 // Delete all referenced object properties and copy them to another object.
-                previousStoredData = previousData.data?.content
+                previousStoredData = currentData.data?.content
                     ? { data: { content: {} } }
                     : {};
-                if (previousData.metadata) {
+                if (currentData.metadata) {
                     // We cannot use structuredClone to clone the whole JSON,
                     // since proxies used by queries are not supported by structuredClone.
-                    previousStoredData.metadata = structuredClone(previousData.metadata);
+                    previousStoredData.metadata = structuredClone(currentData.metadata);
                 }
                 const previousStoredDataPointer = previousStoredData.data?.content || previousStoredData;
-                const previousDataPointer = previousData.data?.content || previousData;
-                Object.keys(previousDataPointer).forEach(key => {
-                    previousStoredDataPointer[key] = previousDataPointer[key];
-                    delete previousDataPointer[key];
+                const currentDataPointer = currentData.data?.content || currentData;
+                Object.keys(currentDataPointer).forEach(key => {
+                    previousStoredDataPointer[key] = currentDataPointer[key];
+                    delete currentDataPointer[key];
                 });
                 // Hydrate new object properties into referenced object
                 const dataToStorePointer = dataToStore.data?.content || dataToStore;
                 Object.keys(dataToStorePointer).forEach(key => {
-                    previousDataPointer[key] = dataToStorePointer[key];
+                    currentDataPointer[key] = dataToStorePointer[key];
                 });
+                if (dataToStore.metadata) {
+                    currentData.metadata = dataToStore.metadata;
+                }
+                else {
+                    delete currentData.metadata;
+                }
                 skipUpdating = true;
             }
             // Add data to UUID index.
@@ -85,7 +92,7 @@ const setFileIntoStore = (relativeFilepath) => {
         }
     }
     else {
-        previousStoredData = previousData;
+        previousStoredData = currentData;
     }
     if (!skipUpdating) {
         _1.store.data.set(relativeFilepath, dataToStore);
