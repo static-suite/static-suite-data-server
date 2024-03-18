@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable import/first */
 
+import fs from 'fs';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -8,6 +9,12 @@ import { httpServer } from '../http/httpServer';
 import { dataServer } from '../lib/dataServer';
 import { RunMode, RunModeStrings } from '../lib/dataServer.types';
 import { LogLevel, LogLevelStrings } from '../lib/utils/logger/logger.types';
+
+const configFile =
+  process.env.DATASERVER_CONFIG_FILE ?? 'dataserver.config.json';
+const config = fs.existsSync(configFile)
+  ? JSON.parse(fs.readFileSync(configFile).toString())
+  : {};
 
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 http --data-dir [path]')
@@ -77,6 +84,7 @@ const argv = yargs(hideBin(process.argv))
       done(['query-dir', 'data-dir']);
     }, 500);
   })
+  .config(config)
   .parseSync();
 
 const logLevel = LogLevel[argv['log-level'].toUpperCase() as LogLevelStrings];
