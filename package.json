@@ -27,7 +27,6 @@
     "marked": "^4.2.12",
     "microtime": "^3.1.1",
     "mime-types": "^2.1.35",
-    "nodemon": "^2.0.20",
     "pug": "^3.0.3",
     "simple-datatables": "^7.1.2",
     "tsc-watch": "^6.0.0",
@@ -72,8 +71,7 @@
     "jest": "^29.4.3",
     "prettier": "^2.8.4",
     "ts-jest": "^29.0.5",
-    "typedoc": "^0.23.25",
-    "yarn-upgrade-all": "^0.7.2"
+    "typedoc": "^0.23.25"
   },
   "jest": {
     "preset": "ts-jest",
