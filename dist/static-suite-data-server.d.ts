@@ -540,6 +540,12 @@ declare type TaskSuccessfulResponse = {
          * Execution time taken by the task, in milliseconds.
          */
         execTimeMs: number;
+        /**
+         * Optional HTTP status type for the data available in "data"
+         *
+         * @defaultValue 200
+         */
+        httpStatus?: number;
     };
 };
 

@@ -79,11 +79,6 @@ const argv = yargs(hideBin(process.argv))
       type: 'boolean',
     },
   })
-  .completion('completion', (_current, _argv, done) => {
-    setTimeout(() => {
-      done(['query-dir', 'data-dir']);
-    }, 500);
-  })
   .config(config)
   .parseSync();
 

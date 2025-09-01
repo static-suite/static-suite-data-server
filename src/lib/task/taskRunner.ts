@@ -46,6 +46,7 @@ export const taskRunner: TaskRunner = {
     const taskResult: TaskModuleResult = {
       result: undefined,
       contentType: undefined,
+      httpStatus: undefined,
     };
     try {
       const taskModule = taskModuleInfo.getModule();
@@ -54,8 +55,8 @@ export const taskRunner: TaskRunner = {
         args,
       });
       taskResult.result = taskResponse?.result;
-
       taskResult.contentType = taskResponse?.contentType || 'application/json';
+      taskResult.httpStatus = taskResponse?.httpStatus || 200;
     } catch (e) {
       // Log error and rethrow.
       logger.error(
@@ -69,6 +70,7 @@ export const taskRunner: TaskRunner = {
       metadata: {
         contentType: taskResult.contentType || 'application/json',
         execTimeMs,
+        httpStatus: taskResult.httpStatus || 200,
       },
     };
 

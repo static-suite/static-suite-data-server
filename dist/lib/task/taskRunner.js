@@ -42,6 +42,7 @@ exports.taskRunner = {
         const taskResult = {
             result: undefined,
             contentType: undefined,
+            httpStatus: undefined,
         };
         try {
             const taskModule = taskModuleInfo.getModule();
@@ -51,6 +52,7 @@ exports.taskRunner = {
             });
             taskResult.result = taskResponse?.result;
             taskResult.contentType = taskResponse?.contentType || 'application/json';
+            taskResult.httpStatus = taskResponse?.httpStatus || 200;
         }
         catch (e) {
             // Log error and rethrow.
@@ -63,6 +65,7 @@ exports.taskRunner = {
             metadata: {
                 contentType: taskResult.contentType || 'application/json',
                 execTimeMs,
+                httpStatus: taskResult.httpStatus || 200,
             },
         };
         logger_1.logger.debug(`#${count} Task "${taskId}" took ${execTimeMs} ms.`);

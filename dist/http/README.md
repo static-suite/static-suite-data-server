@@ -15,6 +15,7 @@ Data Server supports static JSON includes (`entityInclude`, `configInclude`, `lo
 - `dumpDir` / `--dump-dir`: path to the directory where data from Static Suite is dumped after being processed by Data Server. Optional.
 - `queryDir` / `--query-dir`: path to the directory where queries are stored. Optional.
 - `hookDir` / `--hook-dir`: path to the directory where hooks are stored. Optional.
+- `taskDir` / `--task-dir`: path to the directory where tasks are stored. Optional.
 - `logLevel` / `--log-level`: log level verbosity: `error`, `warn`, `info` or `debug`. Optional. Defaults to `info`.
 - `logFile` / `--log-file`: path to the log file. Data server logs its errors to the stdOut, but they can also be saved into a log file. Optional.
 - `logFileLevel` / `--log-file-level`: log level verbosity for the log file: `error`, `warn`, `info` or `debug`. Optional. Defaults to the value of `logLevel` / `--log-level`
@@ -344,7 +345,7 @@ Received parameters:
 
 - `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 
 #### `onStoreLoadStart({ store, logger, dependencyTagger }): void`
 
@@ -353,7 +354,7 @@ Called before the store starts loading for the first time.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 
 #### `onProcessFile({ store, logger, dependencyTagger, relativeFilepath, fileContent }): fileContent`
@@ -363,7 +364,7 @@ Called after a file is read from disk, before adding it to the store. It is aime
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `fileContent`: file contents, an object with "raw" and "json" members.
@@ -379,7 +380,7 @@ Called after a file is added into the store for the first time.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
@@ -391,7 +392,7 @@ Called after the store finishes loading for the first time.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 
 #### `onStoreChangeStart({ store, logger, dependencyTagger, changedFiles }): void`
@@ -401,7 +402,7 @@ Called before the store starts updating.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `changedFiles`: a group of changed files in Static Suite's data dir, an object with the following keys:
   - `fromUniqueId`: a unique id representing the date from which those changes are obtained.
@@ -417,7 +418,7 @@ Called before a file is updated in the store.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
@@ -429,7 +430,7 @@ Called after a file is updated in the store.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
@@ -442,7 +443,7 @@ Called after a file is deleted from the store.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
@@ -454,7 +455,7 @@ Called after the store ends updating.
 Received parameters:
 
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
-- `logger`: the logger service width several functions to log messages: `error()`, `warn()`, `info()`, `error()`
+- `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `changedFiles`: a group of changed files in Static Suite's data dir, an object with the following keys:
   - `fromUniqueId`: a unique id representing the date from which those changes are obtained.
@@ -589,6 +590,67 @@ const listContentsByTermId = ({ store, args }) => {
 };
 
 module.exports.default = listContentsByTermId;
+```
+
+## Tasks
+
+Data Server allows the execution of custom tasks. Just like [queries](#queries) and [hooks](#hooks), tasks are stored in a file inside a directory defined by the `taskDir` / `--task-dir` option.
+
+Each task is a file named `${queryId}.task.js`, and it must export a default function that receives an object as an argument, containing two keys (`store` and `args`):
+
+- `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
+
+- `args`: object with arguments used by that task.
+
+> PLEASE NOTE: since `store` is a shared object, you MUST NOT alter it from your tasks.
+
+Tasks must return an object with the following keys:
+
+- `result`: the list of returned results. It must be an structure representable as JSON (an object, array, string, etc)
+- `contentType`: optional content-type for the `result` field. Defaults to `application/json`.
+- `httpStatus`: optional HTTP status for the data available in "result". Defaults to 200.
+
+Example: get customized content data
+
+```javascript
+const getComponentChunkName = page => {
+  const bundle = page.data.content.bundle.replace(/_/g, '-');
+  return `component---src-views-${bundle}-${bundle}-jsx`;
+};
+
+const getPageDataObject = page => ({
+  componentChunkName: getComponentChunkName(page),
+  path: page.data.content.url.path,
+  result: {
+    pageContext: {
+      node: page,
+    },
+  },
+  staticQueryHashes: [],
+});
+
+const getPageData = ({ store, args }) => {
+  let pageData;
+  const pathFromArgs = args.path?.trim();
+  if (pathFromArgs) {
+    const path = pathFromArgs.trim().replace(/^\/+|\/+$/g, '');
+    const storeKey = path === 'index' ? '/' : `/${path}`;
+    const storeFile = store.index.url.get(storeKey);
+    if (storeFile !== undefined) {
+      pageData = getPageDataObject(storeFile);
+    }
+  }
+
+  const res = {
+    httpStatus: pageData ? 200 : 404,
+    result: pageData || 'not found',
+    contentType: pageData ? 'application/json' : 'text/plain',
+  };
+
+  return res;
+};
+
+module.exports.default = getPageData;
 ```
 
 ## Dumps
@@ -801,6 +863,7 @@ It watches for changes in the post processor and query files:
 
 - When a file inside the `queryDir` / `--query-dir` changes, all files inside that directory are reloaded to ensure any module or sub module is properly refreshed
 - When a file inside the `hookDir` / `--hook-dir` changes, all files inside that directory are reloaded, and the store is reloaded and passed again through all hooks, so any changes in them are applied to all data files.
+- When a file inside the `taskDir` / `--task-dir` changes, all files inside that directory are reloaded.
 
 This is the intended mode when developing queries (executing it by directly requesting the HTTP endpoint to execute a query). This mode is not required for the develop phase of a SSG, since the SSG will get the data from the Data Server only once.
 

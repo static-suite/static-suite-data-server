@@ -15,8 +15,14 @@ const runTask = (req, res) => {
     const args = req.query;
     const taskId = req.params[0];
     const response = task_1.taskRunner.run(taskId, args);
-    res.status(200);
-    res.set('application/json');
-    res.send(response);
+    res.status('metadata' in response && response.metadata.httpStatus
+        ? response.metadata.httpStatus
+        : 200);
+    res.set({
+        'Content-Type': 'metadata' in response
+            ? response.metadata.contentType
+            : 'application/json',
+    });
+    res.send('data' in response ? response.data : response);
 };
 exports.runTask = runTask;

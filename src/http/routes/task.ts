@@ -21,9 +21,18 @@ const runTask = (req: Request, res: Response): void => {
     taskId,
     args,
   );
-  res.status(200);
-  res.set('application/json');
-  res.send(response);
+  res.status(
+    'metadata' in response && response.metadata.httpStatus
+      ? response.metadata.httpStatus
+      : 200,
+  );
+  res.set({
+    'Content-Type':
+      'metadata' in response
+        ? response.metadata.contentType
+        : 'application/json',
+  });
+  res.send('data' in response ? response.data : response);
 };
 
 export { taskIndex, runTask };

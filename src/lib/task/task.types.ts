@@ -70,6 +70,13 @@ export type TaskModuleResult = {
    * @defaultValue 'application/json'
    */
   contentType?: string;
+
+  /**
+   * Optional HTTP status type for the data available in "result"
+   *
+   * @defaultValue 200
+   */
+  httpStatus?: number;
 };
 
 /**
@@ -105,6 +112,13 @@ export type TaskSuccessfulResponse = {
      * Execution time taken by the task, in milliseconds.
      */
     execTimeMs: number;
+
+    /**
+     * Optional HTTP status type for the data available in "data"
+     *
+     * @defaultValue 200
+     */
+    httpStatus?: number;
   };
 };
 

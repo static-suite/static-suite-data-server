@@ -15,7 +15,11 @@ const runQuery = (req, res) => {
     const queryDefinition = req.originalUrl.replace(/^\/query\//, '');
     const response = query_1.queryRunner.run(queryDefinition);
     res.status(200);
-    res.set('application/json');
+    res.set({
+        'Content-Type': 'metadata' in response
+            ? response.metadata.contentType
+            : 'application/json',
+    });
     res.send(response);
 };
 exports.runQuery = runQuery;

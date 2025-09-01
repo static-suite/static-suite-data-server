@@ -78,11 +78,6 @@ const argv = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
         type: 'boolean',
     },
 })
-    .completion('completion', (_current, _argv, done) => {
-    setTimeout(() => {
-        done(['query-dir', 'data-dir']);
-    }, 500);
-})
     .config(config)
     .parseSync();
 const logLevel = logger_types_1.LogLevel[argv['log-level'].toUpperCase()];
