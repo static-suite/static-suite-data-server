@@ -1,6 +1,6 @@
 {
   "name": "@static-suite/static-suite-data-server",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "description": "A flexible, fast and developer friendly Data Server for Static Suite",
   "main": "./dist/lib/index.js",
   "typings": "./dist/lib/index.d.ts",
@@ -17,7 +17,6 @@
     "chokidar": "^4.0.3",
     "clear-module": "^4.1.2",
     "clipboard": "^2.0.11",
-    "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
     "decache": "^4.6.1",
     "express": "^5.1.0",
@@ -53,7 +52,6 @@
     "@types/cors": "^2.8.13",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
-    "@types/marked": "^6.0.0",
     "@types/microtime": "^2.1.0",
     "@types/mime-types": "^3.0.1",
     "@types/module-alias": "^2.0.1",
