@@ -38,6 +38,7 @@ describe('TaskRunner test', () => {
       logger.error = jest.fn();
       try {
         taskRunner.run('error', {});
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // none
       }

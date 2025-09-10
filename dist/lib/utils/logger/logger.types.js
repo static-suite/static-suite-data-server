@@ -12,4 +12,4 @@ var LogLevel;
     LogLevel["WARN"] = "warn";
     LogLevel["INFO"] = "info";
     LogLevel["DEBUG"] = "debug";
-})(LogLevel = exports.LogLevel || (exports.LogLevel = {}));
+})(LogLevel || (exports.LogLevel = LogLevel = {}));

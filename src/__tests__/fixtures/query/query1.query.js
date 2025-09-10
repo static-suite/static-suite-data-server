@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const query1 = ({ args }) => {
   const result = [
     {

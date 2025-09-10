@@ -93,6 +93,7 @@ const setConfig = (options) => {
             fs_1.default.accessSync(localOptions.dumpDir, fs_1.default.constants.W_OK);
         }
         catch (e) {
+            console.error(e);
             throw new error_1.NonWritableDirectory('dumpDir', localOptions.dumpDir);
         }
         // fs.realpathSync() throws an error if path does not exist.

@@ -4,7 +4,9 @@ import { config } from '../../../config';
 import { dirBasedModuleGroupManager } from '..';
 
 config.queryDir = fs.realpathSync(
-  path.resolve(path.join(__dirname, '../__mocks__')),
+  path.resolve(
+    path.join(__dirname, '../../../../../src/lib/utils/module/__mocks__'),
+  ),
 );
 export const exampleQueryManager = dirBasedModuleGroupManager('query');
 

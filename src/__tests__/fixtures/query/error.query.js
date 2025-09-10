@@ -1,5 +1,5 @@
+/* eslint-disable no-undef */
 const error = () => {
-  // eslint-disable-next-line no-throw-literal
   throw new Error('oops');
 };
 

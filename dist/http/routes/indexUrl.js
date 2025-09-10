@@ -6,7 +6,10 @@ const logger_1 = require("../../lib/utils/logger");
 const dataDir_1 = require("../../lib/store/dataDir");
 const indexUrl = (req, res) => {
     dataDir_1.dataDirManager.update();
-    const storeKey = req.params[0] === 'index' ? '' : req.params[0];
+    const storeKeyParts = Array.from(req.params.storeKeyParts || []);
+    const storeKey = storeKeyParts.length === 1 && storeKeyParts[0] === 'index'
+        ? ''
+        : storeKeyParts.join('/');
     const storeFile = store_1.store.index.url.get(`/${storeKey}`);
     if (storeFile === undefined) {
         res.status(404);

@@ -59,6 +59,6 @@ export declare const moduleManager: {
      * @throws
      * An exception if the module cannot be loaded.
      */
-    get: <Type_1>(modulePath: string) => Type_1;
+    get: <Type>(modulePath: string) => Type;
 };
 //# sourceMappingURL=moduleManager.d.ts.map

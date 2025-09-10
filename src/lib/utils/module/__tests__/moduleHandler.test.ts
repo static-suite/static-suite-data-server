@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable global-require */
 import fs from 'fs';
 import path from 'path';
 import { logger } from '../../logger';
@@ -8,8 +6,14 @@ import { moduleManager } from '../moduleManager';
 // This works in conjunction with "__mocks__/clear-module.js"
 jest.mock('clear-module');
 
+// This test is executed from dist folder
 const dummyModulePath = fs.realpathSync(
-  path.resolve(path.join(__dirname, '../__mocks__/dummyModule.query.js')),
+  path.resolve(
+    path.join(
+      __dirname,
+      '../../../../../src/lib/utils/module/__mocks__/dummyModule.query.js',
+    ),
+  ),
 );
 
 type DummyModule = {

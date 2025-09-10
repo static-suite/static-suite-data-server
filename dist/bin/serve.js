@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 "use strict";
-/* eslint-disable import/first */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

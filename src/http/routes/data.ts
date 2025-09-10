@@ -7,9 +7,8 @@ import { dataDirManager } from '../../lib/store/dataDir';
 
 const data = (req: Request, res: Response): void => {
   dataDirManager.update();
-  const storeKey = req.params[0];
-  const storeKeyParts =
-    !storeKey || storeKey === '' ? null : storeKey.split('/');
+  const storeKeyParts = Array.from(req.params.storeKeyParts || []);
+  const storeKey = storeKeyParts.join('/');
 
   const storeFile = store.data.get(storeKey);
 

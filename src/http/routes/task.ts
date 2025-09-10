@@ -16,7 +16,7 @@ const taskIndex = (req: Request, res: Response): void => {
 const runTask = (req: Request, res: Response): void => {
   dataDirManager.update();
   const args: any = req.query;
-  const taskId = req.params[0];
+  const { taskId } = req.params;
   const response: TaskSuccessfulResponse | TaskErrorResponse = taskRunner.run(
     taskId,
     args,

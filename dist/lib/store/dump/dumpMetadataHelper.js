@@ -20,6 +20,7 @@ exports.dumpMetadataHelper = {
         let currentDumpMetadata = fallbackDumpMetadata;
         try {
             currentDumpMetadata = JSON.parse(fs_1.default.readFileSync(metadataFilepath).toString());
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         }
         catch (e) {
             currentDumpMetadata = fallbackDumpMetadata;

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const task2 = () => {
   const result = [
     {

@@ -9,7 +9,11 @@ import {
   isJsonFile,
 } from '../fsUtils';
 
-const fixturesDir = path.join(__dirname, './fixtures/');
+// This test is executed from dist folder
+const fixturesDir = path.join(
+  __dirname,
+  '../../../../../src/lib/utils/fs/__tests__/fixtures/',
+);
 const jsonFixturePath = path.join(fixturesDir, 'file.json');
 const jsonRawValue = fs.readFileSync(jsonFixturePath, 'utf8');
 const jsonParsedValue = JSON.parse(jsonRawValue);

@@ -10,7 +10,7 @@ var CacheStatus;
 (function (CacheStatus) {
     CacheStatus["MISS"] = "miss";
     CacheStatus["HIT"] = "hit";
-})(CacheStatus = exports.CacheStatus || (exports.CacheStatus = {}));
+})(CacheStatus || (exports.CacheStatus = CacheStatus = {}));
 /**
  * Tells whether a query response is erroneous or not.
  *

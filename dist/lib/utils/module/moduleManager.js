@@ -4,8 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.moduleManager = void 0;
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
 const clear_module_1 = __importDefault(require("clear-module"));
 const logger_1 = require("../logger");
 const config_1 = require("../../config");
@@ -39,6 +37,7 @@ const resolve = (modulePath) => {
     if (!resolvedModulePath) {
         try {
             resolvedModulePath = require.resolve(modulePath);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         }
         catch (e) {
             resolvedModulePath = modulePath;

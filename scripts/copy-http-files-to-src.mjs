@@ -1,23 +1,21 @@
+/* eslint-disable no-undef */
 /**
  * Script to run after npm install
  *
  * Copy selected files to assets directory
  */
 
-const fs = require('fs');
+import { mkdirSync, copyFileSync } from 'fs';
 
 // Copy files from Bulma to assets directory
 const bulmaSrcDir = 'node_modules/bulma/css/';
 const bulmaTargetDir = `${process.env.INIT_CWD}/src/http/public/assets/bulma/`;
-fs.mkdirSync(bulmaTargetDir, { recursive: true });
-fs.copyFileSync(
-  `${bulmaSrcDir}/bulma.min.css`,
-  `${bulmaTargetDir}/bulma.min.css`,
-);
+mkdirSync(bulmaTargetDir, { recursive: true });
+copyFileSync(`${bulmaSrcDir}/bulma.min.css`, `${bulmaTargetDir}/bulma.min.css`);
 
 // Copy files from Bulma tooltip to assets directory
 const bulmaTooltipSrcDir = 'node_modules/@creativebulma/bulma-tooltip/dist/';
-fs.copyFileSync(
+copyFileSync(
   `${bulmaTooltipSrcDir}/bulma-tooltip.min.css`,
   `${bulmaTargetDir}/bulma-tooltip.min.css`,
 );
@@ -25,8 +23,8 @@ fs.copyFileSync(
 // Copy files from Clipboard to assets directory
 const clipboardSrcDir = 'node_modules/clipboard/dist/';
 const clipboardTargetDir = `${process.env.INIT_CWD}/src/http/public/assets/clipboard/`;
-fs.mkdirSync(clipboardTargetDir, { recursive: true });
-fs.copyFileSync(
+mkdirSync(clipboardTargetDir, { recursive: true });
+copyFileSync(
   `${clipboardSrcDir}/clipboard.min.js`,
   `${clipboardTargetDir}/clipboard.min.js`,
 );
@@ -34,12 +32,12 @@ fs.copyFileSync(
 // Copy files from datatables to assets directory
 const dataTablesSrcDir = 'node_modules/simple-datatables/dist/';
 const dataTablesTargetDir = `${process.env.INIT_CWD}/src/http/public/assets/simple-datatables/`;
-fs.mkdirSync(dataTablesTargetDir, { recursive: true });
-fs.copyFileSync(
+mkdirSync(dataTablesTargetDir, { recursive: true });
+copyFileSync(
   `${dataTablesSrcDir}/umd/simple-datatables.js`,
   `${dataTablesTargetDir}/index.js`,
 );
-fs.copyFileSync(
+copyFileSync(
   `${dataTablesSrcDir}/style.css`,
   `${dataTablesTargetDir}/style.css`,
 );

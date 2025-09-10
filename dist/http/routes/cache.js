@@ -8,7 +8,7 @@ const cacheIndex = (req, res) => {
 };
 exports.cacheIndex = cacheIndex;
 const cacheClear = (req, res) => {
-    const cacheBinId = req.params[0];
+    const { cacheBinId } = req.params;
     let done = false;
     if (cache_1.cache.has(cacheBinId)) {
         cache_1.cache.bin(cacheBinId).clear();

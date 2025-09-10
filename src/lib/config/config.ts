@@ -110,6 +110,7 @@ const setConfig = (options: NonSanitizedConfigOptions): ConfigOptions => {
     try {
       fs.accessSync(localOptions.dumpDir, fs.constants.W_OK);
     } catch (e) {
+      console.error(e);
       throw new NonWritableDirectory('dumpDir', localOptions.dumpDir);
     }
     // fs.realpathSync() throws an error if path does not exist.

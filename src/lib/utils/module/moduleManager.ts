@@ -1,5 +1,3 @@
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
 import clearModule from 'clear-module';
 import { logger } from '../logger';
 import { config } from '../../config';
@@ -36,6 +34,7 @@ const resolve = (modulePath: string): string => {
   if (!resolvedModulePath) {
     try {
       resolvedModulePath = require.resolve(modulePath);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       resolvedModulePath = modulePath;
     }

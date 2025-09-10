@@ -52,6 +52,7 @@ describe('QueryRunner test', () => {
       logger.error = jest.fn();
       try {
         queryRunner.run('error');
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // none
       }

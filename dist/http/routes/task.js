@@ -13,7 +13,7 @@ exports.taskIndex = taskIndex;
 const runTask = (req, res) => {
     dataDir_1.dataDirManager.update();
     const args = req.query;
-    const taskId = req.params[0];
+    const { taskId } = req.params;
     const response = task_1.taskRunner.run(taskId, args);
     res.status('metadata' in response && response.metadata.httpStatus
         ? response.metadata.httpStatus

@@ -6,10 +6,10 @@ import { dataDirManager } from '../../lib/store/dataDir';
 // Url format /index/uuid/fr/4c7a791d-f994-4a0a-81c5-b0cdf759f8b5
 const indexUUID = (req: Request, res: Response): void => {
   dataDirManager.update();
-  const storeKey = req.params[0].split('/');
+  const { langcode, uuid } = req.params;
 
-  const storeFile = storeKey[1]
-    ? store.index.uuid.get(storeKey[0])?.get(storeKey[1])
+  const storeFile = uuid
+    ? store.index.uuid.get(langcode)?.get(uuid)
     : undefined;
   if (storeFile === undefined) {
     res.status(404);

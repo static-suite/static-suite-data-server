@@ -33,7 +33,6 @@ export const queryTagManager: QueryTagManager = {
           queryDefinition => {
             const tagsByQuery = tagsByQueryIndex.get(queryDefinition);
             if (tagsByQuery) {
-              // eslint-disable-next-line no-restricted-syntax
               for (const invalidatedTag of invalidatedTags) {
                 if (tagsByQuery.has(invalidatedTag)) {
                   invalidFilepaths.add(relativeFilepath);

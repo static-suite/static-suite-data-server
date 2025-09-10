@@ -5,7 +5,11 @@ import { dataDirManager } from '../../lib/store/dataDir';
 
 const indexUrl = (req: Request, res: Response): void => {
   dataDirManager.update();
-  const storeKey = req.params[0] === 'index' ? '' : req.params[0];
+  const storeKeyParts = Array.from(req.params.storeKeyParts || []);
+  const storeKey =
+    storeKeyParts.length === 1 && storeKeyParts[0] === 'index'
+      ? ''
+      : storeKeyParts.join('/');
   const storeFile = store.index.url.get(`/${storeKey}`);
 
   if (storeFile === undefined) {

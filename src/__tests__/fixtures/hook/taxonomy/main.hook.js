@@ -1,4 +1,5 @@
-exports.onProcessFile = ({ fileContent }) => {
+/* eslint-disable no-undef */
+module.exports.onProcessFile = ({ fileContent }) => {
   // Do something...
   return {
     raw: fileContent.raw,
@@ -6,10 +7,10 @@ exports.onProcessFile = ({ fileContent }) => {
   };
 };
 
-exports.onStoreAdd = (/* _dataDir, _file, _fileContent, _store */) => {
+module.exports.onStoreAdd = (/* _dataDir, _file, _fileContent, _store */) => {
   // Do something...
 };
 
-exports.onStoreRemove = (/* _file, _store */) => {
+module.exports.onStoreRemove = (/* _file, _store */) => {
   // Do something...
 };

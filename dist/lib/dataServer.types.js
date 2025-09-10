@@ -10,4 +10,4 @@ var RunMode;
 (function (RunMode) {
     RunMode["DEV"] = "dev";
     RunMode["PROD"] = "prod";
-})(RunMode = exports.RunMode || (exports.RunMode = {}));
+})(RunMode || (exports.RunMode = RunMode = {}));

@@ -36,7 +36,7 @@ describe('Config test', () => {
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      expect(() => setConfig(config)).toThrowError(MissingRequiredOption);
+      expect(() => setConfig(config)).toThrow(MissingRequiredOption);
     });
 
     it('wrong option runMode returns expected error', () => {
@@ -46,7 +46,7 @@ describe('Config test', () => {
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      expect(() => setConfig(config)).toThrowError(InvalidRunMode);
+      expect(() => setConfig(config)).toThrow(InvalidRunMode);
     });
 
     it('Wrong dataDir returns expected error', () => {
