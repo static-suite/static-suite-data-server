@@ -1,6 +1,6 @@
 {
   "name": "@static-suite/static-suite-data-server",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "A flexible, fast and developer friendly Data Server for Static Suite",
   "main": "./dist/lib/index.js",
   "typings": "./dist/lib/index.d.ts",
@@ -14,7 +14,7 @@
     "@creativebulma/bulma-tooltip": "^1.2.0",
     "@microsoft/api-extractor": "^7.34.4",
     "bulma": "^1.0.4",
-    "chokidar": "^5.0.0",
+    "chokidar": "4.0.3",
     "clear-module": "^4.1.2",
     "clipboard": "^2.0.11",
     "cors": "^2.8.5",
