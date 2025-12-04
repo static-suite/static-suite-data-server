@@ -9,6 +9,14 @@ const DomainError_1 = require("../../error/DomainError");
  */
 class MissingDirectory extends DomainError_1.DomainError {
     /**
+     * The configuration id of the missing directory (dataDir, queryDir, etc).
+     */
+    directoryId;
+    /**
+     * Path of the missing directory.
+     */
+    path;
+    /**
      * Constructs a new error for missing directories.
      *
      * @param directoryId - the configuration id of the missing directory (dataDir, queryDir, etc).

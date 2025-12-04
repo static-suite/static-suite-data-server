@@ -9,6 +9,10 @@ const DomainError_1 = require("../../error/DomainError");
  */
 class MissingRequiredOption extends DomainError_1.DomainError {
     /**
+     * The name of the missing required option.
+     */
+    requiredOption;
+    /**
      * Constructs a new error for missing required options.
      *
      * @param requiredOption - the name of the missing required option.

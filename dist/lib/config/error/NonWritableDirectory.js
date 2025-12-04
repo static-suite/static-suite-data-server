@@ -9,6 +9,14 @@ const DomainError_1 = require("../../error/DomainError");
  */
 class NonWritableDirectory extends DomainError_1.DomainError {
     /**
+     * The configuration id of the non-writable directory (dataDir, queryDir, etc).
+     */
+    directoryId;
+    /**
+     * Path of the non-writable directory.
+     */
+    path;
+    /**
      * Constructs a new error for non-writable directories.
      *
      * @param directoryId - the configuration id of the non-writable directory (dataDir, queryDir, etc).

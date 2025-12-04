@@ -5,7 +5,7 @@ const config_1 = require("../config");
 const dataDirManager_1 = require("../store/dataDir/dataDirManager");
 const logger_1 = require("../utils/logger");
 const cache_1 = require("../utils/cache");
-const fs_1 = require("../utils/fs");
+const fsWatchUtils_1 = require("../utils/fs/fsWatchUtils");
 const hook_1 = require("../store/hook");
 const query_1 = require("../query");
 const task_1 = require("../task");
@@ -56,7 +56,7 @@ const initWatcher = () => {
             task_1.taskManager.reset();
         }
     };
-    (0, fs_1.watch)(paths, {
+    (0, fsWatchUtils_1.watch)(paths, {
         add: listener,
         change: listener,
         unlink: listener,

@@ -2,7 +2,7 @@ import { config } from '../config';
 import { dataDirManager } from '../store/dataDir/dataDirManager';
 import { logger } from '../utils/logger';
 import { cache } from '../utils/cache';
-import { watch } from '../utils/fs';
+import { watch } from '../utils/fs/fsWatchUtils';
 import { hookManager } from '../store/hook';
 import { queryManager } from '../query';
 import { taskManager } from '../task';
