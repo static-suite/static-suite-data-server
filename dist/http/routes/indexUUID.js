@@ -9,7 +9,7 @@ const indexUUID = (req, res) => {
     dataDir_1.dataDirManager.update();
     const { langcode, uuid } = req.params;
     const storeFile = uuid
-        ? store_1.store.index.uuid.get(langcode)?.get(uuid)
+        ? store_1.store.index.uuid.get(String(langcode))?.get(String(uuid))
         : undefined;
     if (storeFile === undefined) {
         res.status(404);

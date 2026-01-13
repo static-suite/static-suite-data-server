@@ -18,7 +18,7 @@ const runTask = (req: Request, res: Response): void => {
   const args: any = req.query;
   const { taskId } = req.params;
   const response: TaskSuccessfulResponse | TaskErrorResponse = taskRunner.run(
-    taskId,
+    String(taskId),
     args,
   );
   res.status(

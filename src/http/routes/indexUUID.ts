@@ -9,7 +9,7 @@ const indexUUID = (req: Request, res: Response): void => {
   const { langcode, uuid } = req.params;
 
   const storeFile = uuid
-    ? store.index.uuid.get(langcode)?.get(uuid)
+    ? store.index.uuid.get(String(langcode))?.get(String(uuid))
     : undefined;
   if (storeFile === undefined) {
     res.status(404);
