@@ -1,6 +1,6 @@
 {
   "name": "@static-suite/static-suite-data-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A flexible, fast and developer friendly Data Server for Static Suite",
   "main": "./dist/lib/index.js",
   "typings": "./dist/lib/index.d.ts",
@@ -27,7 +27,7 @@
     "pug": "^3.0.3",
     "simple-datatables": "^10.0.0",
     "tsc-watch": "^7.1.1",
-    "typescript": "^5.9.2",
+    "typescript": "^6.0.2",
     "winston": "^3.8.2",
     "yargs": "^18.0.0"
   },
