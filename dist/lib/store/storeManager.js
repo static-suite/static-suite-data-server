@@ -25,6 +25,7 @@ const setFileIntoStore = (relativeFilepath) => {
         relativeFilepath,
         fileContent,
     });
+    // Used to return the contents of the previously stored file
     let previousStoredData = null;
     const dataToStore = fileContent.json || fileContent.raw;
     const currentData = _1.store.data.get(relativeFilepath);
@@ -80,12 +81,12 @@ const setFileIntoStore = (relativeFilepath) => {
             if (uuid && langcode) {
                 const langcodeMap = _1.store.index.uuid.get(langcode) ||
                     _1.store.index.uuid.set(langcode, new Map()).get(langcode);
-                langcodeMap.set(uuid, dataToStore);
+                langcodeMap.set(uuid, skipUpdating ? currentData : dataToStore);
             }
             // Add data to URL index.
             const url = dataToStore.data?.content?.url?.path;
             if (url) {
-                _1.store.index.url.set(url, dataToStore);
+                _1.store.index.url.set(url, skipUpdating ? currentData : dataToStore);
             }
             // Add include dependencies.
             dependencyFileHelper_1.dependencyIncludeHelper.addIncludeDependencies(relativeFilepath, dataToStore);

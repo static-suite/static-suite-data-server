@@ -32,6 +32,7 @@ const setFileIntoStore = (
     fileContent,
   });
 
+  // Used to return the contents of the previously stored file
   let previousStoredData: any = null;
 
   const dataToStore = fileContent.json || fileContent.raw;
@@ -99,13 +100,13 @@ const setFileIntoStore = (
         const langcodeMap =
           store.index.uuid.get(langcode) ||
           store.index.uuid.set(langcode, new Map<string, any>()).get(langcode);
-        langcodeMap.set(uuid, dataToStore);
+        langcodeMap.set(uuid, skipUpdating ? currentData : dataToStore);
       }
 
       // Add data to URL index.
       const url = dataToStore.data?.content?.url?.path;
       if (url) {
-        store.index.url.set(url, dataToStore);
+        store.index.url.set(url, skipUpdating ? currentData : dataToStore);
       }
 
       // Add include dependencies.
