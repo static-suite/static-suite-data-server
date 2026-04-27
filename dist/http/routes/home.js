@@ -6,6 +6,7 @@ const home = (req, res) => {
         links: {
             '/data': 'Browse all data loaded into the server',
             '/dependency': 'Dependency data',
+            '/diff': 'Diff operations',
             '/dump': 'Dump operations',
             '/query': 'List of available queries',
             '/task': 'List of available tasks',

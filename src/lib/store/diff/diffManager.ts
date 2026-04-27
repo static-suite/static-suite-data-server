@@ -27,6 +27,7 @@ export const diffManager: DiffManager = {
     const currentDumpUniqueId = dumpMetadataHelper.getCurrentDumpUniqueId();
     const isFirstDiffAfterReboot = lastDiffUniqueId === unixEpochUniqueId;
     const isADumpAvailable = currentDumpUniqueId !== unixEpochUniqueId;
+
     // If both checks passes, check if something has changed after last dump to avoid a full diff:
     if (isFirstDiffAfterReboot && isADumpAvailable) {
       const dataDirModificationUniqueId = changedFiles.toUniqueId;

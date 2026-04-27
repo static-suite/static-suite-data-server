@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { StoreSubsetOptions } from 'lib/store/store.types';
+import { StoreSubsetOptions } from '../../lib/store/store.types';
 import { store } from '../../lib/store';
 import { dataDirManager } from '../../lib/store/dataDir';
 

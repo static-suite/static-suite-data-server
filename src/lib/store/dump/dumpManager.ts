@@ -50,22 +50,6 @@ const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
             oldPublicUrl =
               JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
               null;
-            /*
-            // Save a copy for later reference.
-            const backupAbsoluteFilepathInDumpDir =
-              absoluteFilepathInDumpDir.replace(
-                '/dump/files/',
-                '/dump/files.bak/',
-              );
-            const backupDir = path.dirname(backupAbsoluteFilepathInDumpDir);
-            if (!fs.existsSync(backupDir)) {
-              fs.mkdirSync(backupDir, { recursive: true });
-            }
-            fs.renameSync(
-              absoluteFilepathInDumpDir,
-              backupAbsoluteFilepathInDumpDir,
-            );
-            */
           }
         }
         if (needsSave) {
@@ -138,6 +122,8 @@ export const dumpManager: DumpManager = {
       const dumpDir = `${config.dumpDir}/files`;
 
       if (diff.updated.size || diff.deleted.size) {
+        dumpMetadataHelper.storeDumpMetadata(dump);
+
         // Store updated files.
         storeUpdatedFiles(diff, dump, dumpDir);
 
@@ -162,13 +148,6 @@ export const dumpManager: DumpManager = {
           logger.info(
             `Dump created in ${execTimeMs} ms. Updated: ${dump.updated.size} / Deleted: ${dump.deleted.size}`,
           );
-
-          /*
-          // Log dump if not empty
-          if (dump.updated.size || dump.deleted.size) {
-            logger.debug(`Dump: "${JSON.stringify(jsonify(dump))}"`);
-          }
-          */
         } else {
           // Resetting the diff must happen when no other operations are pending.
           diffManager.reset(diff.toUniqueId);

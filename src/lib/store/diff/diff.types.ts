@@ -38,6 +38,7 @@ export type Diff = {
    * Execution time taken by the diff, in milliseconds.
    */
   execTimeMs: number;
+
   /**
    * A unique id representing the date from which this diff is obtained.
    */

@@ -46,22 +46,6 @@ const storeUpdatedFiles = (diff, dump, dumpDir) => {
                         oldPublicUrl =
                             JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
                                 null;
-                        /*
-                        // Save a copy for later reference.
-                        const backupAbsoluteFilepathInDumpDir =
-                          absoluteFilepathInDumpDir.replace(
-                            '/dump/files/',
-                            '/dump/files.bak/',
-                          );
-                        const backupDir = path.dirname(backupAbsoluteFilepathInDumpDir);
-                        if (!fs.existsSync(backupDir)) {
-                          fs.mkdirSync(backupDir, { recursive: true });
-                        }
-                        fs.renameSync(
-                          absoluteFilepathInDumpDir,
-                          backupAbsoluteFilepathInDumpDir,
-                        );
-                        */
                     }
                 }
                 if (needsSave) {
@@ -123,6 +107,7 @@ exports.dumpManager = {
         if (config_1.config.dumpDir) {
             const dumpDir = `${config_1.config.dumpDir}/files`;
             if (diff.updated.size || diff.deleted.size) {
+                dumpMetadataHelper_1.dumpMetadataHelper.storeDumpMetadata(dump);
                 // Store updated files.
                 storeUpdatedFiles(diff, dump, dumpDir);
                 // Remove deleted files.
@@ -140,12 +125,6 @@ exports.dumpManager = {
                         diffManager_1.diffManager.reset(diff.toUniqueId);
                     }
                     logger_1.logger.info(`Dump created in ${execTimeMs} ms. Updated: ${dump.updated.size} / Deleted: ${dump.deleted.size}`);
-                    /*
-                    // Log dump if not empty
-                    if (dump.updated.size || dump.deleted.size) {
-                      logger.debug(`Dump: "${JSON.stringify(jsonify(dump))}"`);
-                    }
-                    */
                 }
                 else {
                     // Resetting the diff must happen when no other operations are pending.

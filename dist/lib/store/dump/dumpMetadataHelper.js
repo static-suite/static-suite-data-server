@@ -54,6 +54,7 @@ exports.dumpMetadataHelper = {
     },
     getCurrentDumpUniqueId() {
         const metadataFilepath = getMetadataFilepath();
+        logger_1.logger.debug(`metadataFilepath: ${metadataFilepath}`);
         const metadata = JSON.parse(fs_1.default.existsSync(metadataFilepath)
             ? fs_1.default.readFileSync(metadataFilepath).toString()
             : '[]');

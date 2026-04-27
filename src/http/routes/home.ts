@@ -5,6 +5,7 @@ export const home = (req: Request, res: Response): void => {
     links: {
       '/data': 'Browse all data loaded into the server',
       '/dependency': 'Dependency data',
+      '/diff': 'Diff operations',
       '/dump': 'Dump operations',
       '/query': 'List of available queries',
       '/task': 'List of available tasks',

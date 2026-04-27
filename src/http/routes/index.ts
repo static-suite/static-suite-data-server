@@ -32,6 +32,7 @@ import {
 import { indexUrl } from './indexUrl';
 import { indexUUID } from './indexUUID';
 import { subset } from './subset';
+import { diffFull, diffIncremental, diffIndex, diffReset } from './diff';
 
 const routes = Router();
 
@@ -49,6 +50,10 @@ routes.get('/task', taskIndex);
 routes.get('/task/:taskId', runTask);
 routes.get('/cache', cacheIndex);
 routes.get('/cache/:cacheBinId/clear', cacheClear);
+routes.get('/diff', diffIndex);
+routes.get('/diff/incremental', diffIncremental);
+routes.get('/diff/full', diffFull);
+routes.get('/diff/reset', diffReset);
 routes.get('/dump', dumpIndex);
 routes.get('/dump/incremental', dumpIncremental);
 routes.get('/dump/full', dumpFull);

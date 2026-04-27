@@ -1,15 +1,23 @@
 import fs from 'fs';
-import { logger } from '../../utils/logger';
-import { jsonify } from '../../utils/object';
+// import { logger } from '../../utils/logger';
+// import { jsonify } from '../../utils/object';
 import { config } from '../../config';
-import { Dump, DumpMetadata } from './dump.types';
-import { unixEpochUniqueId } from '../workDir';
+// import { Dump, DumpMetadata } from './dump.types';
+// import { unixEpochUniqueId } from '../workDir';
+// import { findFilesInDir } from '../../utils/fs';
 
-const getMetadataFilepath = () => `${config.dumpDir}/metadata.json`;
+const getIndexFilepath = () => `${config.dumpDir}/files.idx`;
 
-export const dumpMetadataHelper = {
-  storeDumpMetadata: (dump: Dump): boolean => {
-    const metadataFilepath = getMetadataFilepath();
+export const dumpIndexHelper = {
+  isDumpIndexPresent: (): boolean => {
+    const indexFilepath = getIndexFilepath();
+    return fs.existsSync(indexFilepath);
+  },
+
+  createDumpIndex: (): void => {
+    // const relativeFilePaths = findFilesInDir(config.dumpDir);
+    // console.log('kkk relativeFilePaths', relativeFilePaths.length);
+    /* const indexFilepath = getIndexFilepath();
     const fallbackDumpMetadata: DumpMetadata = {
       current: unixEpochUniqueId,
       dumps: [],
@@ -17,7 +25,7 @@ export const dumpMetadataHelper = {
     let currentDumpMetadata = fallbackDumpMetadata;
     try {
       currentDumpMetadata = JSON.parse(
-        fs.readFileSync(metadataFilepath).toString(),
+        fs.readFileSync(indexFilepath).toString(),
       );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
@@ -27,17 +35,17 @@ export const dumpMetadataHelper = {
     currentDumpMetadata.dumps.push(jsonify(dump));
     try {
       const currentDumpMetadataString = JSON.stringify(currentDumpMetadata);
-      fs.writeFileSync(metadataFilepath, currentDumpMetadataString);
+      fs.writeFileSync(indexFilepath, currentDumpMetadataString);
       return true;
     } catch (e) {
       logger.error(
-        `Dump: error saving dump metadata to "${metadataFilepath}": ${e}`,
+        `Dump: error saving dump metadata to "${indexFilepath}": ${e}`,
       );
     }
-    return false;
+    return false; */
   },
 
-  removeDumpDataOlderThan(uniqueId: string): DumpMetadata {
+  /* removeDumpDataOlderThan(uniqueId: string): DumpMetadata {
     const metadataFilepath = getMetadataFilepath();
 
     const metadata = JSON.parse(
@@ -71,5 +79,5 @@ export const dumpMetadataHelper = {
     ) as DumpMetadata;
 
     return metadata.current || unixEpochUniqueId;
-  },
+  }, */
 };
