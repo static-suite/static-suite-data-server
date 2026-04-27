@@ -26,9 +26,6 @@ exports.diffManager = {
         const currentDumpUniqueId = dumpMetadataHelper_1.dumpMetadataHelper.getCurrentDumpUniqueId();
         const isFirstDiffAfterReboot = lastDiffUniqueId === workDir_1.unixEpochUniqueId;
         const isADumpAvailable = currentDumpUniqueId !== workDir_1.unixEpochUniqueId;
-        logger_1.logger.debug(`currentDumpUniqueId: "${currentDumpUniqueId}"`);
-        logger_1.logger.debug(`isFirstDiffAfterReboot: "${isFirstDiffAfterReboot}"`);
-        logger_1.logger.debug(`isADumpAvailable: "${isADumpAvailable}"`);
         // If both checks passes, check if something has changed after last dump to avoid a full diff:
         if (isFirstDiffAfterReboot && isADumpAvailable) {
             const dataDirModificationUniqueId = changedFiles.toUniqueId;
