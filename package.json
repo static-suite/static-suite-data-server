@@ -1,6 +1,6 @@
 {
   "name": "@static-suite/static-suite-data-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A flexible, fast and developer friendly Data Server for Static Suite",
   "main": "./dist/lib/index.js",
   "typings": "./dist/lib/index.d.ts",
@@ -21,7 +21,7 @@
     "decache": "^4.6.1",
     "express": "^5.1.0",
     "fast-glob": "^3.2.12",
-    "marked": "^17.0.1",
+    "marked": "^18.0.3",
     "microtime": "^3.1.1",
     "mime-types": "^3.0.1",
     "pug": "^3.0.3",
@@ -48,7 +48,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
+    "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.13",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
@@ -59,7 +59,7 @@
     "@types/yargs": "^17.0.22",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
-    "eslint": "^9.35.0",
+    "eslint": "^10.3.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^5.5.4",

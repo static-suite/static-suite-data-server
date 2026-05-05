@@ -25,7 +25,7 @@ export const isJsonFile = (filepath: string): boolean =>
  * @returns The file contents as a string if file is found, or null otherwise.
  */
 export const readFile = (filePath: string): string | null => {
-  let content = null;
+  let content;
   try {
     content = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
   } catch (error) {
@@ -115,4 +115,3 @@ export const removeEmptyDirsUpwards = (dir: string): void => {
     removeEmptyDirsUpwards(path.dirname(dir));
   }
 };
-

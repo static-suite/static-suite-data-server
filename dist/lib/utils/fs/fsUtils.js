@@ -28,7 +28,7 @@ exports.isJsonFile = isJsonFile;
  * @returns The file contents as a string if file is found, or null otherwise.
  */
 const readFile = (filePath) => {
-    let content = null;
+    let content;
     try {
         content = fs_1.default.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
     }
