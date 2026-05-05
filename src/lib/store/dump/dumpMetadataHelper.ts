@@ -14,7 +14,7 @@ export const dumpMetadataHelper = {
       current: unixEpochUniqueId,
       dumps: [],
     };
-    let currentDumpMetadata = fallbackDumpMetadata;
+    let currentDumpMetadata;
     try {
       currentDumpMetadata = JSON.parse(
         fs.readFileSync(metadataFilepath).toString(),
