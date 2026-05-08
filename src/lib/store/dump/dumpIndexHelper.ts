@@ -1,83 +1,132 @@
 import fs from 'fs';
-// import { logger } from '../../utils/logger';
-// import { jsonify } from '../../utils/object';
+import { logger } from '../../utils/logger';
+import { createHash } from '../../utils/string';
 import { config } from '../../config';
 // import { Dump, DumpMetadata } from './dump.types';
 // import { unixEpochUniqueId } from '../workDir';
-// import { findFilesInDir } from '../../utils/fs';
+import { findFilesInDir, getFileContent } from '../../utils/fs';
+import { IndexEntry } from './dump.types';
+
+const index = new Map<string, IndexEntry>();
+
+let isStale: boolean | undefined = undefined;
 
 const getIndexFilepath = () => `${config.dumpDir}/files.idx`;
+const getIndexIsStaleFlagFilepath = () =>
+  `${config.dumpDir}/index-is-stale.flag`;
+
+const indexToString = (): string => {
+  const indexLines: string[] = [];
+  index.forEach((value, filePath) => {
+    const line = [filePath, value.hash, value.url];
+    indexLines.push(line.join('\t'));
+  });
+  return indexLines.join('\n');
+};
+
+const setIsStale = (value: boolean): void => {
+  if (isStale !== value) {
+    isStale = value;
+    const indexIsStaleFlagFilepath = getIndexIsStaleFlagFilepath();
+    if (isStale === true) {
+      fs.writeFileSync(indexIsStaleFlagFilepath, '');
+    } else {
+      if (fs.existsSync(indexIsStaleFlagFilepath)) {
+        fs.unlinkSync(indexIsStaleFlagFilepath);
+      }
+    }
+  }
+};
 
 export const dumpIndexHelper = {
-  isDumpIndexPresent: (): boolean => {
-    const indexFilepath = getIndexFilepath();
-    return fs.existsSync(indexFilepath);
+  isDumpIndexStale: (): boolean => {
+    if (isStale === undefined) {
+      const indexIsStaleFlagFilepath = getIndexIsStaleFlagFilepath();
+      if (fs.existsSync(indexIsStaleFlagFilepath)) {
+        setIsStale(true);
+      } else {
+        setIsStale(false);
+      }
+    }
+    return !!isStale;
+  },
+
+  isDumpIndexPresent: (): boolean => fs.existsSync(getIndexFilepath()),
+
+  saveDumpIndex: (): void => {
+    if (isStale) {
+      const indexFilepath = getIndexFilepath();
+      const indexAsString = indexToString().trim();
+      fs.writeFileSync(indexFilepath, indexAsString);
+      setIsStale(false);
+    }
   },
 
   createDumpIndex: (): void => {
-    // const relativeFilePaths = findFilesInDir(config.dumpDir);
-    // console.log('kkk relativeFilePaths', relativeFilePaths.length);
-    /* const indexFilepath = getIndexFilepath();
-    const fallbackDumpMetadata: DumpMetadata = {
-      current: unixEpochUniqueId,
-      dumps: [],
-    };
-    let currentDumpMetadata = fallbackDumpMetadata;
-    try {
-      currentDumpMetadata = JSON.parse(
-        fs.readFileSync(indexFilepath).toString(),
+    if (config.dumpDir) {
+      setIsStale(true);
+      logger.info('Creating dump index...');
+      const startDate = Date.now();
+      index.clear();
+      const filesDumpDir = `${config.dumpDir}/files`;
+      const relativeFilePaths = findFilesInDir(filesDumpDir);
+      relativeFilePaths.forEach(relativeFilePath => {
+        const fileContent = getFileContent(
+          `${filesDumpDir}/${relativeFilePath}`,
+        );
+        if (fileContent.raw) {
+          const url = fileContent.json
+            ? fileContent.json.data?.content?.url?.path
+            : null;
+          const hash = createHash(fileContent.raw);
+          index.set(relativeFilePath, { hash, url });
+        }
+      });
+
+      // Save index into disk
+      dumpIndexHelper.saveDumpIndex();
+
+      logger.info(
+        `${relativeFilePaths.length} files in dump indexed in ${
+          Date.now() - startDate
+        }ms.`,
       );
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      currentDumpMetadata = fallbackDumpMetadata;
     }
-    currentDumpMetadata.current = dump.toUniqueId;
-    currentDumpMetadata.dumps.push(jsonify(dump));
-    try {
-      const currentDumpMetadataString = JSON.stringify(currentDumpMetadata);
-      fs.writeFileSync(indexFilepath, currentDumpMetadataString);
-      return true;
-    } catch (e) {
-      logger.error(
-        `Dump: error saving dump metadata to "${indexFilepath}": ${e}`,
-      );
-    }
-    return false; */
   },
 
-  /* removeDumpDataOlderThan(uniqueId: string): DumpMetadata {
-    const metadataFilepath = getMetadataFilepath();
-
-    const metadata = JSON.parse(
-      fs.existsSync(metadataFilepath)
-        ? fs.readFileSync(metadataFilepath).toString()
-        : '[]',
-    ) as DumpMetadata;
-
-    // Remove any dump data older than or equal to unique id.
-    metadata.dumps = metadata.dumps.filter(dump => dump.toUniqueId > uniqueId);
-
-    try {
-      fs.writeFileSync(metadataFilepath, JSON.stringify(metadata));
-    } catch (e) {
-      logger.error(
-        `Dump: error removing dump metadata older than "${uniqueId}" from "${metadataFilepath}": ${e}`,
+  loadDumpIndex: (): void => {
+    if (config.dumpDir) {
+      logger.info('Loading dump index...');
+      const startDate = Date.now();
+      const indexFilepath = getIndexFilepath();
+      const data = fs.readFileSync(indexFilepath).toString().trim();
+      index.clear();
+      // Split lines and remove empty ones.
+      const dataLines: string[] = data.split('\n').filter(line => !!line);
+      dataLines.forEach(line => {
+        const [relativeFilePath, hash, url] = line.split('\t');
+        index.set(relativeFilePath, { hash, url });
+      });
+      logger.info(
+        `${dataLines.length} entries loaded from dump index in ${
+          Date.now() - startDate
+        }ms.`,
       );
     }
-
-    return metadata;
   },
 
-  getCurrentDumpUniqueId(): string {
-    const metadataFilepath = getMetadataFilepath();
+  hasEntry: (relativeFilePath: string): boolean => index.has(relativeFilePath),
 
-    logger.debug(`metadataFilepath: ${metadataFilepath}`);
-    const metadata = JSON.parse(
-      fs.existsSync(metadataFilepath)
-        ? fs.readFileSync(metadataFilepath).toString()
-        : '[]',
-    ) as DumpMetadata;
+  getEntry: (relativeFilePath: string): IndexEntry | undefined =>
+    index.get(relativeFilePath),
 
-    return metadata.current || unixEpochUniqueId;
-  }, */
+  addEntry: (relativeFilePath: string, entry: IndexEntry): void => {
+    setIsStale(true);
+    index.set(relativeFilePath, entry);
+  },
+
+  removeEntry: (relativeFilePath: string): void => {
+    setIsStale(true);
+    index.delete(relativeFilePath);
+  },
 };

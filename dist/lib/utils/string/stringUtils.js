@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isUniqueId = exports.parseUniqueId = exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
+exports.createHash = exports.isUniqueId = exports.parseUniqueId = exports.parseURLSearchParams = exports.parseJsonString = exports.VARIANT_SEPARATOR = void 0;
 const logger_1 = require("../logger");
 /**
  * Separator for variant data files saved to storage.
@@ -87,3 +87,10 @@ exports.parseUniqueId = parseUniqueId;
  */
 const isUniqueId = (uniqueId) => /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/.test(uniqueId);
 exports.isUniqueId = isUniqueId;
+/**
+ * Creates a hash from a string
+ *
+ * @param data - A string of data
+ */
+const createHash = (data) => require('crypto').createHash('sha1').update(data).digest('base64');
+exports.createHash = createHash;

@@ -48,4 +48,10 @@ export declare const parseUniqueId: (uniqueId: string) => Date | null;
  * @param uniqueId - A unique id to be checked
  */
 export declare const isUniqueId: (uniqueId: string) => boolean;
+/**
+ * Creates a hash from a string
+ *
+ * @param data - A string of data
+ */
+export declare const createHash: (data: string) => string;
 //# sourceMappingURL=stringUtils.d.ts.map

@@ -2,12 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import microtime from 'microtime';
 import { logger } from '../../utils/logger';
-import {
-  getFileContent,
-  isJsonFile,
-  readFile,
-  removeEmptyDirsUpwards,
-} from '../../utils/fs';
+import { isJsonFile, removeEmptyDirsUpwards } from '../../utils/fs';
 import { config } from '../../config';
 import { store } from '../store';
 import { diffManager } from '../diff/diffManager';
@@ -15,19 +10,19 @@ import { Diff } from '../diff/diff.types';
 import { Dump, DumpManager } from './dump.types';
 import { hookManager } from '../hook';
 import { dumpMetadataHelper } from './dumpMetadataHelper';
+import { dumpIndexHelper } from './dumpIndexHelper';
+import { createHash } from '../../utils/string';
 
-const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
+const storeUpdatedFiles = (
+  diff: Diff,
+  dump: Dump,
+  filesDumpDir: string,
+): void => {
   diff.updated.forEach(relativeFilepath => {
     const storeFileContentData = store.data.get(relativeFilepath);
     if (storeFileContentData) {
-      const absoluteFilepathInDumpDir = `${dumpDir}/${relativeFilepath}`;
+      const absoluteFilepathInDumpDir = `${filesDumpDir}/${relativeFilepath}`;
       try {
-        // Create parent directories if they are missing.
-        const dir = path.dirname(absoluteFilepathInDumpDir);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-
         // If store data is an object, stringify it to execute its
         // queries and resolve its includes.
         const isJson = isJsonFile(relativeFilepath);
@@ -35,26 +30,38 @@ const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
           ? JSON.stringify(storeFileContentData)
           : storeFileContentData;
 
-        // Before overwriting a file, check it has changed.
+        // Before overwriting a file, check if it has changed.
         let needsSave = true;
         let oldPublicUrl: string | null = null;
         const newPublicUrl: string | null =
           storeFileContentData.data?.content?.url?.path || null;
-        if (fs.existsSync(absoluteFilepathInDumpDir)) {
-          const dumpFileContentString = readFile(absoluteFilepathInDumpDir);
-          if (storeFileContentString === dumpFileContentString) {
+        const newHash = createHash(storeFileContentString);
+        const indexEntry = dumpIndexHelper.getEntry(relativeFilepath);
+        if (indexEntry) {
+          if (newHash === indexEntry.hash) {
             // No need to save it, file has not changed.
             needsSave = false;
-          } else if (isJson && dumpFileContentString) {
-            // Get old public URL before it changes on disk.
-            oldPublicUrl =
-              JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
-              null;
+          } else if (isJson) {
+            // Get old public URL before it changes on disk and index.
+            oldPublicUrl = indexEntry.url;
           }
         }
+
         if (needsSave) {
-          // Save it.
+          // Create parent directories if they are missing.
+          const dir = path.dirname(absoluteFilepathInDumpDir);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+
+          // Save it on disk.
           fs.writeFileSync(absoluteFilepathInDumpDir, storeFileContentString);
+
+          // Save it to index.
+          dumpIndexHelper.addEntry(relativeFilepath, {
+            hash: newHash,
+            url: newPublicUrl,
+          });
 
           // Mark it as updated.
           dump.updated.set(relativeFilepath, {
@@ -75,21 +82,27 @@ const storeUpdatedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
   });
 };
 
-const removeDeletedFiles = (diff: Diff, dump: Dump, dumpDir: string): void => {
+const removeDeletedFiles = (
+  diff: Diff,
+  dump: Dump,
+  filesDumpDir: string,
+): void => {
   diff.deleted.forEach(relativeFilepath => {
-    const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
+    const absoluteFilepath = `${filesDumpDir}/${relativeFilepath}`;
     try {
-      if (fs.existsSync(absoluteFilepath)) {
-        // Get old public URLs before they change on disk.
-        const dumpContent = getFileContent(absoluteFilepath);
-        const oldPublicUrl: string | null =
-          dumpContent.json?.data?.content?.url?.path;
+      const indexEntry = dumpIndexHelper.getEntry(relativeFilepath);
+      if (indexEntry) {
+        // Get old public URLs before they change on disk and index.
+        const oldPublicUrl = indexEntry.url;
 
         // Delete it.
         fs.unlinkSync(absoluteFilepath);
 
         // Delete any empty directory.
         removeEmptyDirsUpwards(path.dirname(absoluteFilepath));
+
+        // Delete it from index.
+        dumpIndexHelper.removeEntry(relativeFilepath);
 
         // Mark it as deleted.
         dump.deleted.set(relativeFilepath, {
@@ -119,16 +132,19 @@ export const dumpManager: DumpManager = {
     };
 
     if (config.dumpDir) {
-      const dumpDir = `${config.dumpDir}/files`;
+      const filesDumpDir = `${config.dumpDir}/files`;
 
       if (diff.updated.size || diff.deleted.size) {
         dumpMetadataHelper.storeDumpMetadata(dump);
 
         // Store updated files.
-        storeUpdatedFiles(diff, dump, dumpDir);
+        storeUpdatedFiles(diff, dump, filesDumpDir);
 
         // Remove deleted files.
-        removeDeletedFiles(diff, dump, dumpDir);
+        removeDeletedFiles(diff, dump, filesDumpDir);
+
+        // Save dump index
+        dumpIndexHelper.saveDumpIndex();
 
         // Invoke "onDumpCreate" hook.
         dump = hookManager.invokeOnDumpCreate(dump);

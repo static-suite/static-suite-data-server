@@ -76,3 +76,8 @@ export type DumpMetadata = {
   current: string;
   dumps: Dump[];
 };
+
+export type IndexEntry = {
+  hash: string;
+  url: string | null;
+};

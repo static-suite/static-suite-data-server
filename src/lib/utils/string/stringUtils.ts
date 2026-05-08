@@ -91,3 +91,11 @@ export const parseUniqueId = (uniqueId: string): Date | null => {
  */
 export const isUniqueId = (uniqueId: string): boolean =>
   /(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})\.(\d{3}).*/.test(uniqueId);
+
+/**
+ * Creates a hash from a string
+ *
+ * @param data - A string of data
+ */
+export const createHash = (data: string): string =>
+  require('crypto').createHash('sha1').update(data).digest('base64');

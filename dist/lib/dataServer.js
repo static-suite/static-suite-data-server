@@ -14,6 +14,7 @@ const query_types_1 = require("./query/query.types");
 Object.defineProperty(exports, "CacheStatus", { enumerable: true, get: function () { return query_types_1.CacheStatus; } });
 const dataServer_types_1 = require("./dataServer.types");
 Object.defineProperty(exports, "RunMode", { enumerable: true, get: function () { return dataServer_types_1.RunMode; } });
+const dumpIndexHelper_1 = require("./store/dump/dumpIndexHelper");
 /**
  * The Data Server instance.
  *
@@ -28,6 +29,7 @@ const dataServer = {
      * @returns An object with the data store and the queryRunner service.
      */
     init: (options) => {
+        const startDate = Date.now();
         // Configure logger.
         (0, logger_1.configureLogger)(options.logLevel, options.logFile);
         // Configure data server.
@@ -46,6 +48,15 @@ const dataServer = {
         }
         // Load data from dataDir.
         dataDir_1.dataDirManager.load();
+        // Create and load dump index.
+        if (config.dumpDir) {
+            if (dumpIndexHelper_1.dumpIndexHelper.isDumpIndexStale() ||
+                !dumpIndexHelper_1.dumpIndexHelper.isDumpIndexPresent()) {
+                dumpIndexHelper_1.dumpIndexHelper.createDumpIndex();
+            }
+            dumpIndexHelper_1.dumpIndexHelper.loadDumpIndex();
+        }
+        logger_1.logger.info(`Data Server loaded in ${Date.now() - startDate}ms.`);
         return {
             store: store_1.store,
             queryRunner: query_1.queryRunner,

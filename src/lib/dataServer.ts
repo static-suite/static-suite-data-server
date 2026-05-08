@@ -1,4 +1,4 @@
-import { configureLogger } from './utils/logger';
+import { configureLogger, logger } from './utils/logger';
 import { LogLevel, LogFile } from './utils/logger/logger.types';
 import { initWatcher } from './watcher';
 import { setConfig } from './config';
@@ -21,6 +21,7 @@ import {
   DataServerReturn,
   DataServerInitOptions,
 } from './dataServer.types';
+import { dumpIndexHelper } from './store/dump/dumpIndexHelper';
 
 /**
  * The Data Server instance.
@@ -36,6 +37,8 @@ const dataServer = {
    * @returns An object with the data store and the queryRunner service.
    */
   init: (options: DataServerInitOptions): DataServerReturn => {
+    const startDate = Date.now();
+
     // Configure logger.
     configureLogger(options.logLevel, options.logFile);
 
@@ -57,6 +60,19 @@ const dataServer = {
 
     // Load data from dataDir.
     dataDirManager.load();
+
+    // Create and load dump index.
+    if (config.dumpDir) {
+      if (
+        dumpIndexHelper.isDumpIndexStale() ||
+        !dumpIndexHelper.isDumpIndexPresent()
+      ) {
+        dumpIndexHelper.createDumpIndex();
+      }
+      dumpIndexHelper.loadDumpIndex();
+    }
+
+    logger.info(`Data Server loaded in ${Date.now() - startDate}ms.`);
 
     return {
       store,

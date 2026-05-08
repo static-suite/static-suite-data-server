@@ -14,43 +14,49 @@ const store_1 = require("../store");
 const diffManager_1 = require("../diff/diffManager");
 const hook_1 = require("../hook");
 const dumpMetadataHelper_1 = require("./dumpMetadataHelper");
-const storeUpdatedFiles = (diff, dump, dumpDir) => {
+const dumpIndexHelper_1 = require("./dumpIndexHelper");
+const string_1 = require("../../utils/string");
+const storeUpdatedFiles = (diff, dump, filesDumpDir) => {
     diff.updated.forEach(relativeFilepath => {
         const storeFileContentData = store_1.store.data.get(relativeFilepath);
         if (storeFileContentData) {
-            const absoluteFilepathInDumpDir = `${dumpDir}/${relativeFilepath}`;
+            const absoluteFilepathInDumpDir = `${filesDumpDir}/${relativeFilepath}`;
             try {
-                // Create parent directories if they are missing.
-                const dir = path_1.default.dirname(absoluteFilepathInDumpDir);
-                if (!fs_1.default.existsSync(dir)) {
-                    fs_1.default.mkdirSync(dir, { recursive: true });
-                }
                 // If store data is an object, stringify it to execute its
                 // queries and resolve its includes.
                 const isJson = (0, fs_2.isJsonFile)(relativeFilepath);
                 const storeFileContentString = isJson
                     ? JSON.stringify(storeFileContentData)
                     : storeFileContentData;
-                // Before overwriting a file, check it has changed.
+                // Before overwriting a file, check if it has changed.
                 let needsSave = true;
                 let oldPublicUrl = null;
                 const newPublicUrl = storeFileContentData.data?.content?.url?.path || null;
-                if (fs_1.default.existsSync(absoluteFilepathInDumpDir)) {
-                    const dumpFileContentString = (0, fs_2.readFile)(absoluteFilepathInDumpDir);
-                    if (storeFileContentString === dumpFileContentString) {
+                const newHash = (0, string_1.createHash)(storeFileContentString);
+                const indexEntry = dumpIndexHelper_1.dumpIndexHelper.getEntry(relativeFilepath);
+                if (indexEntry) {
+                    if (newHash === indexEntry.hash) {
                         // No need to save it, file has not changed.
                         needsSave = false;
                     }
-                    else if (isJson && dumpFileContentString) {
-                        // Get old public URL before it changes on disk.
-                        oldPublicUrl =
-                            JSON.parse(dumpFileContentString)?.data?.content?.url?.path ||
-                                null;
+                    else if (isJson) {
+                        // Get old public URL before it changes on disk and index.
+                        oldPublicUrl = indexEntry.url;
                     }
                 }
                 if (needsSave) {
-                    // Save it.
+                    // Create parent directories if they are missing.
+                    const dir = path_1.default.dirname(absoluteFilepathInDumpDir);
+                    if (!fs_1.default.existsSync(dir)) {
+                        fs_1.default.mkdirSync(dir, { recursive: true });
+                    }
+                    // Save it on disk.
                     fs_1.default.writeFileSync(absoluteFilepathInDumpDir, storeFileContentString);
+                    // Save it to index.
+                    dumpIndexHelper_1.dumpIndexHelper.addEntry(relativeFilepath, {
+                        hash: newHash,
+                        url: newPublicUrl,
+                    });
                     // Mark it as updated.
                     dump.updated.set(relativeFilepath, {
                         oldPublicUrl,
@@ -67,18 +73,20 @@ const storeUpdatedFiles = (diff, dump, dumpDir) => {
         }
     });
 };
-const removeDeletedFiles = (diff, dump, dumpDir) => {
+const removeDeletedFiles = (diff, dump, filesDumpDir) => {
     diff.deleted.forEach(relativeFilepath => {
-        const absoluteFilepath = `${dumpDir}/${relativeFilepath}`;
+        const absoluteFilepath = `${filesDumpDir}/${relativeFilepath}`;
         try {
-            if (fs_1.default.existsSync(absoluteFilepath)) {
-                // Get old public URLs before they change on disk.
-                const dumpContent = (0, fs_2.getFileContent)(absoluteFilepath);
-                const oldPublicUrl = dumpContent.json?.data?.content?.url?.path;
+            const indexEntry = dumpIndexHelper_1.dumpIndexHelper.getEntry(relativeFilepath);
+            if (indexEntry) {
+                // Get old public URLs before they change on disk and index.
+                const oldPublicUrl = indexEntry.url;
                 // Delete it.
                 fs_1.default.unlinkSync(absoluteFilepath);
                 // Delete any empty directory.
                 (0, fs_2.removeEmptyDirsUpwards)(path_1.default.dirname(absoluteFilepath));
+                // Delete it from index.
+                dumpIndexHelper_1.dumpIndexHelper.removeEntry(relativeFilepath);
                 // Mark it as deleted.
                 dump.deleted.set(relativeFilepath, {
                     oldPublicUrl,
@@ -105,13 +113,15 @@ exports.dumpManager = {
             diff,
         };
         if (config_1.config.dumpDir) {
-            const dumpDir = `${config_1.config.dumpDir}/files`;
+            const filesDumpDir = `${config_1.config.dumpDir}/files`;
             if (diff.updated.size || diff.deleted.size) {
                 dumpMetadataHelper_1.dumpMetadataHelper.storeDumpMetadata(dump);
                 // Store updated files.
-                storeUpdatedFiles(diff, dump, dumpDir);
+                storeUpdatedFiles(diff, dump, filesDumpDir);
                 // Remove deleted files.
-                removeDeletedFiles(diff, dump, dumpDir);
+                removeDeletedFiles(diff, dump, filesDumpDir);
+                // Save dump index
+                dumpIndexHelper_1.dumpIndexHelper.saveDumpIndex();
                 // Invoke "onDumpCreate" hook.
                 dump = hook_1.hookManager.invokeOnDumpCreate(dump);
                 const execTimeMs = (microtime_1.default.now() - startDate) / 1000;
