@@ -162,7 +162,7 @@ exports.dumpManager = {
                 storeUpdatedFiles(diff, dump, filesDumpDir);
                 // Remove deleted files.
                 removeDeletedFiles(diff, dump, filesDumpDir);
-                // Sync stale files.
+                // Remove stale files.
                 removeStaleFiles(diff, dump, filesDumpDir);
                 // Save dump index
                 dumpIndexHelper_1.dumpIndexHelper.saveDumpIndex();
