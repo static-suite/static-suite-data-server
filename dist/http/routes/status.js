@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.statusDiff = exports.statusIndexCustom = exports.statusIndexUuid = exports.statusIndexUrl = exports.statusBasic = exports.statusIndex = void 0;
+exports.statusIndexCustom = exports.statusIndexUuid = exports.statusIndexUrl = exports.statusBasic = exports.statusIndex = void 0;
 const dataDir_1 = require("../../lib/store/dataDir");
 const query_1 = require("../../lib/query");
 const config_1 = require("../../lib/config");
 const cache_1 = require("../../lib/utils/cache");
 const store_1 = require("../../lib/store");
-const object_1 = require("../../lib/utils/object");
-const diffManager_1 = require("../../lib/store/diff/diffManager");
 const statusIndex = (req, res) => {
     res.render('statusIndex', {
         links: {
@@ -16,7 +14,6 @@ const statusIndex = (req, res) => {
             '/status/index/uuid': 'List of indexed UUIDs by language',
             '/status/index/include': 'List of indexed includes',
             '/status/index/custom': 'List of custom indexes',
-            '/status/diff': 'Executes a diff operation',
         },
     });
 };
@@ -60,10 +57,3 @@ const statusIndexCustom = (req, res) => {
     res.send(response);
 };
 exports.statusIndexCustom = statusIndexCustom;
-const statusDiff = (req, res) => {
-    const response = (0, object_1.jsonify)(diffManager_1.diffManager.getDiff());
-    res.status(200);
-    res.set({ 'Content-Type': 'application/json' });
-    res.send(response);
-};
-exports.statusDiff = statusDiff;

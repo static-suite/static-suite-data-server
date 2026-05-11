@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CacheStatus = exports.LogLevel = exports.RunMode = exports.dataServer = void 0;
+const package_json_1 = require("../../package.json");
 const logger_1 = require("./utils/logger");
 const logger_types_1 = require("./utils/logger/logger.types");
 Object.defineProperty(exports, "LogLevel", { enumerable: true, get: function () { return logger_types_1.LogLevel; } });
@@ -56,7 +57,7 @@ const dataServer = {
             }
             dumpIndexHelper_1.dumpIndexHelper.loadDumpIndex();
         }
-        logger_1.logger.info(`Data Server loaded in ${Date.now() - startDate}ms.`);
+        logger_1.logger.info(`Data Server ${package_json_1.version} loaded in ${Date.now() - startDate}ms.`);
         return {
             store: store_1.store,
             queryRunner: query_1.queryRunner,

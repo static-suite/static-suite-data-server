@@ -21,7 +21,6 @@ routes.get('/status/basic', status_1.statusBasic);
 routes.get('/status/index/url', status_1.statusIndexUrl);
 routes.get('/status/index/uuid', status_1.statusIndexUuid);
 routes.get('/status/index/custom', status_1.statusIndexCustom);
-routes.get('/status/diff', status_1.statusDiff);
 routes.get('/status', status_1.statusIndex);
 routes.get('/query', query_1.queryIndex);
 routes.get('/query/*queryDefinition', query_1.runQuery);

@@ -1,3 +1,4 @@
+import { version } from '../../package.json';
 import { configureLogger, logger } from './utils/logger';
 import { LogLevel, LogFile } from './utils/logger/logger.types';
 import { initWatcher } from './watcher';
@@ -72,7 +73,9 @@ const dataServer = {
       dumpIndexHelper.loadDumpIndex();
     }
 
-    logger.info(`Data Server loaded in ${Date.now() - startDate}ms.`);
+    logger.info(
+      `Data Server ${version} loaded in ${Date.now() - startDate}ms.`,
+    );
 
     return {
       store,

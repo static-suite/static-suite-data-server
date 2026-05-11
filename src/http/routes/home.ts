@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
+import { version } from '../../../package.json';
 
 export const home = (req: Request, res: Response): void => {
   res.render('home', {
+    version,
     links: {
       '/data': 'Browse all data loaded into the server',
       '/dependency': 'Dependency data',

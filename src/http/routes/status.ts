@@ -5,8 +5,6 @@ import { queryRunner } from '../../lib/query';
 import { config } from '../../lib/config';
 import { cache } from '../../lib/utils/cache';
 import { store } from '../../lib/store';
-import { jsonify } from '../../lib/utils/object';
-import { diffManager } from '../../lib/store/diff/diffManager';
 import { ObjectType } from '../../lib/utils/object/object.types';
 
 const statusIndex = (req: Request, res: Response): void => {
@@ -17,7 +15,6 @@ const statusIndex = (req: Request, res: Response): void => {
       '/status/index/uuid': 'List of indexed UUIDs by language',
       '/status/index/include': 'List of indexed includes',
       '/status/index/custom': 'List of custom indexes',
-      '/status/diff': 'Executes a diff operation',
     },
   });
 };
@@ -64,18 +61,10 @@ const statusIndexCustom = (req: Request, res: Response): void => {
   res.send(response);
 };
 
-const statusDiff = (req: Request, res: Response): void => {
-  const response = jsonify(diffManager.getDiff());
-  res.status(200);
-  res.set({ 'Content-Type': 'application/json' });
-  res.send(response);
-};
-
 export {
   statusIndex,
   statusBasic,
   statusIndexUrl,
   statusIndexUuid,
   statusIndexCustom,
-  statusDiff,
 };

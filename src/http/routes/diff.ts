@@ -5,8 +5,8 @@ import { jsonify } from '../../lib/utils/object';
 const diffIndex = (req: Request, res: Response): void => {
   res.render('diffIndex', {
     links: {
-      '/diff/incremental': 'Execute an incremental dump',
-      '/diff/full': 'Execute a full dump',
+      '/diff/incremental': 'Execute an incremental diff',
+      '/diff/full': 'Execute a full diff',
       '/diff/reset':
         'Clears intermediate changes tracked by dependency manager',
     },

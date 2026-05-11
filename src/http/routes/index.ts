@@ -4,7 +4,6 @@ import { queryIndex, runQuery } from './query';
 import { cacheIndex, cacheClear } from './cache';
 import {
   statusBasic,
-  statusDiff,
   statusIndex,
   statusIndexCustom,
   statusIndexUrl,
@@ -42,7 +41,6 @@ routes.get('/status/basic', statusBasic);
 routes.get('/status/index/url', statusIndexUrl);
 routes.get('/status/index/uuid', statusIndexUuid);
 routes.get('/status/index/custom', statusIndexCustom);
-routes.get('/status/diff', statusDiff);
 routes.get('/status', statusIndex);
 routes.get('/query', queryIndex);
 routes.get('/query/*queryDefinition', runQuery);

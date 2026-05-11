@@ -6,8 +6,8 @@ const object_1 = require("../../lib/utils/object");
 const diffIndex = (req, res) => {
     res.render('diffIndex', {
         links: {
-            '/diff/incremental': 'Execute an incremental dump',
-            '/diff/full': 'Execute a full dump',
+            '/diff/incremental': 'Execute an incremental diff',
+            '/diff/full': 'Execute a full diff',
             '/diff/reset': 'Clears intermediate changes tracked by dependency manager',
         },
     });
