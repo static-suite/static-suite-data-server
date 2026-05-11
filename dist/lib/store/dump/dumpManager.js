@@ -157,7 +157,6 @@ exports.dumpManager = {
         if (config_1.config.dumpDir) {
             const filesDumpDir = `${config_1.config.dumpDir}/files`;
             if (diff.updated.size || diff.deleted.size) {
-                dumpMetadataHelper_1.dumpMetadataHelper.storeDumpMetadata(dump);
                 // Store updated files.
                 storeUpdatedFiles(diff, dump, filesDumpDir);
                 // Remove deleted files.
