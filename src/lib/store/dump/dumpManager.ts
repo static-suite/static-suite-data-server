@@ -116,6 +116,62 @@ const removeDeletedFiles = (
   });
 };
 
+const removeStaleFiles = (
+  diff: Diff,
+  dump: Dump,
+  filesDumpDir: string,
+): void => {
+  const iterator = dumpIndexHelper.getKeys();
+  for (const relativeFilepath of iterator) {
+    const absoluteFilepath = `${filesDumpDir}/${relativeFilepath}`;
+    if (!store.data.has(relativeFilepath) && fs.existsSync(absoluteFilepath)) {
+      logger.info(`Dump: removing stale file: ${relativeFilepath}`);
+      try {
+        // Get old public URLs before they change on disk.
+        const dumpStaleFileString = fs
+          .readFileSync(absoluteFilepath)
+          .toString();
+        const isJson = isJsonFile(relativeFilepath);
+        const dumpStaleFileContentData = isJson
+          ? JSON.parse(dumpStaleFileString)
+          : dumpStaleFileString;
+        let oldPublicUrl: string | null =
+          dumpStaleFileContentData.data?.content?.url?.path || null;
+
+        // An stale file can be a manually copied file.
+        // In that case, that stale file would have an oldPublicUrl from a valid file,
+        // which would lead to deleting a valid URL.
+        // To solve that case, check that oldPublicUrl is not a valid URL.
+        if (oldPublicUrl && store.index.url.has(oldPublicUrl)) {
+          logger.info(
+            `Dump: skipping valid url from stale file: ${oldPublicUrl}`,
+          );
+          oldPublicUrl = null;
+        }
+
+        // Delete it.
+        fs.unlinkSync(absoluteFilepath);
+
+        // Delete any empty directory.
+        removeEmptyDirsUpwards(path.dirname(absoluteFilepath));
+
+        // Delete it from index.
+        dumpIndexHelper.removeEntry(relativeFilepath);
+
+        // Mark it as deleted.
+        dump.deleted.set(relativeFilepath, {
+          oldPublicUrl,
+          newPublicUrl: null,
+        });
+      } catch (e) {
+        logger.error(
+          `Dump: error deleting stale file "${absoluteFilepath}": ${e}`,
+        );
+      }
+    }
+  }
+};
+
 export const dumpManager: DumpManager = {
   dump(options = { incremental: true }): Dump {
     const startDate = microtime.now();
@@ -142,6 +198,9 @@ export const dumpManager: DumpManager = {
 
         // Remove deleted files.
         removeDeletedFiles(diff, dump, filesDumpDir);
+
+        // Remove stale files.
+        removeStaleFiles(diff, dump, filesDumpDir);
 
         // Save dump index
         dumpIndexHelper.saveDumpIndex();

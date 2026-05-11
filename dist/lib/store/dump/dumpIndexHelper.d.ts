@@ -7,6 +7,7 @@ export declare const dumpIndexHelper: {
     loadDumpIndex: () => void;
     hasEntry: (relativeFilePath: string) => boolean;
     getEntry: (relativeFilePath: string) => IndexEntry | undefined;
+    getKeys: () => MapIterator<string>;
     addEntry: (relativeFilePath: string, entry: IndexEntry) => void;
     removeEntry: (relativeFilePath: string) => void;
 };

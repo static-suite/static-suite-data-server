@@ -100,6 +100,7 @@ exports.dumpIndexHelper = {
     },
     hasEntry: (relativeFilePath) => index.has(relativeFilePath),
     getEntry: (relativeFilePath) => index.get(relativeFilePath),
+    getKeys: () => index.keys(),
     addEntry: (relativeFilePath, entry) => {
         setIsStale(true);
         index.set(relativeFilePath, entry);

@@ -120,6 +120,8 @@ export const dumpIndexHelper = {
   getEntry: (relativeFilePath: string): IndexEntry | undefined =>
     index.get(relativeFilePath),
 
+  getKeys: () => index.keys(),
+
   addEntry: (relativeFilePath: string, entry: IndexEntry): void => {
     setIsStale(true);
     index.set(relativeFilePath, entry);

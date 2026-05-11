@@ -99,6 +99,48 @@ const removeDeletedFiles = (diff, dump, filesDumpDir) => {
         }
     });
 };
+const removeStaleFiles = (diff, dump, filesDumpDir) => {
+    const iterator = dumpIndexHelper_1.dumpIndexHelper.getKeys();
+    for (const relativeFilepath of iterator) {
+        const absoluteFilepath = `${filesDumpDir}/${relativeFilepath}`;
+        if (!store_1.store.data.has(relativeFilepath) && fs_1.default.existsSync(absoluteFilepath)) {
+            logger_1.logger.info(`Dump: removing stale file: ${relativeFilepath}`);
+            try {
+                // Get old public URLs before they change on disk.
+                const dumpStaleFileString = fs_1.default
+                    .readFileSync(absoluteFilepath)
+                    .toString();
+                const isJson = (0, fs_2.isJsonFile)(relativeFilepath);
+                const dumpStaleFileContentData = isJson
+                    ? JSON.parse(dumpStaleFileString)
+                    : dumpStaleFileString;
+                let oldPublicUrl = dumpStaleFileContentData.data?.content?.url?.path || null;
+                // An stale file can be a manually copied file.
+                // In that case, that stale file would have an oldPublicUrl from a valid file,
+                // which would lead to deleting a valid URL.
+                // To solve that case, check that oldPublicUrl is not a valid URL.
+                if (oldPublicUrl && store_1.store.index.url.has(oldPublicUrl)) {
+                    logger_1.logger.info(`Dump: skipping valid url from stale file: ${oldPublicUrl}`);
+                    oldPublicUrl = null;
+                }
+                // Delete it.
+                fs_1.default.unlinkSync(absoluteFilepath);
+                // Delete any empty directory.
+                (0, fs_2.removeEmptyDirsUpwards)(path_1.default.dirname(absoluteFilepath));
+                // Delete it from index.
+                dumpIndexHelper_1.dumpIndexHelper.removeEntry(relativeFilepath);
+                // Mark it as deleted.
+                dump.deleted.set(relativeFilepath, {
+                    oldPublicUrl,
+                    newPublicUrl: null,
+                });
+            }
+            catch (e) {
+                logger_1.logger.error(`Dump: error deleting stale file "${absoluteFilepath}": ${e}`);
+            }
+        }
+    }
+};
 exports.dumpManager = {
     dump(options = { incremental: true }) {
         const startDate = microtime_1.default.now();
@@ -120,6 +162,8 @@ exports.dumpManager = {
                 storeUpdatedFiles(diff, dump, filesDumpDir);
                 // Remove deleted files.
                 removeDeletedFiles(diff, dump, filesDumpDir);
+                // Sync stale files.
+                removeStaleFiles(diff, dump, filesDumpDir);
                 // Save dump index
                 dumpIndexHelper_1.dumpIndexHelper.saveDumpIndex();
                 // Invoke "onDumpCreate" hook.
