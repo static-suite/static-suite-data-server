@@ -14,8 +14,16 @@ export const httpServer = {
 
     app.use(routes);
 
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       logger.info(`Data Server listening at http://localhost:${port}`);
     });
+
+    const shutdown = () => {
+      server.close();
+      process.exit();
+    };
+
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
   },
 };

@@ -17,8 +17,14 @@ exports.httpServer = {
         app.set('views', path_1.default.join(__dirname, 'views'));
         app.set('view engine', 'pug');
         app.use(routes_1.default);
-        app.listen(port, () => {
+        const server = app.listen(port, () => {
             logger_1.logger.info(`Data Server listening at http://localhost:${port}`);
         });
+        const shutdown = () => {
+            server.close();
+            process.exit();
+        };
+        process.on('SIGINT', shutdown);
+        process.on('SIGTERM', shutdown);
     },
 };
