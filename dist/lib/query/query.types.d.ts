@@ -59,6 +59,7 @@ export type QueryRunner = {
 export type QueryArgs = Record<string, any>;
 /**
  * The result that a query returns after being executed.
+ * @public
  */
 export type QueryModuleResult = {
     /**
@@ -137,6 +138,7 @@ export type QuerySuccessfulResponse = {
 };
 /**
  * A module that defines a query.
+ * @public
  */
 export type QueryModule = {
     /**

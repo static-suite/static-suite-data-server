@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { logger } from '../../utils/logger';
 import { isUniqueId } from '../../utils/string';
-import { allChangesItem, ChangedFiles, LogLineData } from './workDir.types';
+import { AllChangesItem, ChangedFiles, LogLineData } from './workDir.types';
 import {
   getLogFile,
   getChangedLinesBetween,
@@ -77,7 +77,7 @@ export const workDirHelper = {
       lineDataByUniqueId[lineDataGroup.uniqueId].push(lineDataGroup);
     });
     const sortedUniqueIds = Object.keys(lineDataByUniqueId).sort();
-    const all: allChangesItem[] = [];
+    const all: AllChangesItem[] = [];
     sortedUniqueIds.forEach(sortedUniqueId => {
       lineDataByUniqueId[sortedUniqueId].forEach(data => {
         all.push({

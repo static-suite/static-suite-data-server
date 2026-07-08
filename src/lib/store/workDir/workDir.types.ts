@@ -1,13 +1,15 @@
 /**
  * An item for all changed files in Static Suite's data dir.
+ * @public
  */
-export type allChangesItem = {
+export type AllChangesItem = {
   file: string;
   type: 'updated' | 'deleted';
 };
 
 /**
  * A group of changed files in Static Suite's data dir.
+ * @public
  */
 export type ChangedFiles = {
   /**
@@ -33,7 +35,7 @@ export type ChangedFiles = {
   /**
    * A list of all changed files, sorted by its timestamp.
    */
-  all: allChangesItem[];
+  all: AllChangesItem[];
 };
 
 /**

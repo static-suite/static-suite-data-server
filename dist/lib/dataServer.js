@@ -62,6 +62,7 @@ const dataServer = {
             store: store_1.store,
             queryRunner: query_1.queryRunner,
             taskRunner: taskRunner_1.taskRunner,
+            dataDirManager: dataDir_1.dataDirManager,
         };
     },
 };

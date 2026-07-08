@@ -1,3 +1,6 @@
+/**
+ * @public
+ */
 export interface StoreData<K, V> extends Map<K, V> {
     /**
      * Create a subset with all files in store that match the given arguments.
@@ -36,6 +39,7 @@ export interface StoreData<K, V> extends Map<K, V> {
 }
 /**
  * The store that holds all data.
+ * @public
  */
 export type Store = {
     /**
@@ -98,6 +102,7 @@ export type Store = {
 };
 /**
  * Options for subset() function.
+ * @public
  */
 export type StoreSubsetOptions = {
     /**
@@ -128,6 +133,7 @@ export type StoreSubsetOptions = {
 };
 /**
  * Object holding a subset of items from the store.
+ * @public
  */
 export type StoreSubset = {
     /**

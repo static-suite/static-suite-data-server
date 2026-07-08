@@ -1,4 +1,13 @@
 /**
+ * An item for all changed files in Static Suite's data dir.
+ * @public
+ */
+export declare type AllChangesItem = {
+    file: string;
+    type: 'updated' | 'deleted';
+};
+
+/**
  * Possible values for a cache get operation: miss or hit.
  *
  * @public
@@ -7,6 +16,69 @@ export declare enum CacheStatus {
     MISS = "miss",
     HIT = "hit"
 }
+
+/**
+ * A group of changed files in Static Suite's data dir.
+ * @public
+ */
+export declare type ChangedFiles = {
+    /**
+     * A unique id representing the date from which those changes are obtained.
+     */
+    fromUniqueId: string;
+    /**
+     * A unique id representing the date until which those changes are obtained.
+     */
+    toUniqueId: string;
+    /**
+     * A list of updated files (both newly added and changed files).
+     */
+    updated: string[];
+    /**
+     * A list of deleted files.
+     */
+    deleted: string[];
+    /**
+     * A list of all changed files, sorted by its timestamp.
+     */
+    all: AllChangesItem[];
+};
+
+/**
+ * A manager for the data dir from Static Suite.
+ * @public
+ */
+export declare type DataDirManager = {
+    /**
+     * Loads all files inside the data directory into the store.
+     *
+     */
+    load(): void;
+    /**
+     * Updates the store with changed files since last sync.
+     *
+     * @remarks
+     * It's main difference with load() is that, instead of loading the whole store,
+     * update() checks if something has changed, not doing anything if nothing
+     * has changed. Thus, this method is way faster than load().
+     *
+     * @returns A group of changed files in Static Suite's data dir.
+     */
+    update(): ChangedFiles;
+    /**
+     * Get unique id of last modification of data directory.
+     *
+     * @remarks
+     * Metadata about when and how is the data directory updated is
+     * stored in the work directory. If that directory is not present or
+     * not initialized with proper data, it returns the unique id of the store.
+     * If the store is not yet loaded, it returns a unique id in the past,
+     * the Unix Epoch (00:00:00 UTC on 1 January 1970).
+     *
+     * @returns The unique id of last modification of data directory
+     */
+    getModificationUniqueId(): string;
+};
 
 /**
  * The Data Server instance.
@@ -90,10 +162,15 @@ export declare type DataServerReturn = {
      * The task runner, to be able to run tasks on demand.
      */
     taskRunner: TaskRunner;
+    /**
+     * The data dir manager, to be able to update the store on demand.
+     */
+    dataDirManager: DataDirManager;
 };
 
 /**
  * A log file definition.
+ * @public
  */
 export declare type LogFile = {
     /**
@@ -143,6 +220,7 @@ export declare type QueryErrorResponse = {
 
 /**
  * A module that defines a query.
+ * @public
  */
 export declare type QueryModule = {
     /**
@@ -165,8 +243,9 @@ export declare type QueryModule = {
 
 /**
  * The result that a query returns after being executed.
+ * @public
  */
-declare type QueryModuleResult = {
+export declare type QueryModuleResult = {
     /**
      * A result, which can be of any kind (and array, an object, a string, etc)
      */
@@ -299,6 +378,7 @@ export declare enum RunMode {
 
 /**
  * The store that holds all data.
+ * @public
  */
 export declare type Store = {
     /**
@@ -360,7 +440,10 @@ export declare type Store = {
     };
 };
 
-declare interface StoreData<K, V> extends Map<K, V> {
+/**
+ * @public
+ */
+export declare interface StoreData<K, V> extends Map<K, V> {
     /**
      * Create a subset with all files in store that match the given arguments.
      *
@@ -399,8 +482,9 @@ declare interface StoreData<K, V> extends Map<K, V> {
 
 /**
  * Object holding a subset of items from the store.
+ * @public
  */
-declare type StoreSubset = {
+export declare type StoreSubset = {
     /**
      * Map of elements, with the filename as key
      */
@@ -417,8 +501,9 @@ declare type StoreSubset = {
 
 /**
  * Options for subset() function.
+ * @public
  */
-declare type StoreSubsetOptions = {
+export declare type StoreSubsetOptions = {
     /**
      * Optional base directory to filter files.
      *
@@ -451,7 +536,7 @@ declare type StoreSubsetOptions = {
  *
  * @public
  */
-declare type TaskArgs = Record<string, any>;
+export declare type TaskArgs = Record<string, any>;
 
 /**
  * An error response returned after executing a task.
@@ -462,7 +547,7 @@ declare type TaskArgs = Record<string, any>;
  *
  * @public
  */
-declare type TaskErrorResponse = {
+export declare type TaskErrorResponse = {
     /**
      * Error message from the task, usually coming from a failed validation.
      */
@@ -518,7 +603,7 @@ export declare type TaskRunner = {
  *
  * @public
  */
-declare type TaskSuccessfulResponse = {
+export declare type TaskSuccessfulResponse = {
     /**
      * Data returned by the task. @see {@link TaskModule#default}
      */

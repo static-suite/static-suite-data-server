@@ -1,7 +1,9 @@
 import { LogLevel, LogFile } from './utils/logger/logger.types';
-import { Store } from './store/store.types';
-import { TaskRunner } from './task/task.types';
-import { QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, QueryModule, CacheStatus } from './query/query.types';
+import { DataDirManager } from './store/dataDir/dataDir.types';
+import { ChangedFiles, AllChangesItem } from './store/workDir/workDir.types';
+import { Store, StoreData, StoreSubset, StoreSubsetOptions } from './store/store.types';
+import { TaskRunner, TaskArgs, TaskSuccessfulResponse, TaskErrorResponse } from './task/task.types';
+import { QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, QueryModule, QueryModuleResult, CacheStatus } from './query/query.types';
 import { RunMode, DataServerReturn, DataServerInitOptions } from './dataServer.types';
 /**
  * The Data Server instance.
@@ -18,5 +20,5 @@ declare const dataServer: {
      */
     init: (options: DataServerInitOptions) => DataServerReturn;
 };
-export { dataServer, DataServerInitOptions, DataServerReturn, RunMode, LogLevel, LogFile, Store, QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, QueryModule, TaskRunner, CacheStatus, };
+export { dataServer, DataServerInitOptions, DataServerReturn, RunMode, LogLevel, LogFile, Store, StoreData, StoreSubset, StoreSubsetOptions, QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, QueryModule, QueryModuleResult, TaskRunner, CacheStatus, DataDirManager, ChangedFiles, TaskArgs, TaskSuccessfulResponse, TaskErrorResponse, AllChangesItem, };
 //# sourceMappingURL=dataServer.d.ts.map

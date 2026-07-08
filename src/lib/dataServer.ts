@@ -4,17 +4,30 @@ import { LogLevel, LogFile } from './utils/logger/logger.types';
 import { initWatcher } from './watcher';
 import { setConfig } from './config';
 import { dataDirManager } from './store/dataDir';
+import { DataDirManager } from './store/dataDir/dataDir.types';
+import { ChangedFiles, AllChangesItem } from './store/workDir/workDir.types';
 import { store } from './store';
-import { Store } from './store/store.types';
+import {
+  Store,
+  StoreData,
+  StoreSubset,
+  StoreSubsetOptions,
+} from './store/store.types';
 import { queryRunner } from './query';
 import { taskRunner } from './task/taskRunner';
-import { TaskRunner } from './task/task.types';
+import {
+  TaskRunner,
+  TaskArgs,
+  TaskSuccessfulResponse,
+  TaskErrorResponse,
+} from './task/task.types';
 import {
   QueryRunner,
   QuerySuccessfulResponse,
   QueryErrorResponse,
   QueryArgs,
   QueryModule,
+  QueryModuleResult,
   CacheStatus,
 } from './query/query.types';
 import {
@@ -81,6 +94,7 @@ const dataServer = {
       store,
       queryRunner,
       taskRunner,
+      dataDirManager,
     };
   },
 };
@@ -92,11 +106,21 @@ export {
   LogLevel,
   LogFile,
   Store,
+  StoreData,
+  StoreSubset,
+  StoreSubsetOptions,
   QueryRunner,
   QuerySuccessfulResponse,
   QueryErrorResponse,
   QueryArgs,
   QueryModule,
+  QueryModuleResult,
   TaskRunner,
   CacheStatus,
+  DataDirManager,
+  ChangedFiles,
+  TaskArgs,
+  TaskSuccessfulResponse,
+  TaskErrorResponse,
+  AllChangesItem,
 };

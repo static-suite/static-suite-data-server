@@ -23,6 +23,7 @@ export declare enum LogLevel {
 export type LogLevelStrings = keyof typeof LogLevel;
 /**
  * A log file definition.
+ * @public
  */
 export type LogFile = {
     /**

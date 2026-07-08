@@ -1,6 +1,7 @@
 import { ChangedFiles } from '../workDir/workDir.types';
 /**
  * A manager for the data dir from Static Suite.
+ * @public
  */
 export type DataDirManager = {
     /**

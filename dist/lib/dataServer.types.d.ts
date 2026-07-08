@@ -2,6 +2,7 @@ import { LogLevel, LogFile } from './utils/logger/logger.types';
 import { QueryRunner } from './query/query.types';
 import { TaskRunner } from './task/task.types';
 import { Store } from './store/store.types';
+import { DataDirManager } from './store/dataDir/dataDir.types';
 /**
  * Init options for Data Server.
  *
@@ -80,5 +81,9 @@ export type DataServerReturn = {
      * The task runner, to be able to run tasks on demand.
      */
     taskRunner: TaskRunner;
+    /**
+     * The data dir manager, to be able to update the store on demand.
+     */
+    dataDirManager: DataDirManager;
 };
 //# sourceMappingURL=dataServer.types.d.ts.map
