@@ -6,7 +6,9 @@ import { logger } from '../../lib/utils/logger';
 import { dataDirManager } from '../../lib/store/dataDir';
 
 const data = (req: Request, res: Response): void => {
-  dataDirManager.update();
+  if (req.query?.update !== 'no') {
+    dataDirManager.update();
+  }
   const storeKeyParts = Array.from(req.params.storeKeyParts || []);
   const storeKey = storeKeyParts.join('/');
 

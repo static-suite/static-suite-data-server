@@ -10,7 +10,9 @@ const store_1 = require("../../lib/store");
 const logger_1 = require("../../lib/utils/logger");
 const dataDir_1 = require("../../lib/store/dataDir");
 const data = (req, res) => {
-    dataDir_1.dataDirManager.update();
+    if (req.query?.update !== 'no') {
+        dataDir_1.dataDirManager.update();
+    }
     const storeKeyParts = Array.from(req.params.storeKeyParts || []);
     const storeKey = storeKeyParts.join('/');
     const storeFile = store_1.store.data.get(storeKey);
