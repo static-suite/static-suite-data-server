@@ -29,16 +29,16 @@ Data Server supports static JSON includes (`entityInclude`, `configInclude`, `lo
   - [Hooks](#hooks)
     - [Available hooks](#available-hooks)
       - [`onModuleLoad({config, store, logger }): void`](#onmoduleloadconfig-store-logger--void)
-      - [`onStoreLoadStart({ store, logger, dependencyTagger }): void`](#onstoreloadstart-store-logger-dependencytagger--void)
-      - [`onProcessFile({ store, logger, dependencyTagger, relativeFilepath, fileContent }): fileContent`](#onprocessfile-store-logger-dependencytagger-relativefilepath-filecontent--filecontent)
-      - [`onStoreItemAdd({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`](#onstoreitemadd-store-logger-dependencytagger-relativefilepath-storeitem--void)
-      - [`onStoreLoadDone({ store, logger, dependencyTagger }): void`](#onstoreloaddone-store-logger-dependencytagger--void)
-      - [`onStoreChangeStart({ store, logger, dependencyTagger, changedFiles }): void`](#onstorechangestart-store-logger-dependencytagger-changedfiles--void)
-      - [`onStoreItemBeforeUpdate({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`](#onstoreitembeforeupdate-store-logger-dependencytagger-relativefilepath-storeitem--void)
-      - [`onStoreItemAfterUpdate({ store, logger, dependencyTagger, relativeFilepath, storeItem, previousStoreItem }): void`](#onstoreitemafterupdate-store-logger-dependencytagger-relativefilepath-storeitem-previousstoreitem--void)
-      - [`onStoreItemDelete({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`](#onstoreitemdelete-store-logger-dependencytagger-relativefilepath-storeitem--void)
-      - [`onStoreChangeDone({ store, logger, dependencyTagger, changedFiles }): void`](#onstorechangedone-store-logger-dependencytagger-changedfiles--void)
-      - [`onDumpCreate(options: OnDumpHookOptions): Dump`](#ondumpcreateoptions-ondumphookoptions-dump)
+      - [`onStoreLoadStart({ config, store, logger, dependencyTagger }): void`](#onstoreloadstart-config-store-logger-dependencytagger--void)
+      - [`onProcessFile({ config, store, logger, dependencyTagger, relativeFilepath, fileContent }): fileContent`](#onprocessfile-config-store-logger-dependencytagger-relativefilepath-filecontent--filecontent)
+      - [`onStoreItemAdd({ config, store, logger, dependencyTagger, relativeFilepath, storeItem }): void`](#onstoreitemadd-config-store-logger-dependencytagger-relativefilepath-storeitem--void)
+      - [`onStoreLoadDone({ config, store, logger, dependencyTagger }): void`](#onstoreloaddone-config-store-logger-dependencytagger--void)
+      - [`onStoreChangeStart({ config, store, logger, dependencyTagger, changedFiles }): void`](#onstorechangestart-config-store-logger-dependencytagger-changedfiles--void)
+      - [`onStoreItemBeforeUpdate({ config, store, logger, dependencyTagger, relativeFilepath, storeItem }): void`](#onstoreitembeforeupdate-config-store-logger-dependencytagger-relativefilepath-storeitem--void)
+      - [`onStoreItemAfterUpdate({ config, store, logger, dependencyTagger, relativeFilepath, storeItem, previousStoreItem }): void`](#onstoreitemafterupdate-config-store-logger-dependencytagger-relativefilepath-storeitem-previousstoreitem--void)
+      - [`onStoreItemDelete({ config, store, logger, dependencyTagger, relativeFilepath, storeItem }): void`](#onstoreitemdelete-config-store-logger-dependencytagger-relativefilepath-storeitem--void)
+      - [`onStoreChangeDone({ config, store, logger, dependencyTagger, changedFiles }): void`](#onstorechangedone-config-store-logger-dependencytagger-changedfiles--void)
+      - [`onDumpCreate({ config, store, dumpDir, dump }): Dump`](#ondumpcreate-config-store-dumpdir-dump--dump)
     - [Hook example](#hook-example)
       - [`File taxonomy.hook.js`](#file-taxonomyhookjs)
       - [`File listContentsByTermId.query.js`](#file-listcontentsbytermidqueryjs)
@@ -396,22 +396,24 @@ Received parameters:
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 
-#### `onStoreLoadStart({ store, logger, dependencyTagger }): void`
+#### `onStoreLoadStart({ config, store, logger, dependencyTagger }): void`
 
 Called before the store starts loading for the first time.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 
-#### `onProcessFile({ store, logger, dependencyTagger, relativeFilepath, fileContent }): fileContent`
+#### `onProcessFile({ config, store, logger, dependencyTagger, relativeFilepath, fileContent }): fileContent`
 
 Called after a file is read from disk, before adding it to the store. It is aimed at altering the contents of the file before adding it to the store.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
@@ -422,34 +424,37 @@ Return value:
 
 - The passed `fileContent` object (an object with "raw" and "json" members) with any modification applied.
 
-#### `onStoreItemAdd({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
+#### `onStoreItemAdd({ config, store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
 
 Called after a file is added into the store for the first time.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
 
-#### `onStoreLoadDone({ store, logger, dependencyTagger }): void`
+#### `onStoreLoadDone({ config, store, logger, dependencyTagger }): void`
 
 Called after the store finishes loading for the first time.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 
-#### `onStoreChangeStart({ store, logger, dependencyTagger, changedFiles }): void`
+#### `onStoreChangeStart({ config, store, logger, dependencyTagger, changedFiles }): void`
 
 Called before the store starts updating.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
@@ -460,24 +465,26 @@ Received parameters:
   - `deleted`: a list of deleted files.
   - `all`: a list of all updated and deleted files, sorted by its unique id.
 
-#### `onStoreItemBeforeUpdate({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
+#### `onStoreItemBeforeUpdate({ config, store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
 
 Called before a file is updated in the store.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
 
-#### `onStoreItemAfterUpdate({ store, logger, dependencyTagger, relativeFilepath, storeItem, previousStoreItem }): void`
+#### `onStoreItemAfterUpdate({ config, store, logger, dependencyTagger, relativeFilepath, storeItem, previousStoreItem }): void`
 
 Called after a file is updated in the store.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
@@ -485,24 +492,26 @@ Received parameters:
 - `storeItem`: contents of the store item.
 - `previousStoreItem`: contents of the previous store item before store was updated
 
-#### `onStoreItemDelete({ store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
+#### `onStoreItemDelete({ config, store, logger, dependencyTagger, relativeFilepath, storeItem }): void`
 
 Called after a file is deleted from the store.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
 - `relativeFilepath`: relative file path inside the data dir.
 - `storeItem`: contents of the store item.
 
-#### `onStoreChangeDone({ store, logger, dependencyTagger, changedFiles }): void`
+#### `onStoreChangeDone({ config, store, logger, dependencyTagger, changedFiles }): void`
 
 Called after the store ends updating.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `logger`: the logger service with several functions to log messages: `error()`, `warn()`, `info()`, `error()`
 - `dependencyTagger`: the dependency tagger service. See [Dependency Tags](#dependency-tags) section.
@@ -513,12 +522,13 @@ Received parameters:
   - `deleted`: a list of deleted files.
   - `all`: a list of all updated and deleted files, sorted by its unique id.
 
-#### `onDumpCreate(options: OnDumpHookOptions): Dump`
+#### `onDumpCreate({ config, store, dumpDir, dump }): Dump`
 
 Called after a dump object is created, aimed at altering the contents of the dump being saved, and adding/removing items.
 
 Received parameters:
 
+- `config`: object with configuration options defined at Data Server start: `dataDir`, `workDir`, `queryDir`, etc
 - `store`: the object that holds all data. See [store internal structure](#store-internal-structure).
 - `dumpDir`: path to the dump directory.
 - `dump`: the dump to be processed. See [Dumps section](#dumps) for more information.

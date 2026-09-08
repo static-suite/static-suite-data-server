@@ -30,6 +30,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreLoadStart) {
         hookModule.onStoreLoadStart({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -46,6 +47,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onProcessFile) {
         returnValue = hookModule.onProcessFile({
+          config,
           relativeFilepath,
           fileContent: processedFileContent,
           store,
@@ -66,6 +68,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemAdd) {
         hookModule.onStoreItemAdd({
+          config,
           relativeFilepath,
           store,
           logger,
@@ -82,6 +85,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreLoadDone) {
         hookModule.onStoreLoadDone({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -96,6 +100,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreChangeStart) {
         hookModule.onStoreChangeStart({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -111,6 +116,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemBeforeUpdate) {
         hookModule.onStoreItemBeforeUpdate({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -131,6 +137,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemAfterUpdate) {
         hookModule.onStoreItemAfterUpdate({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -148,6 +155,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreItemDelete) {
         hookModule.onStoreItemDelete({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -164,6 +172,7 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (hookModule.onStoreChangeDone) {
         hookModule.onStoreChangeDone({
+          config,
           store,
           logger,
           dependencyTagger,
@@ -181,9 +190,11 @@ export const hookManager: HookManager = {
       const hookModule = hookInfo.getModule();
       if (config.dumpDir && hookModule.onDumpCreate) {
         returnValue = hookModule.onDumpCreate({
+          config,
           dumpDir: config.dumpDir,
           store,
           dump: processedDump,
+          logger,
         });
         if (returnValue) {
           processedDump = returnValue;

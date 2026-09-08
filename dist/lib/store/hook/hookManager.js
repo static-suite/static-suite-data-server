@@ -27,6 +27,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreLoadStart) {
                 hookModule.onStoreLoadStart({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -42,6 +43,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onProcessFile) {
                 returnValue = hookModule.onProcessFile({
+                    config: config_1.config,
                     relativeFilepath,
                     fileContent: processedFileContent,
                     store: store_1.store,
@@ -61,6 +63,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemAdd) {
                 hookModule.onStoreItemAdd({
+                    config: config_1.config,
                     relativeFilepath,
                     store: store_1.store,
                     logger: logger_1.logger,
@@ -76,6 +79,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreLoadDone) {
                 hookModule.onStoreLoadDone({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -89,6 +93,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreChangeStart) {
                 hookModule.onStoreChangeStart({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -103,6 +108,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemBeforeUpdate) {
                 hookModule.onStoreItemBeforeUpdate({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -118,6 +124,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemAfterUpdate) {
                 hookModule.onStoreItemAfterUpdate({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -134,6 +141,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreItemDelete) {
                 hookModule.onStoreItemDelete({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -149,6 +157,7 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (hookModule.onStoreChangeDone) {
                 hookModule.onStoreChangeDone({
+                    config: config_1.config,
                     store: store_1.store,
                     logger: logger_1.logger,
                     dependencyTagger: dependencyTagger_1.dependencyTagger,
@@ -165,9 +174,11 @@ exports.hookManager = {
             const hookModule = hookInfo.getModule();
             if (config_1.config.dumpDir && hookModule.onDumpCreate) {
                 returnValue = hookModule.onDumpCreate({
+                    config: config_1.config,
                     dumpDir: config_1.config.dumpDir,
                     store: store_1.store,
                     dump: processedDump,
+                    logger: logger_1.logger,
                 });
                 if (returnValue) {
                     processedDump = returnValue;

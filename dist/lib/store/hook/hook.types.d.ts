@@ -43,13 +43,12 @@ export interface OnModuleLoadHookOptions {
 }
 /**
  * Options passed to a hook.
- *
- * @remarks
- * Since hooks are user-land modules, they do not have access to configuration
- * or any other part of the Data Server. All data they need to function must be
- * passed as parameters.
  */
 export interface BaseHookOptions {
+    /**
+     * Configuration options.
+     */
+    config: ConfigOptions;
     /**
      * The data store.
      */
@@ -105,6 +104,10 @@ export interface ChangedFilesHookOptions extends BaseHookOptions {
 }
 export interface OnDumpHookOptions {
     /**
+     * Configuration options.
+     */
+    config: ConfigOptions;
+    /**
      * Path to the dump directory.
      */
     dumpDir: string;
@@ -116,6 +119,10 @@ export interface OnDumpHookOptions {
      * The dump to be processed.
      */
     dump: Dump;
+    /**
+     * The logger service.
+     */
+    logger: Logger;
 }
 /**
  * A module that defines several hooks.
