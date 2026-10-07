@@ -17,9 +17,9 @@ const dependencyTagger_1 = require("./dependency/dependencyTagger");
  *  fileContent: the contents of the stored file
  *  previousStoredData: the contents of the previously stored file
  */
-const setFileIntoStore = (relativeFilepath) => {
+const setFileIntoStore = async (relativeFilepath) => {
     const absoluteFilePath = `${config_1.config.dataDir}/${relativeFilepath}`;
-    let fileContent = (0, fs_1.getFileContent)(absoluteFilePath);
+    let fileContent = await (0, fs_1.getFileContentAsync)(absoluteFilePath);
     // Invoke "process file" hook.
     fileContent = hook_1.hookManager.invokeOnProcessFile({
         relativeFilepath,
@@ -103,8 +103,8 @@ const setFileIntoStore = (relativeFilepath) => {
     return { fileContent: dataToStore, previousStoredData };
 };
 exports.storeManager = {
-    add: (relativeFilepath) => {
-        const { fileContent } = setFileIntoStore(relativeFilepath);
+    add: async (relativeFilepath) => {
+        const { fileContent } = await setFileIntoStore(relativeFilepath);
         // Invoke "store add" hook.
         hook_1.hookManager.invokeOnStoreItemAdd({
             relativeFilepath,
@@ -112,7 +112,7 @@ exports.storeManager = {
         });
         return exports.storeManager;
     },
-    update: (relativeFilepath) => {
+    update: async (relativeFilepath) => {
         const storedData = _1.store.data.get(relativeFilepath);
         if (storedData) {
             hook_1.hookManager.invokeOnStoreItemBeforeUpdate({
@@ -120,7 +120,7 @@ exports.storeManager = {
                 storeItem: storedData,
             });
         }
-        const { fileContent, previousStoredData } = setFileIntoStore(relativeFilepath);
+        const { fileContent, previousStoredData } = await setFileIntoStore(relativeFilepath);
         // Invalidate this item.
         dependencyTagger_1.dependencyTagger.invalidateTags([relativeFilepath]);
         // Invoke "store update" hook.

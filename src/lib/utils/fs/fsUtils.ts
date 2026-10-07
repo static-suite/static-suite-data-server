@@ -1,4 +1,5 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import path from 'path';
 import fg, { Options as fastGlobOptions } from 'fast-glob';
 import { logger } from '../logger';
@@ -38,6 +39,31 @@ export const readFile = (filePath: string): string | null => {
 };
 
 /**
+ * Asynchronously reads a file and logs an error on failure.
+ *
+ * @param filePath - A path to a file.
+ *
+ * @returns The file contents as a string if file is found, or null otherwise.
+ */
+export const readFileAsync = async (
+  filePath: string,
+): Promise<string | null> => {
+  let content;
+  try {
+    content = await fsPromises.readFile(filePath, {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+  } catch (error) {
+    // When an error is thrown, content is undefined, so ensure
+    // it is converted to null.
+    content = null;
+    logger.error(`Error reading file "${filePath}": ${error}`);
+  }
+  return content;
+};
+
+/**
  * Gets raw and JSON parsed content from a file.
  *
  * @param filepath - A path to a file.
@@ -48,6 +74,29 @@ export const readFile = (filePath: string): string | null => {
  */
 export const getFileContent = (filepath: string): FileType => {
   const raw = readFile(filepath);
+  let json = null;
+  if (raw && isJsonFile(filepath)) {
+    json = parseJsonString(raw);
+    if (!json) {
+      logger.error(`Error getting JSON from file "${filepath}"`);
+    }
+  }
+  return { raw, json };
+};
+
+/**
+ * Asynchronously gets raw and JSON parsed content from a file.
+ *
+ * @param filepath - A path to a file.
+ *
+ * @returns Object with two properties, "raw" and "json", which contain
+ * the raw and json version of the file. If file is not a JSON, the "json"
+ * property is null. If file is not found, both properties are null.
+ */
+export const getFileContentAsync = async (
+  filepath: string,
+): Promise<FileType> => {
+  const raw = await readFileAsync(filepath);
   let json = null;
   if (raw && isJsonFile(filepath)) {
     json = parseJsonString(raw);
@@ -78,6 +127,30 @@ export const findFilesInDir = (
   const endDate = Date.now();
   logger.debug(
     `${files.length} files found inside ${dir} in ${endDate - startDate}ms.`,
+  );
+  return files;
+};
+
+/**
+ * Asynchronously finds all files inside a directory
+ *
+ * @param dir - Absolute path to the directory to be scanned
+ * @param glob - Optional glob to filter results (default all files recursive '**\/*')
+ * @param options - Options for the fast-glob package.
+ * See https://www.npmjs.com/package/fast-glob for reference .
+ *
+ * @returns Array of file paths found inside directory
+ */
+export const findFilesInDirAsync = async (
+  dir: string,
+  glob = '**/*',
+  options: fastGlobOptions = { absolute: false },
+): Promise<string[]> => {
+  const startDate = Date.now();
+  const files = await fg([glob], { cwd: dir, ...options });
+  const endDate = Date.now();
+  logger.debug(
+    `ASYNC ${files.length} files found inside ${dir} in ${endDate - startDate}ms.`,
   );
   return files;
 };

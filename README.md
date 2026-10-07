@@ -93,7 +93,7 @@ const {
 } = require('@static-suite/static-suite-data-server/dist/lib/');
 
 // Init Data Server.
-const { store } = dataServer.init({ dataDir: '../data/prod' });
+const { store } = await dataServer.init({ dataDir: '../data/prod' });
 
 // Loop over all articles in english.
 store.data.subset({ dir: 'en/entity/node/article/' }).items.forEach(article => {

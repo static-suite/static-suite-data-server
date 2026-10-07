@@ -15,12 +15,12 @@ const dumpIndex = (req: Request, res: Response): void => {
   });
 };
 
-const dumpAction = (
+const dumpAction = async (
   req: Request,
   res: Response,
   incremental: boolean,
-): void => {
-  const dump = dumpManager.dump({ incremental });
+): Promise<void> => {
+  const dump = await dumpManager.dump({ incremental });
   const dumpAsJson: any = jsonify(dump);
   const args: any = req.query;
   if (args?.noDiff !== undefined) {
@@ -32,12 +32,12 @@ const dumpAction = (
   res.send(dumpAsJson);
 };
 
-const dumpIncremental = (req: Request, res: Response): void => {
-  dumpAction(req, res, true);
+const dumpIncremental = async (req: Request, res: Response): Promise<void> => {
+  await dumpAction(req, res, true);
 };
 
-const dumpFull = (req: Request, res: Response): void => {
-  dumpAction(req, res, false);
+const dumpFull = async (req: Request, res: Response): Promise<void> => {
+  await dumpAction(req, res, false);
 };
 
 const getMetadata = () => {

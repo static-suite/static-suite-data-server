@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeEmptyDirsUpwards = exports.getModificationDate = exports.findFilesInDir = exports.getFileContent = exports.readFile = exports.isJsonFile = void 0;
-const fs_1 = __importDefault(require("fs"));
+exports.removeEmptyDirsUpwards = exports.getModificationDate = exports.findFilesInDirAsync = exports.findFilesInDir = exports.getFileContentAsync = exports.getFileContent = exports.readFileAsync = exports.readFile = exports.isJsonFile = void 0;
+const node_fs_1 = __importDefault(require("node:fs"));
+const promises_1 = __importDefault(require("node:fs/promises"));
 const path_1 = __importDefault(require("path"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const logger_1 = require("../logger");
@@ -30,7 +31,7 @@ exports.isJsonFile = isJsonFile;
 const readFile = (filePath) => {
     let content;
     try {
-        content = fs_1.default.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+        content = node_fs_1.default.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
     }
     catch (error) {
         // When an error is thrown, content is undefined, so ensure
@@ -41,6 +42,30 @@ const readFile = (filePath) => {
     return content;
 };
 exports.readFile = readFile;
+/**
+ * Asynchronously reads a file and logs an error on failure.
+ *
+ * @param filePath - A path to a file.
+ *
+ * @returns The file contents as a string if file is found, or null otherwise.
+ */
+const readFileAsync = async (filePath) => {
+    let content;
+    try {
+        content = await promises_1.default.readFile(filePath, {
+            encoding: 'utf8',
+            flag: 'r',
+        });
+    }
+    catch (error) {
+        // When an error is thrown, content is undefined, so ensure
+        // it is converted to null.
+        content = null;
+        logger_1.logger.error(`Error reading file "${filePath}": ${error}`);
+    }
+    return content;
+};
+exports.readFileAsync = readFileAsync;
 /**
  * Gets raw and JSON parsed content from a file.
  *
@@ -63,6 +88,27 @@ const getFileContent = (filepath) => {
 };
 exports.getFileContent = getFileContent;
 /**
+ * Asynchronously gets raw and JSON parsed content from a file.
+ *
+ * @param filepath - A path to a file.
+ *
+ * @returns Object with two properties, "raw" and "json", which contain
+ * the raw and json version of the file. If file is not a JSON, the "json"
+ * property is null. If file is not found, both properties are null.
+ */
+const getFileContentAsync = async (filepath) => {
+    const raw = await (0, exports.readFileAsync)(filepath);
+    let json = null;
+    if (raw && (0, exports.isJsonFile)(filepath)) {
+        json = (0, string_1.parseJsonString)(raw);
+        if (!json) {
+            logger_1.logger.error(`Error getting JSON from file "${filepath}"`);
+        }
+    }
+    return { raw, json };
+};
+exports.getFileContentAsync = getFileContentAsync;
+/**
  * Finds all files inside a directory
  *
  * @param dir - Absolute path to the directory to be scanned
@@ -81,6 +127,24 @@ const findFilesInDir = (dir, glob = '**/*', options = { absolute: false }) => {
 };
 exports.findFilesInDir = findFilesInDir;
 /**
+ * Asynchronously finds all files inside a directory
+ *
+ * @param dir - Absolute path to the directory to be scanned
+ * @param glob - Optional glob to filter results (default all files recursive '**\/*')
+ * @param options - Options for the fast-glob package.
+ * See https://www.npmjs.com/package/fast-glob for reference .
+ *
+ * @returns Array of file paths found inside directory
+ */
+const findFilesInDirAsync = async (dir, glob = '**/*', options = { absolute: false }) => {
+    const startDate = Date.now();
+    const files = await (0, fast_glob_1.default)([glob], { cwd: dir, ...options });
+    const endDate = Date.now();
+    logger_1.logger.debug(`ASYNC ${files.length} files found inside ${dir} in ${endDate - startDate}ms.`);
+    return files;
+};
+exports.findFilesInDirAsync = findFilesInDirAsync;
+/**
  * Gets a file's modification date and logs an error on failure.
  *
  * @param filePath - Path to the file
@@ -90,7 +154,7 @@ exports.findFilesInDir = findFilesInDir;
 const getModificationDate = (filePath) => {
     let modificationDate = null;
     try {
-        modificationDate = new Date(fs_1.default.statSync(filePath).mtime);
+        modificationDate = new Date(node_fs_1.default.statSync(filePath).mtime);
     }
     catch (e) {
         logger_1.logger.error(`Error getting modification date for ${`path`}: ${e}`);
@@ -104,10 +168,10 @@ exports.getModificationDate = getModificationDate;
  * @param dir - Path to a directory
  */
 const removeEmptyDirsUpwards = (dir) => {
-    const isEmpty = fs_1.default.readdirSync(dir).length === 0;
+    const isEmpty = node_fs_1.default.readdirSync(dir).length === 0;
     if (isEmpty) {
         try {
-            fs_1.default.rmdirSync(dir);
+            node_fs_1.default.rmdirSync(dir);
         }
         catch (e) {
             logger_1.logger.debug(`Error deleting empty directory "${dir}": ${e}`);

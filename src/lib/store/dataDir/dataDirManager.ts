@@ -1,7 +1,7 @@
 import microtime from 'microtime';
 import { config } from '../../config';
 import { store } from '../store';
-import { findFilesInDir } from '../../utils/fs';
+import { findFilesInDirAsync } from '../../utils/fs';
 import { logger } from '../../utils/logger';
 import { unixEpochUniqueId, workDirHelper } from '../workDir';
 import { cache } from '../../utils/cache';
@@ -16,7 +16,7 @@ import { dependencyManager } from '../dependency/dependencyManager';
 let initialUniqueIdAlreadySet = false;
 
 export const dataDirManager: DataDirManager = {
-  load: () => {
+  load: async () => {
     logger.info('Loading data dir...');
     const startDate = Date.now();
 
@@ -43,12 +43,13 @@ export const dataDirManager: DataDirManager = {
     store.currentUniqueId = modificationUniqueId;
     logger.info(`Found unique id: ${store.currentUniqueId}`);
 
-    // Add all files, one by one.
-    const relativeFilePaths = findFilesInDir(config.dataDir);
+    // Add all files to store.
+    const relativeFilePaths = await findFilesInDirAsync(config.dataDir);
     const storeHydrationStartDate = Date.now();
-    relativeFilePaths.forEach(relativeFilePath => {
-      storeManager.add(relativeFilePath);
-    });
+    const addPromises = relativeFilePaths.map(relativeFilePath =>
+      storeManager.add(relativeFilePath),
+    );
+    await Promise.all(addPromises);
 
     logger.debug(
       `Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`,
@@ -70,7 +71,7 @@ export const dataDirManager: DataDirManager = {
     );
   },
 
-  update: () => {
+  update: async () => {
     const dataDirModificationUniqueId =
       dataDirManager.getModificationUniqueId();
 
@@ -101,14 +102,22 @@ export const dataDirManager: DataDirManager = {
           dataDirModificationUniqueId,
         );
         hookManager.invokeOnStoreChangeStart(changedFiles);
-        changedFiles.all.forEach(changedData => {
-          if (changedData.type === 'updated') {
-            storeManager.update(changedData.file);
-            const fileContent = store.data.get(changedData.file);
-            storeManager.parseSingleFileIncludes(changedData.file, fileContent);
-          } else {
-            storeManager.remove(changedData.file);
-          }
+
+        // First, remove all deleted files
+        changedFiles.deleted.forEach(deletedFile => {
+          storeManager.remove(deletedFile);
+        });
+
+        // Second, update all updated files
+        const updatePromises = changedFiles.updated.map(updatedFile =>
+          storeManager.update(updatedFile),
+        );
+        await Promise.all(updatePromises);
+
+        // Finally, parse includes from updated files
+        changedFiles.updated.forEach(updatedFile => {
+          const fileContent = store.data.get(updatedFile);
+          storeManager.parseSingleFileIncludes(updatedFile, fileContent);
         });
 
         // Clear all store subsets and queries, since they are stale.

@@ -19,6 +19,14 @@ export declare const isJsonFile: (filepath: string) => boolean;
  */
 export declare const readFile: (filePath: string) => string | null;
 /**
+ * Asynchronously reads a file and logs an error on failure.
+ *
+ * @param filePath - A path to a file.
+ *
+ * @returns The file contents as a string if file is found, or null otherwise.
+ */
+export declare const readFileAsync: (filePath: string) => Promise<string | null>;
+/**
  * Gets raw and JSON parsed content from a file.
  *
  * @param filepath - A path to a file.
@@ -28,6 +36,16 @@ export declare const readFile: (filePath: string) => string | null;
  * property is null. If file is not found, both properties are null.
  */
 export declare const getFileContent: (filepath: string) => FileType;
+/**
+ * Asynchronously gets raw and JSON parsed content from a file.
+ *
+ * @param filepath - A path to a file.
+ *
+ * @returns Object with two properties, "raw" and "json", which contain
+ * the raw and json version of the file. If file is not a JSON, the "json"
+ * property is null. If file is not found, both properties are null.
+ */
+export declare const getFileContentAsync: (filepath: string) => Promise<FileType>;
 /**
  * Finds all files inside a directory
  *
@@ -39,6 +57,17 @@ export declare const getFileContent: (filepath: string) => FileType;
  * @returns Array of file paths found inside directory
  */
 export declare const findFilesInDir: (dir: string, glob?: string, options?: fastGlobOptions) => string[];
+/**
+ * Asynchronously finds all files inside a directory
+ *
+ * @param dir - Absolute path to the directory to be scanned
+ * @param glob - Optional glob to filter results (default all files recursive '**\/*')
+ * @param options - Options for the fast-glob package.
+ * See https://www.npmjs.com/package/fast-glob for reference .
+ *
+ * @returns Array of file paths found inside directory
+ */
+export declare const findFilesInDirAsync: (dir: string, glob?: string, options?: fastGlobOptions) => Promise<string[]>;
 /**
  * Gets a file's modification date and logs an error on failure.
  *

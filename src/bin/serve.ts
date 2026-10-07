@@ -86,21 +86,23 @@ const logFileLevel = argv['log-file-level']
   : logLevel;
 
 // Configure data server.
-dataServer.init({
-  logLevel,
-  logFile: argv['log-file']
-    ? { path: argv['log-file'], level: logFileLevel }
-    : undefined,
-  dataDir: argv['data-dir'],
-  workDir: argv['work-dir'],
-  queryDir: argv['query-dir'],
-  hookDir: argv['hook-dir'],
-  taskDir: argv['task-dir'],
-  dumpDir: argv['dump-dir'],
-  runMode: RunMode[argv['run-mode'].toUpperCase() as RunModeStrings],
-});
-
-// Start server.
-if (argv._.includes('http')) {
-  httpServer.start(argv['--port']);
-}
+dataServer
+  .init({
+    logLevel,
+    logFile: argv['log-file']
+      ? { path: argv['log-file'], level: logFileLevel }
+      : undefined,
+    dataDir: argv['data-dir'],
+    workDir: argv['work-dir'],
+    queryDir: argv['query-dir'],
+    hookDir: argv['hook-dir'],
+    taskDir: argv['task-dir'],
+    dumpDir: argv['dump-dir'],
+    runMode: RunMode[argv['run-mode'].toUpperCase() as RunModeStrings],
+  })
+  .then(() => {
+    // Start server.
+    if (argv._.includes('http')) {
+      httpServer.start(argv['--port']);
+    }
+  });

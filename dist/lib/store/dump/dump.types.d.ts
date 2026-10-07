@@ -17,7 +17,7 @@ export type DumpManager = {
      */
     dump(options?: {
         incremental: boolean;
-    }): Dump;
+    }): Promise<Dump>;
     /**
      * Reset dump metadata.
      *

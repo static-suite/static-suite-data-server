@@ -15,11 +15,11 @@ export const diffManager: DiffManager = {
     dependencyManager.reset();
   },
 
-  getDiff(options = { incremental: true }): Diff {
+  async getDiff(options = { incremental: true }): Promise<Diff> {
     const startDate = microtime.now();
 
     // Before getting any diff data, update any pending changes from data dir.
-    const changedFiles = dataDirManager.update();
+    const changedFiles = await dataDirManager.update();
 
     const updated = new Set<string>();
     const deleted = new Set<string>();

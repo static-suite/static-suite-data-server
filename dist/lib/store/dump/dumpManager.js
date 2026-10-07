@@ -142,10 +142,12 @@ const removeStaleFiles = (diff, dump, filesDumpDir) => {
     }
 };
 exports.dumpManager = {
-    dump(options = { incremental: true }) {
+    async dump(options = { incremental: true }) {
         const startDate = microtime_1.default.now();
         // Diff data is processed and transformed into a dump object.
-        const diff = diffManager_1.diffManager.getDiff({ incremental: options.incremental });
+        const diff = await diffManager_1.diffManager.getDiff({
+            incremental: options.incremental,
+        });
         let dump = {
             execTimeMs: 0,
             fromUniqueId: diff.fromUniqueId,

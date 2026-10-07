@@ -17,10 +17,10 @@ exports.diffManager = {
         lastDiffUniqueId = uniqueId;
         dependencyManager_1.dependencyManager.reset();
     },
-    getDiff(options = { incremental: true }) {
+    async getDiff(options = { incremental: true }) {
         const startDate = microtime_1.default.now();
         // Before getting any diff data, update any pending changes from data dir.
-        const changedFiles = dataDirManager_1.dataDirManager.update();
+        const changedFiles = await dataDirManager_1.dataDirManager.update();
         const updated = new Set();
         const deleted = new Set();
         const currentDumpUniqueId = dumpMetadataHelper_1.dumpMetadataHelper.getCurrentDumpUniqueId();

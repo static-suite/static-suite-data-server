@@ -18,7 +18,7 @@ const task_1 = require("../../task");
 const dependencyManager_1 = require("../dependency/dependencyManager");
 let initialUniqueIdAlreadySet = false;
 exports.dataDirManager = {
-    load: () => {
+    load: async () => {
         logger_1.logger.info('Loading data dir...');
         const startDate = Date.now();
         // Reset store, just in case this load is called on an already loaded store.
@@ -39,12 +39,11 @@ exports.dataDirManager = {
         }
         store_1.store.currentUniqueId = modificationUniqueId;
         logger_1.logger.info(`Found unique id: ${store_1.store.currentUniqueId}`);
-        // Add all files, one by one.
-        const relativeFilePaths = (0, fs_1.findFilesInDir)(config_1.config.dataDir);
+        // Add all files to store.
+        const relativeFilePaths = await (0, fs_1.findFilesInDirAsync)(config_1.config.dataDir);
         const storeHydrationStartDate = Date.now();
-        relativeFilePaths.forEach(relativeFilePath => {
-            storeManager_1.storeManager.add(relativeFilePath);
-        });
+        const addPromises = relativeFilePaths.map(relativeFilePath => storeManager_1.storeManager.add(relativeFilePath));
+        await Promise.all(addPromises);
         logger_1.logger.debug(`Store map hydrated in ${Date.now() - storeHydrationStartDate}ms.`);
         const includeParserStartDate = Date.now();
         storeManager_1.storeManager.parseIncludes();
@@ -53,7 +52,7 @@ exports.dataDirManager = {
         hook_1.hookManager.invokeOnStoreLoadDone();
         logger_1.logger.info(`${relativeFilePaths.length} files loaded in ${Date.now() - startDate}ms.`);
     },
-    update: () => {
+    update: async () => {
         const dataDirModificationUniqueId = exports.dataDirManager.getModificationUniqueId();
         let changedFiles = {
             all: [],
@@ -74,15 +73,17 @@ exports.dataDirManager = {
                 dependencyManager_1.dependencyManager.trackInvalidatedFilepaths();
                 changedFiles = workDir_1.workDirHelper.getChangedFilesBetween(storeLastUniqueId, dataDirModificationUniqueId);
                 hook_1.hookManager.invokeOnStoreChangeStart(changedFiles);
-                changedFiles.all.forEach(changedData => {
-                    if (changedData.type === 'updated') {
-                        storeManager_1.storeManager.update(changedData.file);
-                        const fileContent = store_1.store.data.get(changedData.file);
-                        storeManager_1.storeManager.parseSingleFileIncludes(changedData.file, fileContent);
-                    }
-                    else {
-                        storeManager_1.storeManager.remove(changedData.file);
-                    }
+                // First, remove all deleted files
+                changedFiles.deleted.forEach(deletedFile => {
+                    storeManager_1.storeManager.remove(deletedFile);
+                });
+                // Second, update all updated files
+                const updatePromises = changedFiles.updated.map(updatedFile => storeManager_1.storeManager.update(updatedFile));
+                await Promise.all(updatePromises);
+                // Finally, parse includes from updated files
+                changedFiles.updated.forEach(updatedFile => {
+                    const fileContent = store_1.store.data.get(updatedFile);
+                    storeManager_1.storeManager.parseSingleFileIncludes(updatedFile, fileContent);
                 });
                 // Clear all store subsets and queries, since they are stale.
                 // In fact, the subset cache should be cleared only when files

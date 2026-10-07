@@ -53,7 +53,7 @@ export declare type DataDirManager = {
      * Loads all files inside the data directory into the store.
      *
      */
-    load(): void;
+    load(): Promise<void>;
     /**
      * Updates the store with changed files since last sync.
      *
@@ -64,7 +64,7 @@ export declare type DataDirManager = {
      *
      * @returns A group of changed files in Static Suite's data dir.
      */
-    update(): ChangedFiles;
+    update(): Promise<ChangedFiles>;
     /**
      * Get unique id of last modification of data directory.
      *
@@ -93,7 +93,7 @@ export declare const dataServer: {
      *
      * @returns An object with the data store and the queryRunner service.
      */
-    init: (options: DataServerInitOptions) => DataServerReturn;
+    init: (options: DataServerInitOptions) => Promise<DataServerReturn>;
 };
 
 /**

@@ -28,7 +28,7 @@ export type DiffManager = {
      */
     getDiff(options?: {
         incremental: boolean;
-    }): Diff;
+    }): Promise<Diff>;
 };
 /**
  * A group of changed files in Static Suite's data dir.

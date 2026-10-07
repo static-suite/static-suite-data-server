@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { getFileContent } from '../utils/fs';
+import { getFileContentAsync } from '../utils/fs';
 import { Json } from '../utils/object/object.types';
 import { StoreManager } from './store.types';
 import { hookManager } from './hook';
@@ -17,14 +17,14 @@ import { dependencyTagger } from './dependency/dependencyTagger';
  *  fileContent: the contents of the stored file
  *  previousStoredData: the contents of the previously stored file
  */
-const setFileIntoStore = (
+const setFileIntoStore = async (
   relativeFilepath: string,
-): {
+): Promise<{
   fileContent: Json | string | null;
   previousStoredData: Json | null;
-} => {
+}> => {
   const absoluteFilePath = `${config.dataDir}/${relativeFilepath}`;
-  let fileContent = getFileContent(absoluteFilePath);
+  let fileContent = await getFileContentAsync(absoluteFilePath);
 
   // Invoke "process file" hook.
   fileContent = hookManager.invokeOnProcessFile({
@@ -130,8 +130,8 @@ const setFileIntoStore = (
 };
 
 export const storeManager: StoreManager = {
-  add: (relativeFilepath: string): StoreManager => {
-    const { fileContent } = setFileIntoStore(relativeFilepath);
+  add: async (relativeFilepath: string): Promise<StoreManager> => {
+    const { fileContent } = await setFileIntoStore(relativeFilepath);
 
     // Invoke "store add" hook.
     hookManager.invokeOnStoreItemAdd({
@@ -142,7 +142,7 @@ export const storeManager: StoreManager = {
     return storeManager;
   },
 
-  update: (relativeFilepath: string): StoreManager => {
+  update: async (relativeFilepath: string): Promise<StoreManager> => {
     const storedData = store.data.get(relativeFilepath);
     if (storedData) {
       hookManager.invokeOnStoreItemBeforeUpdate({
@@ -152,7 +152,7 @@ export const storeManager: StoreManager = {
     }
 
     const { fileContent, previousStoredData } =
-      setFileIntoStore(relativeFilepath);
+      await setFileIntoStore(relativeFilepath);
 
     // Invalidate this item.
     dependencyTagger.invalidateTags([relativeFilepath]);

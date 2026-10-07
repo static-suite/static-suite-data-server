@@ -19,8 +19,8 @@ const dumpIndex = (req, res) => {
     });
 };
 exports.dumpIndex = dumpIndex;
-const dumpAction = (req, res, incremental) => {
-    const dump = dump_1.dumpManager.dump({ incremental });
+const dumpAction = async (req, res, incremental) => {
+    const dump = await dump_1.dumpManager.dump({ incremental });
     const dumpAsJson = (0, object_1.jsonify)(dump);
     const args = req.query;
     if (args?.noDiff !== undefined) {
@@ -30,12 +30,12 @@ const dumpAction = (req, res, incremental) => {
     res.set({ 'Content-Type': 'application/json' });
     res.send(dumpAsJson);
 };
-const dumpIncremental = (req, res) => {
-    dumpAction(req, res, true);
+const dumpIncremental = async (req, res) => {
+    await dumpAction(req, res, true);
 };
 exports.dumpIncremental = dumpIncremental;
-const dumpFull = (req, res) => {
-    dumpAction(req, res, false);
+const dumpFull = async (req, res) => {
+    await dumpAction(req, res, false);
 };
 exports.dumpFull = dumpFull;
 const getMetadata = () => {

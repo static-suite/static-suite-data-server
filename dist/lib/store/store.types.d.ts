@@ -163,7 +163,7 @@ export type StoreManager = {
      *
      * @returns The store manager, to allow chaining.
      */
-    add(relativeFilepath: string): StoreManager;
+    add(relativeFilepath: string): Promise<StoreManager>;
     /**
      * Removes a file from the store.
      *
@@ -186,7 +186,7 @@ export type StoreManager = {
      *
      * @returns The store manager, to allow chaining.
      */
-    update(file: string): StoreManager;
+    update(file: string): Promise<StoreManager>;
     /**
      * Parses all static and dynamic includes (entity, config, locale, custom and query)
      * from data stored in "store.data".

@@ -13,19 +13,19 @@ const diffIndex = (req, res) => {
     });
 };
 exports.diffIndex = diffIndex;
-const diffAction = (req, res, incremental) => {
-    const diff = diff_1.diffManager.getDiff({ incremental });
+const diffAction = async (req, res, incremental) => {
+    const diff = await diff_1.diffManager.getDiff({ incremental });
     const diffAsJson = (0, object_1.jsonify)(diff);
     res.status(200);
     res.set({ 'Content-Type': 'application/json' });
     res.send(diffAsJson);
 };
-const diffIncremental = (req, res) => {
-    diffAction(req, res, true);
+const diffIncremental = async (req, res) => {
+    await diffAction(req, res, true);
 };
 exports.diffIncremental = diffIncremental;
-const diffFull = (req, res) => {
-    diffAction(req, res, false);
+const diffFull = async (req, res) => {
+    await diffAction(req, res, false);
 };
 exports.diffFull = diffFull;
 const diffReset = (req, res) => {

@@ -27,7 +27,7 @@ export type DiffManager = {
 
    * @param options - Configuration options
    */
-  getDiff(options?: { incremental: boolean }): Diff;
+  getDiff(options?: { incremental: boolean }): Promise<Diff>;
 };
 
 /**

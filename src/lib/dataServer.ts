@@ -50,7 +50,7 @@ const dataServer = {
    *
    * @returns An object with the data store and the queryRunner service.
    */
-  init: (options: DataServerInitOptions): DataServerReturn => {
+  init: async (options: DataServerInitOptions): Promise<DataServerReturn> => {
     const startDate = Date.now();
 
     // Configure logger.
@@ -67,13 +67,8 @@ const dataServer = {
       runMode: options.runMode,
     });
 
-    // Start watcher.
-    if (config.runMode === RunMode.DEV) {
-      initWatcher();
-    }
-
     // Load data from dataDir.
-    dataDirManager.load();
+    await dataDirManager.load();
 
     // Create and load dump index.
     if (config.dumpDir) {
@@ -84,6 +79,11 @@ const dataServer = {
         dumpIndexHelper.createDumpIndex();
       }
       dumpIndexHelper.loadDumpIndex();
+    }
+
+    // Start watcher.
+    if (config.runMode === RunMode.DEV) {
+      initWatcher();
     }
 
     logger.info(

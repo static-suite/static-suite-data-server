@@ -29,7 +29,7 @@ const dataServer = {
      *
      * @returns An object with the data store and the queryRunner service.
      */
-    init: (options) => {
+    init: async (options) => {
         const startDate = Date.now();
         // Configure logger.
         (0, logger_1.configureLogger)(options.logLevel, options.logFile);
@@ -43,12 +43,8 @@ const dataServer = {
             dumpDir: options.dumpDir,
             runMode: options.runMode,
         });
-        // Start watcher.
-        if (config.runMode === dataServer_types_1.RunMode.DEV) {
-            (0, watcher_1.initWatcher)();
-        }
         // Load data from dataDir.
-        dataDir_1.dataDirManager.load();
+        await dataDir_1.dataDirManager.load();
         // Create and load dump index.
         if (config.dumpDir) {
             if (dumpIndexHelper_1.dumpIndexHelper.isDumpIndexStale() ||
@@ -56,6 +52,10 @@ const dataServer = {
                 dumpIndexHelper_1.dumpIndexHelper.createDumpIndex();
             }
             dumpIndexHelper_1.dumpIndexHelper.loadDumpIndex();
+        }
+        // Start watcher.
+        if (config.runMode === dataServer_types_1.RunMode.DEV) {
+            (0, watcher_1.initWatcher)();
         }
         logger_1.logger.info(`Data Server ${package_json_1.version} loaded in ${Date.now() - startDate}ms.`);
         return {

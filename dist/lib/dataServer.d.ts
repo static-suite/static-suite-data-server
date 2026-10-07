@@ -18,7 +18,7 @@ declare const dataServer: {
      *
      * @returns An object with the data store and the queryRunner service.
      */
-    init: (options: DataServerInitOptions) => DataServerReturn;
+    init: (options: DataServerInitOptions) => Promise<DataServerReturn>;
 };
 export { dataServer, DataServerInitOptions, DataServerReturn, RunMode, LogLevel, LogFile, Store, StoreData, StoreSubset, StoreSubsetOptions, QueryRunner, QuerySuccessfulResponse, QueryErrorResponse, QueryArgs, QueryModule, QueryModuleResult, TaskRunner, CacheStatus, DataDirManager, ChangedFiles, TaskArgs, TaskSuccessfulResponse, TaskErrorResponse, AllChangesItem, };
 //# sourceMappingURL=dataServer.d.ts.map

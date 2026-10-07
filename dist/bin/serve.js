@@ -84,7 +84,8 @@ const logFileLevel = argv['log-file-level']
     ? logger_types_1.LogLevel[argv['log-file-level'].toUpperCase()]
     : logLevel;
 // Configure data server.
-dataServer_1.dataServer.init({
+dataServer_1.dataServer
+    .init({
     logLevel,
     logFile: argv['log-file']
         ? { path: argv['log-file'], level: logFileLevel }
@@ -96,8 +97,10 @@ dataServer_1.dataServer.init({
     taskDir: argv['task-dir'],
     dumpDir: argv['dump-dir'],
     runMode: dataServer_types_1.RunMode[argv['run-mode'].toUpperCase()],
+})
+    .then(() => {
+    // Start server.
+    if (argv._.includes('http')) {
+        httpServer_1.httpServer.start(argv['--port']);
+    }
 });
-// Start server.
-if (argv._.includes('http')) {
-    httpServer_1.httpServer.start(argv['--port']);
-}

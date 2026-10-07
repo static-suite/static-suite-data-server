@@ -13,12 +13,12 @@ const diffIndex = (req: Request, res: Response): void => {
   });
 };
 
-const diffAction = (
+const diffAction = async (
   req: Request,
   res: Response,
   incremental: boolean,
-): void => {
-  const diff = diffManager.getDiff({ incremental });
+): Promise<void> => {
+  const diff = await diffManager.getDiff({ incremental });
   const diffAsJson: any = jsonify(diff);
 
   res.status(200);
@@ -26,12 +26,12 @@ const diffAction = (
   res.send(diffAsJson);
 };
 
-const diffIncremental = (req: Request, res: Response): void => {
-  diffAction(req, res, true);
+const diffIncremental = async (req: Request, res: Response): Promise<void> => {
+  await diffAction(req, res, true);
 };
 
-const diffFull = (req: Request, res: Response): void => {
-  diffAction(req, res, false);
+const diffFull = async (req: Request, res: Response): Promise<void> => {
+  await diffAction(req, res, false);
 };
 
 const diffReset = (req: Request, res: Response): void => {
