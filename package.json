@@ -1,6 +1,6 @@
 {
   "name": "@static-suite/static-suite-data-server",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A flexible, fast and developer friendly Data Server for Static Suite",
   "main": "./dist/lib/index.js",
   "typings": "./dist/lib/index.d.ts",

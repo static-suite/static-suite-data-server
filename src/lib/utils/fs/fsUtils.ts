@@ -150,7 +150,7 @@ export const findFilesInDirAsync = async (
   const files = await fg([glob], { cwd: dir, ...options });
   const endDate = Date.now();
   logger.debug(
-    `ASYNC ${files.length} files found inside ${dir} in ${endDate - startDate}ms.`,
+    `${files.length} files found inside ${dir} in ${endDate - startDate}ms.`,
   );
   return files;
 };

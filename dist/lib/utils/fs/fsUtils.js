@@ -140,7 +140,7 @@ const findFilesInDirAsync = async (dir, glob = '**/*', options = { absolute: fal
     const startDate = Date.now();
     const files = await (0, fast_glob_1.default)([glob], { cwd: dir, ...options });
     const endDate = Date.now();
-    logger_1.logger.debug(`ASYNC ${files.length} files found inside ${dir} in ${endDate - startDate}ms.`);
+    logger_1.logger.debug(`${files.length} files found inside ${dir} in ${endDate - startDate}ms.`);
     return files;
 };
 exports.findFilesInDirAsync = findFilesInDirAsync;
