@@ -34,7 +34,7 @@ export const initWatcher = (): void => {
     paths.push(config.taskDir);
   }
 
-  const listener = (filePath: string) => {
+  const callback = (filePath: string) => {
     // Remove all modules inside the query directory.
     if (config.queryDir && filePath.startsWith(config.queryDir)) {
       queryManager.reset();
@@ -58,9 +58,5 @@ export const initWatcher = (): void => {
     }
   };
 
-  watch(paths, {
-    add: listener,
-    change: listener,
-    unlink: listener,
-  });
+  watch(paths, callback);
 };

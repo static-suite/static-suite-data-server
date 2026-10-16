@@ -4,42 +4,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.watch = void 0;
-const chokidar_1 = __importDefault(require("chokidar"));
+const node_fs_1 = __importDefault(require("node:fs"));
 const logger_1 = require("../logger");
+const debounce_1 = require("../misc/debounce");
 /**
  * Watches for changes on a set of paths and attach listener to them
  *
- * @remarks
- * It handles three different events: add, change and unlink
- *
  * @param paths - An array of paths to be watched
- * @param listeners - An object with three optional event keys (add, change and unlink)
- * and a listener function as value. That function will be executed once any of
- * the event keys is dispatched.
+ * @param callback - A callback function to be executed when a file changes
  */
-const watch = (paths, listeners) => {
+const watch = (paths, callback) => {
     if (paths.length > 0) {
-        const watcher = chokidar_1.default.watch(paths, {
-            ignored: /(^|[/\\])\../,
-            persistent: true,
+        const listener = (eventType, filename) => {
+            if (filename) {
+                logger_1.logger.debug(`File ${filename} ${eventType}`);
+                callback(filename);
+            }
+        };
+        paths.forEach(path => {
+            node_fs_1.default.watch(path, {
+                ignore: /(^|[/\\])\../,
+                recursive: true,
+            }, 
+            // Ensure filenames are absolute
+            (0, debounce_1.debounce)((eventType, filename) => filename ? listener(eventType, `${path}/${filename}`) : null, 300));
         });
-        // Add event listeners.
-        watcher.on('ready', () => {
-            logger_1.logger.debug(`Watcher listening for changes on ${paths.join(',')}`);
-            watcher
-                .on('add', filePath => {
-                logger_1.logger.debug(`File ${filePath} added`);
-                listeners.add(filePath);
-            })
-                .on('change', filePath => {
-                logger_1.logger.debug(`File ${filePath} changed`);
-                listeners.change(filePath);
-            })
-                .on('unlink', filePath => {
-                logger_1.logger.debug(`File ${filePath} removed`);
-                listeners.unlink(filePath);
-            });
-        });
+        logger_1.logger.debug(`Watcher listening for changes on ${paths.join(',')}`);
     }
 };
 exports.watch = watch;
