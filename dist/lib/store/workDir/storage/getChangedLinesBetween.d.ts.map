@@ -1,1 +1,1 @@
-{"version":3,"file":"getChangedLinesBetween.d.ts","sourceRoot":"","sources":["../../../../../src/lib/store/workDir/storage/getChangedLinesBetween.ts"],"names":[],"mappings":"AAKA;;;;;;;;;;;;;GAaG;AACH,eAAO,MAAM,sBAAsB,iBACnB,MAAM,cACR,MAAM,KACjB,MAAM,EA6BR,CAAC"}
+{"version":3,"file":"getChangedLinesBetween.d.ts","sourceRoot":"","sources":["../../../../../src/lib/store/workDir/storage/getChangedLinesBetween.ts"],"names":[],"mappings":"AAKA;;;;;;;;;;;;;GAaG;AACH,eAAO,MAAM,sBAAsB,GACjC,cAAc,MAAM,EACpB,YAAY,MAAM,KACjB,MAAM,EA6BR,CAAC"}
