@@ -1,0 +1,47 @@
+name: update-node-dependencies
+
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [26]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+
+      - run: shasum yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Update dependencies
+        run: yarn upgrade
+
+      - run: shasum yarn.lock
+
+      - name: Commit files
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes detected, nothing to commit."
+            exit 0
+          fi
+
+          echo "Changes detected, committing them."
+          git config user.name "github-actions[bot]"
+          git config user.email "{user.id}+{user.login}[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: update dependencies"
+          npm version patch -m "chore: version %s"
+          git push

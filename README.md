@@ -2,7 +2,7 @@
 
 A flexible, fast and developer friendly Data Server for [Static Suite](https://www.drupal.org/project/static_suite).
 
-- flexible: it honors the structure of Static Suite's data directory, non imposing any opinionated structure. Every directory and its contents can be retrieved as simple arrays, and therefore queried using common [array functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) like `filter()`, `find()`, `forEach()`, etc.
+- flexible: it honors the structure of Static Suite's data directory, not imposing any opinionated structure. Every directory and its contents can be retrieved as simple arrays, and therefore queried using common [array functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) like `filter()`, `find()`, `forEach()`, etc.
 - fast: on a cold start, ~20k json files are usually loaded in ~2 seconds. Queries take ~1 ms, depending on their complexity. Once queries are cached, it executes ~150k queries per second.
 - developer friendly: when run in `dev` mode, changes made to queries or hooks (more on this later) are automatically reloaded. Queries are easy to create (they are just a function) and debug using a HTTP endpoint.
 
