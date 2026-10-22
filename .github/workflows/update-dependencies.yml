@@ -1,6 +1,9 @@
-name: update-node-dependencies
+name: update-dependencies
 
-on: workflow_dispatch
+on:
+  schedule:
+    - cron: '30 6 * * *' # every day at 06:30 UTC
+  workflow_dispatch:
 
 permissions:
   contents: write
