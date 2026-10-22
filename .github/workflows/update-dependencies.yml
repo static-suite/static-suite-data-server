@@ -1,5 +1,5 @@
 # Update dependencies, commit them and create a new tag
-name: update-dependencies
+name: Update dependencies
 
 on:
   schedule:
