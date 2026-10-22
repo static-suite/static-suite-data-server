@@ -22,10 +22,6 @@ const dumpAction = async (
 ): Promise<void> => {
   const dump = await dumpManager.dump({ incremental });
   const dumpAsJson: any = jsonify(dump);
-  const args: any = req.query;
-  if (args?.noDiff !== undefined) {
-    delete dumpAsJson.diff;
-  }
 
   res.status(200);
   res.set({ 'Content-Type': 'application/json' });

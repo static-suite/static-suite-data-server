@@ -22,10 +22,6 @@ exports.dumpIndex = dumpIndex;
 const dumpAction = async (req, res, incremental) => {
     const dump = await dump_1.dumpManager.dump({ incremental });
     const dumpAsJson = (0, object_1.jsonify)(dump);
-    const args = req.query;
-    if (args?.noDiff !== undefined) {
-        delete dumpAsJson.diff;
-    }
     res.status(200);
     res.set({ 'Content-Type': 'application/json' });
     res.send(dumpAsJson);

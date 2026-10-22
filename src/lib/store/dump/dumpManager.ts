@@ -186,7 +186,6 @@ export const dumpManager: DumpManager = {
       toUniqueId: diff.toUniqueId,
       updated: new Map(),
       deleted: new Map(),
-      diff,
     };
 
     if (config.dumpDir) {

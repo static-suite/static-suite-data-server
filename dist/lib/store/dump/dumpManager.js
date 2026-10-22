@@ -154,7 +154,6 @@ exports.dumpManager = {
             toUniqueId: diff.toUniqueId,
             updated: new Map(),
             deleted: new Map(),
-            diff,
         };
         if (config_1.config.dumpDir) {
             const filesDumpDir = `${config_1.config.dumpDir}/files`;
