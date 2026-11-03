@@ -37,10 +37,16 @@ jobs:
             exit 0
           fi
 
-          echo "Changes detected, committing them."
+          echo "Changes detected, running building and testing."
+          yarn build
+          yarn test --ci --silent
+
+          echo "Committing changes."
           git config user.name "github-actions[bot]"
           git config user.email "{user.id}+{user.login}[bot]@users.noreply.github.com"
+          npm version patch --no-git-tag-version
+          VERSION=$(node -p "require('./package.json').version")
           git add -A
-          git commit -m "chore: update dependencies"
-          npm version patch -m "chore: version %s"
-          git push
+          git commit -m "chore: version v$VERSION" --no-verify
+          git tag "v$VERSION"
+          git push --tags
