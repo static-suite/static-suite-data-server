@@ -49,4 +49,4 @@ jobs:
           git add -A
           git commit -m "chore: version v$VERSION" --no-verify
           git tag "v$VERSION"
-          git push --tags
+          git push --follow-tags
