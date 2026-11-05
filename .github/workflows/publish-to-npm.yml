@@ -5,6 +5,14 @@ on:
   push:
     tags: v*
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Update dependencies']
+    types:
+      - completed
+
+permissions:
+  packages: write
+  contents: write
 
 jobs:
   build:
@@ -12,9 +20,9 @@ jobs:
     strategy:
       matrix:
         node-version: [26]
-    permissions:
-      contents: read
-      id-token: write
+    # permissions:
+    #   contents: read
+    #   id-token: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -23,13 +31,13 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: 'https://registry.npmjs.org'
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run tests
-        run: yarn test
+      - name: Create a Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          gh release create v$VERSION -t "v${VERSION}" --generate-notes
 
       - name: Publish to NPM
         run: npm publish --access public
