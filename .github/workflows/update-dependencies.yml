@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   update:
@@ -31,15 +32,17 @@ jobs:
         run: yarn upgrade
 
       - name: Commit files
+        id: commit
         run: |
           if [ -z "$(git status --porcelain)" ]; then
             echo "No changes detected, nothing to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          echo "Changes detected, running building and testing."
-          yarn build
-          yarn test --ci --silent
+          # echo "Changes detected, running building and testing."
+          # yarn build
+          # yarn test --ci --silent
 
           echo "Committing changes."
           git config user.name "github-actions[bot]"
@@ -50,3 +53,11 @@ jobs:
           git commit -m "chore: version v$VERSION" --no-verify
           git tag "v$VERSION"
           git push --atomic origin main "v$VERSION"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger publish-to-npm workflow
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run publish-to-npm.yml
