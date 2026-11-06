@@ -1,5 +1,5 @@
-# Publish to npm whenever a tag is pushed
-name: Publish to NPM
+# Publish whenever a tag is pushed
+name: Publish
 
 on:
   push:
@@ -32,12 +32,21 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Create a Release
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test --ci --silent
+
+      - name: Publish to NPM
+        run: npm publish --access public
+
+      - name: Create a Github Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           gh release create v$VERSION -t "v${VERSION}" --generate-notes
-
-      - name: Publish to NPM
-        run: npm publish --access public

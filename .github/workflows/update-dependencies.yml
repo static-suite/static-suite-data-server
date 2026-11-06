@@ -41,8 +41,8 @@ jobs:
           fi
 
           # echo "Changes detected, running building and testing."
-          # yarn build
-          # yarn test --ci --silent
+          yarn build
+          yarn test --ci --silent
 
           echo "Committing changes."
           git config user.name "github-actions[bot]"
