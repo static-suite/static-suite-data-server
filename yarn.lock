@@ -4931,9 +4931,9 @@ signal-exit@^4.0.1:
   integrity sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==
 
 simple-datatables@^10.0.0:
-  version "10.3.0"
-  resolved "https://registry.yarnpkg.com/simple-datatables/-/simple-datatables-10.3.0.tgz#04ccc95ff3c684b8c7f642ec2e748944d0df384b"
-  integrity sha512-/9XcZ/AzZWYNMTTwUcUqsNhZXD1KIHg4tWCUhRx5qPDOnRVG2gNdRDR1euNTCbQxfAypu78ucgWc/BOMFfuxAQ==
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/simple-datatables/-/simple-datatables-10.4.0.tgz#37defbff8322a51b4f50402f0ba18b099ce8d4e8"
+  integrity sha512-GV42SHgfnrl/oq/J1l1p0lmYgdnZSKJ5sURd4GmtJeq7LdGncLDlzxpmmcfjGICg+LjFHpQU4DiVYS+bK2HQbA==
   dependencies:
     dayjs "^1.11.21"
     diff-dom "5.2.1"
