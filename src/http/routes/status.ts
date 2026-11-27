@@ -1,4 +1,3 @@
-// import microtime from 'microtime';
 import { Request, Response } from 'express';
 import { dataDirManager } from '../../lib/store/dataDir';
 import { queryRunner } from '../../lib/query';
